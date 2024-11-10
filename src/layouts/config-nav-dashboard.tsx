@@ -14,6 +14,11 @@ export const navData = [
     icon: icon('ic-analytics'),
   },
   {
+    title: 'Batches',
+    path: '/batches',
+    icon: icon('ic-user'),
+  },
+  {
     title: 'Instructors',
     path: '/user',
     icon: icon('ic-user'),
@@ -24,7 +29,7 @@ export const navData = [
     icon: icon('ic-user'),
   },
   {
-    title: 'Courses',
+    title: 'Assigments',
     path: '/courses',
     icon: icon('ic-user'),
   },

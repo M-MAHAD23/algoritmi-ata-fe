@@ -15,6 +15,8 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const CoursePage = lazy(() => import('src/pages/course'));
 export const StudentPage = lazy(() => import('src/pages/students'));
+export const BatchesPage = lazy(() => import('src/pages/batches'));
+export const BatchDetail = lazy(() => import('src/pages/batchdetailpage'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -49,6 +51,8 @@ export function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'courses', element: <CoursePage /> },
         { path: 'students', element: <StudentPage /> },
+        { path: 'batches', element: <BatchesPage /> },
+        { path: 'batch-detail', element: <BatchDetail /> },
         // { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],
