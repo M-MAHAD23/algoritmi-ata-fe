@@ -71,7 +71,11 @@ const SignIn: React.FC = () => {
       localStorage.clear();
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
       localStorage.setItem('token', token);
-      toast.success('Sign In Successfull.');
+      toast.success('Sign In Successfull.',
+        {
+          position: 'top-right', // Position the toast at the top right corner
+        }
+      );
       setTimeout(() => {
         navigate('/dashboard'); // Navigate to the sign-in page on successful signup
 
@@ -213,7 +217,7 @@ const SignIn: React.FC = () => {
                   <div className="mt-6 text-center">
                     <p>
                       Don’t have an account?{' '}
-                      <Link to="/auth/signup" className="text-primary">
+                      <Link to="/signup" className="text-primary">
                         Sign Up
                       </Link>
                     </p>
