@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
@@ -7,6 +7,18 @@ import { useNavigate } from 'react-router-dom';
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const [token, setToken] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    const storedUserInfo = localStorage.getItem('userInfo');
+
+    if (storedUserInfo && storedToken) {
+      setToken(storedToken);
+      setUserInfo(JSON.parse(storedUserInfo));
+    }
+  }, []);
 
   const handleLogout = () => {
     // Clear user info and token from local storage
@@ -20,17 +32,17 @@ const DropdownUser = () => {
       <Link
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="flex items-center gap-4"
-        to="#"
+        to="/profile"
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {userInfo ? userInfo.name : <>My name.</>}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">{userInfo ? userInfo.name : <>My about.</>}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+          <img src={userInfo ? userInfo.image : UserOne} alt="User" />
         </span>
 
         <svg
