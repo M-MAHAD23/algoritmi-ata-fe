@@ -1,15 +1,9 @@
-import { getSession } from "@auth0/nextjs-auth0";
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ChatSidebar } from "components/ChatSidebar";
-import { Message } from "components/Message";
-import clientPromise from "lib/mongodb";
-import { ObjectId } from "mongodb";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { streamReader } from "openai-edge-stream";
+import { ChatSidebar } from "./ChatSidebar/index.js";
+import { Message } from "./Message/index.js";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { v4 as uuid } from "uuid";
 
 export default function ChatPage({ chatId, title, messages = [] }) {
     const [newChatId, setNewChatId] = useState(null);
@@ -19,7 +13,7 @@ export default function ChatPage({ chatId, title, messages = [] }) {
     const [generatingResponse, setGeneratingResponse] = useState(false);
     const [fullMessage, setFullMessage] = useState("");
     const [originalChatId, setOriginalChatId] = useState(chatId);
-    const router = useRouter();
+    const router = useNavigate();
 
     const routeHasChanged = chatId !== originalChatId;
 
@@ -48,7 +42,7 @@ export default function ChatPage({ chatId, title, messages = [] }) {
     useEffect(() => {
         if (!generatingResponse && newChatId) {
             setNewChatId(null);
-            router.push(`/chat/${newChatId}`);
+            router(`/chat/${newChatId}`);
         }
     }, [newChatId, generatingResponse, router]);
 
@@ -107,9 +101,6 @@ export default function ChatPage({ chatId, title, messages = [] }) {
 
     return (
         <>
-            <Head>
-                <title>{title || "New chat"}</title>
-            </Head>
             <div className="grid h-screen grid-cols-[260px_1fr]">
                 <ChatSidebar chatId={chatId} />
                 <div className="flex flex-col overflow-hidden bg-gray-700">
@@ -169,49 +160,49 @@ export default function ChatPage({ chatId, title, messages = [] }) {
     );
 }
 
-export const getServerSideProps = async (ctx) => {
-    const chatId = ctx.params?.chatId?.[0] || null;
-    if (chatId) {
-        let objectId;
+// export const getServerSideProps = async (ctx) => {
+//     const chatId = ctx.params?.chatId?.[0] || null;
+//     if (chatId) {
+//         let objectId;
 
-        try {
-            objectId = new ObjectId(chatId);
-        } catch (e) {
-            return {
-                redirect: {
-                    destination: "/chat",
-                },
-            };
-        }
+//         try {
+//             objectId = new ObjectId(chatId);
+//         } catch (e) {
+//             return {
+//                 redirect: {
+//                     destination: "/chat",
+//                 },
+//             };
+//         }
 
-        const { user } = await getSession(ctx.req, ctx.res);
-        const client = await clientPromise;
-        const db = client.db("ChattyPete");
-        const chat = await db.collection("chats").findOne({
-            userId: user.sub,
-            _id: objectId,
-        });
+//         const { user } = await getSession(ctx.req, ctx.res);
+//         const client = await clientPromise;
+//         const db = client.db("ChattyPete");
+//         const chat = await db.collection("chats").findOne({
+//             userId: user.sub,
+//             _id: objectId,
+//         });
 
-        if (!chat) {
-            return {
-                redirect: {
-                    destination: "/chat",
-                },
-            };
-        }
+//         if (!chat) {
+//             return {
+//                 redirect: {
+//                     destination: "/chat",
+//                 },
+//             };
+//         }
 
-        return {
-            props: {
-                chatId,
-                title: chat.title,
-                messages: chat.messages.map((message) => ({
-                    ...message,
-                    _id: uuid(),
-                })),
-            },
-        };
-    }
-    return {
-        props: {},
-    };
-};
+//         return {
+//             props: {
+//                 chatId,
+//                 title: chat.title,
+//                 messages: chat.messages.map((message) => ({
+//                     ...message,
+//                     _id: uuid(),
+//                 })),
+//             },
+//         };
+//     }
+//     return {
+//         props: {},
+//     };
+// };

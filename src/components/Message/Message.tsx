@@ -1,25 +1,22 @@
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from "react-markdown";
 
 export const Message = ({ role, content }) => {
-  const { user } = useUser();
+  const user = 0;
   console.log("USER: ", user);
   return (
     <div
-      className={`grid grid-cols-[30px_1fr] gap-5 p-5 ${
-        role === "assistant"
-          ? "bg-gray-600"
-          : role === "notice"
+      className={`grid grid-cols-[30px_1fr] gap-5 p-5 ${role === "assistant"
+        ? "bg-gray-600"
+        : role === "notice"
           ? "bg-red-600"
           : ""
-      }`}
+        }`}
     >
       <div>
         {role === "user" && !!user && (
-          <Image
+          <img
             src={user.picture}
             width={30}
             height={30}
@@ -34,7 +31,7 @@ export const Message = ({ role, content }) => {
         )}
       </div>
       <div className="prose prose-invert">
-        <ReactMarkdown>{content}</ReactMarkdown>
+        <Markdown>{content}</Markdown>
       </div>
     </div>
   );

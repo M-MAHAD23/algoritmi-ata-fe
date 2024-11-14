@@ -87,7 +87,7 @@ function Landing() {
                         {userInfo && token ? (
                             <div className="flex justify-center space-x-4">
                                 <button
-                                    onClick={() => navigate('/dashboard')}
+                                    onClick={() => navigate('/profile')}
                                     className="hover:underline bg-white text-black font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
                                     View Profile
                                 </button>

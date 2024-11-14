@@ -2,12 +2,12 @@ import React from 'react'
 import Panel from '../../layout/Panel'
 import ChatCard from '../../components/Chat'
 
-function ChatBot() {
+function ChatPage() {
     return (
         <Panel>
-            <ChatCard/>
+            <ChatCard />
         </Panel>
     )
 }
 
-export default ChatBot
+export default ChatPage
