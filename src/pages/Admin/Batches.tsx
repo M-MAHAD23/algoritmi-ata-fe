@@ -15,6 +15,8 @@ function Batches() {
         role: 'Student', // Default role
         email: '',
         cnic: '',
+        password: '',
+        id: '',
         contact: [],
         education: [],
         batchId: '', // to be populated from the selected batch
@@ -57,10 +59,10 @@ function Batches() {
         }
     };
 
-    // Handle Delete Batch
-    const handleDeleteBatch = async (batchId) => {
+    // Handle Update Batch
+    const handleUpdateeBatch = async (batchId) => {
         try {
-            await axios.delete(`http://localhost:8000/batch/deleteBatch/${batchId}`);
+            await axios.delete(`http://localhost:8000/batch/updateBatch/${batchId}`);
             setBatches(batches.filter(batch => batch._id !== batchId));
         } catch (err) {
             setError('Error deleting batch');
@@ -156,10 +158,10 @@ function Batches() {
                                         {batch.archived ? 'Archived' : 'Archive'}
                                     </button>
                                     <button
-                                        onClick={() => handleDeleteBatch(batch._id)}
+                                        onClick={() => handleUpdateBatch(batch._id)}
                                         className="bg-blue-500 text-white py-1 px-3 rounded ml-2"
                                     >
-                                        Delete
+                                        Update
                                     </button>
                                     <button
                                         onClick={() => {
@@ -187,6 +189,20 @@ function Batches() {
                             placeholder="User Name"
                             value={newUser.name}
                             onChange={e => setNewUser({ ...newUser, name: e.target.value })}
+                            className="border p-2 mb-4 w-full"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Password"
+                            value={newUser.password}
+                            onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+                            className="border p-2 mb-4 w-full"
+                        />
+                        <input
+                            type="text"
+                            placeholder="RollId"
+                            value={newUser.id}
+                            onChange={e => setNewUser({ ...newUser, id: e.target.value })}
                             className="border p-2 mb-4 w-full"
                         />
                         <input
