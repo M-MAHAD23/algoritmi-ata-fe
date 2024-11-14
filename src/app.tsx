@@ -4,7 +4,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import ProtectedRoute from './components/ProtectedRoute'; // Import the ProtectedRoute component
-import useUserInfo from './hooks/useUserInfo';
+import { useUserInfo } from './hooks/hooks';
 
 // Import pages
 import SignIn from './pages/Authentication/SignIn';
@@ -36,6 +36,7 @@ function App() {
   ) : (
     <>
       <Router />
+
     </>
   );
 }

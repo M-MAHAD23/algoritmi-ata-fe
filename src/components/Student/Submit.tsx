@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
 import ControlledEditor from '@monaco-editor/react';
-import useSubmit from '../../hooks/useSubmit'; // Import the custom hook
+import { useSubmit } from '../../hooks/hooks';
 
 function Submit() {
     const [fileContent, setFileContent] = useState('');
     const [fileName, setFileName] = useState('');
 
-    // Handle file upload
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
-
-        // Check if file is selected and it's a cpp file
         if (file && file.name.endsWith('.cpp')) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                setFileContent(e.target.result); // Store file content
-                setFileName(file.name); // Store file name
+                setFileContent(e.target.result);
+                setFileName(file.name);
             };
             reader.readAsText(file);
         } else {
@@ -23,7 +20,6 @@ function Submit() {
         }
     };
 
-    // Using the useSubmit hook for submitting the file
     const { isSubmitting, error, success, submitFile } = useSubmit(fileContent, fileName);
 
     return (
@@ -31,7 +27,6 @@ function Submit() {
             <div className="max-w-7xl w-full bg-white shadow-lg rounded-lg p-6">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Submit Your C++ Code</h2>
 
-                {/* File input */}
                 <div className="mb-4">
                     <input
                         type="file"
@@ -41,7 +36,6 @@ function Submit() {
                     />
                 </div>
 
-                {/* Monaco Editor preview (non-editable) */}
                 {fileContent && (
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold text-gray-700 mb-3">Preview: {fileName}</h3>
@@ -50,8 +44,8 @@ function Submit() {
                             language="cpp"
                             value={fileContent}
                             options={{
-                                readOnly: true,  // Make editor non-editable
-                                minimap: { enabled: false },  // Disable minimap
+                                readOnly: true,
+                                minimap: { enabled: false },
                                 lineNumbers: "on",
                                 scrollBeyondLastLine: false,
                                 wordWrap: "on",
@@ -60,11 +54,9 @@ function Submit() {
                     </div>
                 )}
 
-                {/* Error or success message */}
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 {success && <p className="text-green-500 text-center">File submitted successfully!</p>}
 
-                {/* Submit Button */}
                 <div className="text-center">
                     <button
                         onClick={submitFile}

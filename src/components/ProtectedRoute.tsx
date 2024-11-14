@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import useUserInfo from '../hooks/useUserInfo';
+import useUserInfo from '../hooks/hooks';
 
 // Define role-based access control for routes
 const ProtectedRoute = ({ children, allowedRoles, token, userInfo }) => {

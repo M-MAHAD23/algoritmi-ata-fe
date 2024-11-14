@@ -4,7 +4,7 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 import Vector from '../../images/vector/vector.svg';
-import { useSignUp } from '../../hooks/useSignUp';
+import { useSignUp } from '../../hooks/hooks';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -63,7 +63,7 @@ const SignUp: React.FC = () => {
     const value = e.target.value;
     setPassword(value);
     if (!validatePassword(value)) {
-      setPasswordError('Password must be at least 6 characters and contain 1 uppercase letter');
+      setPasswordError('Password?');
     } else {
       setPasswordError('');
     }
@@ -73,7 +73,7 @@ const SignUp: React.FC = () => {
     const value = e.target.value;
     setValid(value);
     if (!validateValid(value)) {
-      setValidError('Password must be at least 6 characters and contain 1 uppercase letter');
+      setValidError('Password should be same.');
     } else {
       setValidError('');
     }
@@ -115,10 +115,14 @@ const SignUp: React.FC = () => {
           <div className="flex flex-wrap items-center">
             <div className="hidden w-full xl:block xl:w-1/2">
               <div className="py-17.5 px-26 text-center">
-                {/* <Link className="mb-5.5 inline-block" to="/">
-                  <img className="hidden dark:block" src={Logo} alt="Logo" />
-                  <img className="dark:hidden" src={LogoDark} alt="Logo" />
-                </Link> */}
+                <div className="pl-4 flex items-center">
+                  <svg width="50px" height="50px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8 16L3.54223 12.3383C1.93278 11.0162 1 9.04287 1 6.96005C1 3.11612 4.15607 0 8 0C11.8439 0 15 3.11612 15 6.96005C15 9.04287 14.0672 11.0162 12.4578 12.3383L8 16ZM3 6H5C6.10457 6 7 6.89543 7 8V9L3 7.5V6ZM11 6C9.89543 6 9 6.89543 9 8V9L13 7.5V6H11Z" fill="#000000" />
+                  </svg>
+                  <a className="toggleColour text-black no-underline hover:no-underline font-bold text-1xl lg:text-3xl" href="/">
+                    Artificial Teaching Assistant
+                  </a>
+                </div>
                 <p className="2xl:px-20">
                   Unlock your full potential with the guidance of our Artificial Teaching Assistant. Sign up now!
                 </p>
