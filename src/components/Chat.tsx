@@ -17,9 +17,9 @@ export default function ChatPage({ title, messages = [] }) {
   const router = useNavigate();
 
   const user = JSON.parse(localStorage.getItem('userInfo'));
-  const batchId = user.batchId; // hardcoded batchId
+  const batchId = user.batchId;
   const chatOwner = user ? user._id : null;
-  const chatName = 'Programming Fundamentals Discussion'; // hardcoded chatName
+  const chatName = 'Programming Fundamentals Discussion';
 
   const routeHasChanged = chatId !== originalChatId;
 
@@ -56,19 +56,16 @@ export default function ChatPage({ title, messages = [] }) {
     setGeneratingResponse(true);
     setOriginalChatId(chatId);
 
-    // Add the user's message to new chat messages
     setNewChatMessages((prev) => [
       ...prev,
       {
-        // _id: uuid(),
         role: 'user',
         content: messageText,
       },
     ]);
 
-    // Construct the payload
     const payload = {
-      id: chatId || null, // Use existing chatId or null if it doesn't exist
+      id: chatId || null,
       batchId: batchId,
       chatName: chatName,
       chatOwner: chatOwner,
@@ -79,15 +76,12 @@ export default function ChatPage({ title, messages = [] }) {
         },
       ],
     };
-    // debugger;
-
-    console.log('Payload:', payload); // Console the payload for debugging
 
     try {
       const response = await fetch(
         `http://192.168.0.104:8000/chat/updateChatById`,
         {
-          method: 'UPDATE',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -101,13 +95,24 @@ export default function ChatPage({ title, messages = [] }) {
         return;
       }
 
-      const data = await response.json(); // Wait for the full response
-      console.log('API response:', data); // Only console the response as requested
+      const data = await response.json();
+      localStorage.setItem('chatId', data._id);
+
+      // Update messages from the API response
+    //   debugger;
+      const updatedMessages = data.chat.map((msg) => ({
+        _id: msg._id,
+        role: msg.role === 'User' ? 'user' : 'assistant',
+        content: msg.message,
+      }));
+
+      setNewChatMessages(updatedMessages);
+      console.log('API response:', data); // Log the API response
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
-      setGeneratingResponse(false); // Reset the state
-      setMessageText(''); // Clear the input field
+      setGeneratingResponse(false);
+      setMessageText('');
     }
   };
 
@@ -117,6 +122,7 @@ export default function ChatPage({ title, messages = [] }) {
     <>
       <div className="h-screen flex flex-col overflow-hidden bg-[#1C2434]">
         <div className="flex flex-1 flex-col-reverse overflow-scroll text-white">
+          {/* Display a prompt when there are no messages */}
           {!allMessages.length && !incomingMessage && (
             <div className="m-auto flex items-center justify-center text-center">
               <div>
@@ -130,6 +136,8 @@ export default function ChatPage({ title, messages = [] }) {
               </div>
             </div>
           )}
+
+          {/* Map and render all messages */}
           {!!allMessages.length && (
             <div className="mb-auto">
               {allMessages.map((message) => (
@@ -139,9 +147,11 @@ export default function ChatPage({ title, messages = [] }) {
                   content={message.content}
                 />
               ))}
+              {/* Render incoming message if route hasn't changed */}
               {!!incomingMessage && !routeHasChanged && (
                 <Message role="assistant" content={incomingMessage} />
               )}
+              {/* Show notice message if route has changed */}
               {!!incomingMessage && !!routeHasChanged && (
                 <Message
                   role="notice"
@@ -151,6 +161,7 @@ export default function ChatPage({ title, messages = [] }) {
             </div>
           )}
         </div>
+
         <footer className="bg-gray-800 p-10">
           <form onSubmit={handleSubmit}>
             <fieldset className="flex gap-2" disabled={generatingResponse}>
