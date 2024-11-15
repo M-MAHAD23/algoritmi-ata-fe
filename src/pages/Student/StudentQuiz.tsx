@@ -9,25 +9,30 @@ function StudentQuiz() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const location = useLocation();
+    const [token, setToken] = useState(null);
+    const [userInfo, setUserInfo] = useState(null);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        const storedUserInfo = localStorage.getItem('userInfo');
+
+        if (storedUserInfo && storedToken) {
+            setToken(storedToken);
+            setUserInfo(JSON.parse(storedUserInfo));
+        }
+    }, []);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        const batchId = params.get('batchId');  // Fetch batchId from URL query parameters
+        const batchId = params.get('batchId') || userInfo?.batchId; // Use `batchId` from URL or fallback to user's batchId
 
         if (batchId) {
-            // Fetch quizzes for a specific batch
-            axios.post('http://localhost:8000/quiz/getQuizzesByBatch', { batchId })
-                .then(response => {
-                    setQuizzes(response.data.data);
-                    setLoading(false);
-                })
-                .catch(err => {
-                    setError('Error fetching Quizzes');
-                    setLoading(false);
-                });
-        } else {
-            // Fetch all quizzes if no batchId is present
-            axios.post('http://localhost:8000/quiz/getAllQuizzes', {})
+            // Fetch quizzes based on the batchId
+            const endpoint = batchId === userInfo?.batchId
+                ? 'http://localhost:8000/quiz/getAllQuizzesByBatchId'
+                : 'http://localhost:8000/quiz/getQuizzesByBatch';
+
+            axios.post(endpoint, { batchId })
                 .then(response => {
                     setQuizzes(response.data.data);
                     setLoading(false);
@@ -37,7 +42,7 @@ function StudentQuiz() {
                     setLoading(false);
                 });
         }
-    }, [location]);
+    }, [location, userInfo]);
 
     const headers = [
         'Quiz Name',
@@ -45,7 +50,13 @@ function StudentQuiz() {
         'Description',
         'Issued Date',
         'Deadline',
+        'Actions'
     ];
+
+    const handleSubmitQuiz = (quizId) => {
+        // Call the submit quiz endpoint or perform the necessary logic
+        console.log(`Submitting quiz with ID: ${quizId}`);
+    };
 
     if (loading) {
         return <Loader />;
@@ -62,7 +73,7 @@ function StudentQuiz() {
 
                 <div className="flex flex-col">
                     {/* Dynamic Headers */}
-                    <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-gray-2 dark:bg-meta-4">
+                    <div className="grid grid-cols-6 sm:grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4">
                         {headers.map((header, index) => (
                             <div key={index} className="p-2.5 text-center xl:p-5">
                                 <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
@@ -76,7 +87,7 @@ function StudentQuiz() {
                     ) : (
                         quizzes.map((quiz, rowIndex) => (
                             <div
-                                className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                className={`grid grid-cols-6 sm:grid-cols-6 ${rowIndex === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
                                 key={rowIndex}
                             >
                                 <div className="flex items-center justify-center p-2.5 xl:p-5">
@@ -93,6 +104,15 @@ function StudentQuiz() {
                                 </div>
                                 <div className="flex items-center justify-center p-2.5 xl:p-5">
                                     <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
+                                </div>
+                                <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                    {/* Submit Button */}
+                                    <button
+                                        onClick={() => handleSubmitQuiz(quiz._id)}
+                                        className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                                    >
+                                        Submit
+                                    </button>
                                 </div>
                             </div>
                         ))

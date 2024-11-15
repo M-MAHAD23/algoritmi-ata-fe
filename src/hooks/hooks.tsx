@@ -102,7 +102,7 @@ export const useSignIn = () => {
             console.log('Signed in successfully', response.data);
             return response.data;
         } catch (error: any) {
-            setError(error.response?.data?.message || 'Sign-in failed');
+            setError({ message: error.message });
             console.error('Error during sign-in', error);
             throw error;
         } finally {

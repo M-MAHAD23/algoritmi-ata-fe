@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 export default function ChatPage({ title, messages = [] }) {
+  const localStorageChatOwner = localStorage.getItem('chatOwner');
+  const [cO, setCO] = useState(localStorageChatOwner);
   const chatId = localStorage.getItem('chatId');
-
   const [newChatId, setNewChatId] = useState(null);
   const [incomingMessage, setIncomingMessage] = useState('');
   const [messageText, setMessageText] = useState('');
@@ -15,13 +16,39 @@ export default function ChatPage({ title, messages = [] }) {
   const [fullMessage, setFullMessage] = useState('');
   const [originalChatId, setOriginalChatId] = useState(chatId);
   const router = useNavigate();
+  const [loading, setLoading] = useState();
 
   const user = JSON.parse(localStorage.getItem('userInfo'));
   const batchId = user.batchId;
   const chatOwner = user ? user._id : null;
-  const chatName = 'Programming Fundamentals Discussion';
+  const chatName = Math.random().toString(36).substring(2, 10);
 
   const routeHasChanged = chatId !== originalChatId;
+
+  // Check if chatOwner exists; if not, call the createChat API
+  useEffect(() => {
+    if (!cO) {
+      // If no chatOwner, create a new chat
+      fetch('http://localhost:8000/chat/createChat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatName, batchId, chatOwner }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data?.data) {
+            localStorage.setItem('chatId', data.data._id);  // Use data._id directly
+            localStorage.setItem('chatOwner', data.data.chatOwner);  // Save chatOwner if needed
+            setNewChatId(data._id);
+          } else {
+            console.error('Failed to retrieve chatId');
+          }
+        })
+        .catch((error) => console.error('Error creating chat:', error));
+    }
+  }, []);
 
   // Reset messages when route changes
   useEffect(() => {
@@ -79,7 +106,7 @@ export default function ChatPage({ title, messages = [] }) {
 
     try {
       const response = await fetch(
-        `http://192.168.0.104:8000/chat/updateChatById`,
+        `http://localhost:8000/chat/updateChatById`,
         {
           method: 'POST',
           headers: {
@@ -99,7 +126,6 @@ export default function ChatPage({ title, messages = [] }) {
       localStorage.setItem('chatId', data._id);
 
       // Update messages from the API response
-    //   debugger;
       const updatedMessages = data.chat.map((msg) => ({
         _id: msg._id,
         role: msg.role === 'User' ? 'user' : 'assistant',
@@ -107,7 +133,7 @@ export default function ChatPage({ title, messages = [] }) {
       }));
 
       setNewChatMessages(updatedMessages);
-      console.log('API response:', data); // Log the API response
+      console.log('API response:', data);
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {

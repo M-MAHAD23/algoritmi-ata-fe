@@ -71,6 +71,7 @@ const SignIn: React.FC = () => {
       localStorage.clear();
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
       localStorage.setItem('token', token);
+
       toast.success('Sign In Successfull.',
         {
           position: 'top-right', // Position the toast at the top right corner
