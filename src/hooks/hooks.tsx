@@ -6,6 +6,7 @@ export const useProfile = async (userId, token) => {
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
 
     useEffect(() => {
         const fetchProfile = async () => {
