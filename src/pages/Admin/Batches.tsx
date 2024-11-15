@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Panel from '../../layout/Panel';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 function Batches() {
     const [batches, setBatches] = useState([]);
@@ -30,9 +32,9 @@ function Batches() {
             try {
                 let response;
                 if (batchId) {
-                    response = await axios.post('http://localhost:8000/batch/getBatchById', { batchId });
+                    response = await axios.post(`${API_BASE_URL}/batch/getBatchById`, { batchId });
                 } else {
-                    response = await axios.post('http://localhost:8000/batch/getAllBatches');
+                    response = await axios.post(`${API_BASE_URL}/batch/getAllBatches`);
                 }
                 setBatches(response.data.data);
                 setLoading(false);
@@ -50,7 +52,7 @@ function Batches() {
     // Handle Create Batch
     const handleCreateBatch = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/batch/createBatch', newBatch);
+            const response = await axios.post(`${API_BASE_URL}/batch/createBatch`, newBatch);
             setBatches([...batches, response.data.data]);
             setShowCreateModal(false);
             setNewBatch({ batchNumber: '', batchSession: '', batchName: '' });
@@ -62,7 +64,7 @@ function Batches() {
     // Handle Update Batch
     const handleUpdateeBatch = async (batchId) => {
         try {
-            await axios.delete(`http://localhost:8000/batch/updateBatch/${batchId}`);
+            await axios.delete(`${API_BASE_URL}/batch/updateBatch/${batchId}`);
             setBatches(batches.filter(batch => batch._id !== batchId));
         } catch (err) {
             setError('Error deleting batch');
@@ -72,7 +74,7 @@ function Batches() {
     // Handle Archive Batch
     const handleArchiveBatch = async (batchId) => {
         try {
-            const response = await axios.put(`http://localhost:8000/batch/archiveBatch/${batchId}`);
+            const response = await axios.put(`${API_BASE_URL}/batch/archiveBatch/${batchId}`);
             setBatches(batches.map(batch =>
                 batch._id === batchId ? { ...batch, archived: true } : batch
             ));
@@ -84,7 +86,7 @@ function Batches() {
     // Handle Create User
     const handleCreateUser = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/user/createUser', newUser);
+            const response = await axios.post(`${API_BASE_URL}/user/createUser`, newUser);
             // Optionally add the user to the batch's user list here
             setShowUserModal(false);
             setNewUser({

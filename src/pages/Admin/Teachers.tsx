@@ -3,6 +3,8 @@ import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
 import { useParams } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 function Teachers() {
     const [teachers, setTeachers] = useState([]);
@@ -17,10 +19,10 @@ function Teachers() {
                 let response;
                 if (batchId) {
                     // Fetch teachers by batchId if it's present in the URL
-                    response = await axios.post('http://localhost:8000/user/getTeachersByBatch', { batchId });
+                    response = await axios.post(`${API_BASE_URL}/user/getTeachersByBatch`, { batchId });
                 } else {
                     // Fetch all teachers if no batchId is present
-                    response = await axios.post('http://localhost:8000/user/getAllTeachers', { role: 'Teacher' });
+                    response = await axios.post(`${API_BASE_URL}/user/getAllTeachers`, { role: 'Teacher' });
                 }
                 setTeachers(response.data.data);
                 setLoading(false);

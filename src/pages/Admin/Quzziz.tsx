@@ -3,6 +3,8 @@ import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
 import { useLocation } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 function Quizzes() {
     const [quizzes, setQuizzes] = useState([]);
@@ -16,7 +18,7 @@ function Quizzes() {
 
         if (batchId) {
             // Fetch quizzes for a specific batch
-            axios.post('http://localhost:8000/quiz/getQuizzesByBatch', { batchId })
+            axios.post(`${API_BASE_URL}/quiz/getQuizzesByBatch`, { batchId })
                 .then(response => {
                     setQuizzes(response.data.data);
                     setLoading(false);
@@ -27,7 +29,7 @@ function Quizzes() {
                 });
         } else {
             // Fetch all quizzes if no batchId is present
-            axios.post('http://localhost:8000/quiz/getAllQuizzes', {})
+            axios.post(`${API_BASE_URL}/quiz/getAllQuizzes`, {})
                 .then(response => {
                     setQuizzes(response.data.data);
                     setLoading(false);

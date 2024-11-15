@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Message } from './Message/index.js';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 export default function ChatPage({ title, messages = [] }) {
   const localStorageChatOwner = localStorage.getItem('chatOwner');
@@ -29,7 +31,7 @@ export default function ChatPage({ title, messages = [] }) {
   useEffect(() => {
     if (!cO) {
       // If no chatOwner, create a new chat
-      fetch('http://localhost:8000/chat/createChat', {
+      fetch(`${API_BASE_URL}/chat/createChat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +108,7 @@ export default function ChatPage({ title, messages = [] }) {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/chat/updateChatById`,
+        `${API_BASE_URL}/chat/updateChatById`,
         {
           method: 'POST',
           headers: {

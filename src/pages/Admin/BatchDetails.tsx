@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 function BatchDetails() {
     const { id } = useParams();  // Get the batch ID from the URL
@@ -12,7 +14,7 @@ function BatchDetails() {
 
     useEffect(() => {
         // Fetch batch details (Teachers, Students, Quizzes) using the batch ID
-        axios.post(`http://localhost:8000/batch/getBatchDetails`, { batchId: id })
+        axios.post(`${API_BASE_URL}/batch/getBatchDetails`, { batchId: id })
             .then(response => {
                 setBatchDetails(response.data);
                 setLoading(false);

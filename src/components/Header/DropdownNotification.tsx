@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -28,7 +30,7 @@ const DropdownNotification = () => {
 
   const fetchNotifications = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:8000/user/notifications`, {
+      const response = await fetch(`${API_BASE_URL}/user/notifications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +53,7 @@ const DropdownNotification = () => {
   const markNotificationAsSeen = async (notificationId) => {
     try {
       await axios.post(
-        'http://localhost:8000/user/updateNotifications',
+        `${API_BASE_URL}/user/updateNotifications`,
         { id: notificationId, userId: userInfo._id },
         {
           headers: {

@@ -3,6 +3,8 @@ import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
 import { useLocation } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 function StudentQuiz() {
     const [quizzes, setQuizzes] = useState([]);
@@ -29,8 +31,8 @@ function StudentQuiz() {
         if (batchId) {
             // Fetch quizzes based on the batchId
             const endpoint = batchId === userInfo?.batchId
-                ? 'http://localhost:8000/quiz/getAllQuizzesByBatchId'
-                : 'http://localhost:8000/quiz/getQuizzesByBatch';
+                ? `${API_BASE_URL}/quiz/getAllQuizzesByBatchId`
+                : `${API_BASE_URL}/quiz/getQuizzesByBatch`;
 
             axios.post(endpoint, { batchId })
                 .then(response => {
