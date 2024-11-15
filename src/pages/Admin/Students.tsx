@@ -22,7 +22,7 @@ function Students() {
                     response = await axios.post(`${API_BASE_URL}/user/getStudentsByBatch`, { batchId });
                 } else {
                     // Fetch all students if no batchId is present
-                    response = await axios.post(`API_BASE_URL/user/getAllStudents`, { role: 'Student' });
+                    response = await axios.post(`${API_BASE_URL}/user/getAllStudents`, { role: 'Student' });
                 }
                 setStudents(response.data.data);
                 setLoading(false);
