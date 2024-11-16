@@ -2,15 +2,22 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
-import { useLocation } from 'react-router-dom';
+import SubmitModal from '../../components/Student/SubmitModal'; // Import your SubmitModal component
+import { useLocation, useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-
 function StudentQuiz() {
-    const [quizzes, setQuizzes] = useState([]);
+    const [newQuizzes, setNewQuizzes] = useState([]);
+    const [lateQuizzes, setLateQuizzes] = useState([]);
+    const [submittedQuizzes, setSubmittedQuizzes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedQuiz, setSelectedQuiz] = useState(null); // For modal
+    const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
     const location = useLocation();
+    const navigate = useNavigate();
     const [token, setToken] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
 
@@ -26,101 +33,134 @@ function StudentQuiz() {
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        const batchId = params.get('batchId') || userInfo?.batchId; // Use `batchId` from URL or fallback to user's batchId
+        const batchId = params.get('batchId') || userInfo?.batchId;
+        const studentId = params.get('studentId') || userInfo?._id;
 
         if (batchId) {
-            // Fetch quizzes based on the batchId
-            const endpoint = batchId === userInfo?.batchId
-                ? `${API_BASE_URL}/quiz/getAllQuizzesByBatchId`
-                : `${API_BASE_URL}/quiz/getQuizzesByBatch`;
+            const endpoint = `${API_BASE_URL}/quiz/getAllQuizzesByBatchIdStudent`;
 
-            axios.post(endpoint, { batchId })
-                .then(response => {
-                    setQuizzes(response.data.data);
+            axios
+                .post(endpoint, { batchId, studentId })
+                .then((response) => {
+                    const { newQuizzes, lateQuizzes, submittedQuizzes } = response.data.data;
+                    setNewQuizzes(newQuizzes);
+                    setLateQuizzes(lateQuizzes);
+                    setSubmittedQuizzes(submittedQuizzes);
+
                     setLoading(false);
                 })
-                .catch(err => {
-                    setError('Error fetching Quizzes');
+                .catch(() => {
+                    setError('Error fetching quizzes');
                     setLoading(false);
                 });
         }
     }, [location, userInfo]);
 
-    const headers = [
-        'Quiz Name',
-        'Quiz Topic',
-        'Description',
-        'Issued Date',
-        'Deadline',
-        'Actions'
-    ];
-
-    const handleSubmitQuiz = (quizId) => {
-        // Call the submit quiz endpoint or perform the necessary logic
-        console.log(`Submitting quiz with ID: ${quizId}`);
+    const handleOpenModal = (quiz) => {
+        setSelectedQuiz(quiz);
+        setIsModalOpen(true);
     };
 
-    if (loading) {
-        return <Loader />;
-    }
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedQuiz(null);
+    };
 
-    if (error) {
-        return <div>{error}</div>;
-    }
+
+    const handleViewResults = (quizId) => {
+        navigate(`/student/quiz/results?quizId=${quizId}&submitterId=${userInfo?._id}`);
+    };
+
+    if (loading) return <Loader />;
+    if (error) return <div>{error}</div>;
+
+    const renderTable = (title, quizzes, isLate) => (
+        <div className="mb-8">
+            <h5 className="mb-4 text-lg font-semibold text-black dark:text-white">{title}</h5>
+            {quizzes?.length === 0 ? (
+                <div className="text-center text-lg p-5">No quizzes available.</div>
+            ) : (
+                <div className="flex flex-col">
+                    <div className="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4">
+                        <div className="p-2.5 text-center xl:p-5">Quiz Name</div>
+                        <div className="p-2.5 text-center xl:p-5">Quiz Topic</div>
+                        <div className="p-2.5 text-center xl:p-5">Description</div>
+                        <div className="p-2.5 text-center xl:p-5">Issued Date</div>
+                        <div className="p-2.5 text-center xl:p-5">Deadline</div>
+                        <div className="p-2.5 text-center xl:p-5">Actions</div>
+                    </div>
+                    {quizzes?.map((quiz, index) => (
+                        <div
+                            className={`grid grid-cols-6 ${index === quizzes?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                            key={quiz?._id}
+                        >
+                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizName || '-'}</div>
+                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizTopic || '-'}</div>
+                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizDescription || '-'}</div>
+                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizIssued || '-'}</div>
+                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizDead || '-'}</div>
+                            <div className="p-2.5 text-center xl:p-5">
+                                {title === "New Quizzes" && !isLate && (
+                                    <button
+                                        onClick={() => handleOpenModal(quiz)}
+                                        className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                                    >
+                                        Submit
+                                    </button>
+                                )}
+                                {title === "Late Quizzes" && isLate && (
+                                    <span className="text-red">Late Submission Not Allowed</span>
+                                )}
+                                {title === "Submitted Quizzes" && (
+                                    <button
+                                        onClick={() => {
+                                            const cooldown = 6000; // 6 seconds
+                                            const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
+                                            const now = Date.now();
+
+                                            if (quiz?.analyzed) {
+                                                handleViewResults(quiz?._id);
+                                            } else if (now - lastToastTime > cooldown) {
+                                                toast.error(
+                                                    "Please wait for analysis.",
+                                                );
+                                                window.lastToastTime = now; // Update the last toast time globally
+                                            }
+                                        }}
+                                        className={`px-4 py-2 text-white rounded ${quiz?.analyzed ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500"
+                                            }`}
+                                    >
+                                        {quiz?.analyzed ? "View Results" : "Being Analyzed"}
+                                    </button>
+                                )}
+                                <Toaster />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+
 
     return (
         <Panel>
             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
-
-                <div className="flex flex-col">
-                    {/* Dynamic Headers */}
-                    <div className="grid grid-cols-6 sm:grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4">
-                        {headers.map((header, index) => (
-                            <div key={index} className="p-2.5 text-center xl:p-5">
-                                <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Dynamic Rows */}
-                    {quizzes.length === 0 ? (
-                        <div className="text-center text-lg p-5">No quizzes available.</div>
-                    ) : (
-                        quizzes.map((quiz, rowIndex) => (
-                            <div
-                                className={`grid grid-cols-6 sm:grid-cols-6 ${rowIndex === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                                key={rowIndex}
-                            >
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizName || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizTopic || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizDescription || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizIssued || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    {/* Submit Button */}
-                                    <button
-                                        onClick={() => handleSubmitQuiz(quiz._id)}
-                                        className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
+                <div className="mb-8">{renderTable('New Quizzes', newQuizzes, false)}</div>
+                <div className="mb-8">{renderTable('Late Quizzes', lateQuizzes, true)}</div>
+                <div className="mb-8">{renderTable('Submitted Quizzes', submittedQuizzes, false)}</div>
             </div>
+
+            {isModalOpen && selectedQuiz && (
+                <SubmitModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    quiz={selectedQuiz._id}
+                    submitterId={userInfo?._id}
+                    batchId={userInfo?.batchId}
+                />
+            )}
         </Panel>
     );
 }

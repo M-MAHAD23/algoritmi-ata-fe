@@ -4,7 +4,7 @@ import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
 import ECommerce from '../pages/Dashboard/ECommerce';
 import Profile from '../pages/Profile';
-import Submit from '../components/Student/Submit';
+import Submit from '../components/Student/SubmitModal';
 import Tables from '../components/Tables/Tables';
 import Panel from '../layout/Panel';
 import Landing from '../pages/Landing/Landing';
@@ -16,52 +16,52 @@ import Quizzes from '../pages/Admin/Quzziz';
 import TeacherBatches from '../pages/Teacher/TeacherBatches';
 import ActiveBatch from '../pages/Teacher/ActiveBatch';
 import BatchQuizzes from '../pages/Teacher/BatchQuizzes';
+
+// Student
 import StudentQuiz from '../pages/Student/StudentQuiz';
+import QuizResults from '../pages/Student/QuizResults';
 import ChatBot from '../pages/Student/ChatBot';
-import { useEffect, useState } from 'react';
+
+// Wrapper to handle private routes
+const PrivateRoute = ({ element }) => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    return userInfo ? element : <Navigate to="/" />;
+};
 
 function Router() {
-    const [userInfo, setUserInfo] = useState(null)
-    const user = localStorage.getItem('userInfo');
-
-    useEffect(() => {
-
-        setUserInfo(user)
-
-    }, [user])
-    // Check if userInfo exists in localStorage
-
-
     return (
         <Routes>
-            {/* Non-Panel Routes */}
+            {/* Public Routes */}
             <Route index element={<Landing />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
 
-            {/* Redirect to / if no userInfo and not on sign-in or sign-up */}
-            <Route path="/submit" element={userInfo ? <Submit /> : <Navigate to="/" />} />
-            <Route path="/dashboard" element={userInfo ? <ECommerce /> : <Navigate to="/" />} />
+            {/* Private Routes */}
+            <Route path="/submit" element={<PrivateRoute element={<Submit />} />} />
+            <Route path="/dashboard" element={<PrivateRoute element={<ECommerce />} />} />
 
-            {/* Routes with Panel wrapper */}
             {/* Admin */}
-            <Route path="batches" element={userInfo ? <Batches /> : <Navigate to="/" />} />
-            <Route path="teachers" element={userInfo ? <Teachers /> : <Navigate to="/" />} />
-            <Route path="students" element={userInfo ? <Students /> : <Navigate to="/" />} />
-            <Route path="quizzes" element={userInfo ? <Quizzes /> : <Navigate to="/" />} />
+            <Route path="batches" element={<PrivateRoute element={<Batches />} />} />
+            <Route path="teachers" element={<PrivateRoute element={<Teachers />} />} />
+            <Route path="students" element={<PrivateRoute element={<Students />} />} />
+            <Route path="quizzes" element={<PrivateRoute element={<Quizzes />} />} />
 
             {/* Teacher */}
-            <Route path="allBatchesWhereTeacherInvolved" element={userInfo ? <TeacherBatches /> : <Navigate to="/" />} />
-            <Route path="activeBatch" element={userInfo ? <ActiveBatch /> : <Navigate to="/" />} />
-            <Route path="batchQuizzes" element={userInfo ? <BatchQuizzes /> : <Navigate to="/" />} />
+            <Route
+                path="allBatchesWhereTeacherInvolved"
+                element={<PrivateRoute element={<TeacherBatches />} />}
+            />
+            <Route path="activeBatch" element={<PrivateRoute element={<ActiveBatch />} />} />
+            <Route path="batchQuizzes" element={<PrivateRoute element={<BatchQuizzes />} />} />
 
             {/* Student */}
-            <Route path="studentQuiz" element={userInfo ? <StudentQuiz /> : <Navigate to="/" />} />
-            <Route path="chatbot" element={userInfo ? <ChatBot /> : <Navigate to="/" />} />
+            <Route path="studentQuiz" element={<PrivateRoute element={<StudentQuiz />} />} />
+            <Route path="chatbot" element={<PrivateRoute element={<ChatBot />} />} />
+            <Route path="/student/quiz/results" element={<PrivateRoute element={<QuizResults />} />} />
 
-            <Route path="/batch/:id" element={userInfo ? <BatchDetails /> : <Navigate to="/" />} />
-            <Route path="tables" element={userInfo ? <Tables /> : <Navigate to="/" />} />
-            <Route path="profile" element={userInfo ? <Profile /> : <Navigate to="/" />} />
+            <Route path="/batch/:id" element={<PrivateRoute element={<BatchDetails />} />} />
+            <Route path="tables" element={<PrivateRoute element={<Tables />} />} />
+            <Route path="profile" element={<PrivateRoute element={<Profile />} />} />
         </Routes>
     );
 }

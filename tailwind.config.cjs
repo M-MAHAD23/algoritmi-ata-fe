@@ -41,6 +41,7 @@ module.exports = {
           DEFAULT: '#EFF4FB',
           2: '#F7F9FC',
           3: '#FAFAFA',
+          4: '181818',
         },
         graydark: '#333A48',
         whiten: '#F1F5F9',

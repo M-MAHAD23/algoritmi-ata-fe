@@ -6,7 +6,7 @@ export const useProfile = async (userId, token) => {
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -156,7 +156,7 @@ export const useSignUp = () => {
     };
 };
 
-export const useSubmit = (fileContent, fileName) => {
+export const useSubmit = (fileContent, fileName, quizId, submitterId, batchId) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -168,9 +168,9 @@ export const useSubmit = (fileContent, fileName) => {
 
         const formData = new FormData();
         formData.append('files', new Blob([fileContent], { type: 'text/plain' }), fileName);
-        formData.append('batchId', '6730c8006027f9586b388377'); // Hardcoded batchId
-        formData.append('submitterId', '67336d3a36ae0ae6a52132d7'); // Hardcoded submitterId
-        formData.append('quizId', '6733a6fd14866b44118df226'); // Hardcoded quizId
+        formData.append('batchId', batchId); // Dynamically passed batchId
+        formData.append('submitterId', submitterId); // Dynamically passed submitterId
+        formData.append('quizId', quizId); // Dynamically passed quizId
         formData.append('submitDate', new Date().toISOString()); // Current timestamp
 
         try {
@@ -182,7 +182,7 @@ export const useSubmit = (fileContent, fileName) => {
             if (!response.ok) throw new Error('File submission failed.');
 
             setSuccess(true);
-        } catch (error: any) {
+        } catch (error) {
             setError(error.message);
         } finally {
             setIsSubmitting(false);
@@ -190,7 +190,7 @@ export const useSubmit = (fileContent, fileName) => {
     };
 
     return { isSubmitting, error, success, submitFile };
-}
+};
 
 export const useUserInfo = () => {
     const [token, setToken] = useState(null);
