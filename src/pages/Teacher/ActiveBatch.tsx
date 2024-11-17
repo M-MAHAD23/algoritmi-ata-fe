@@ -16,7 +16,7 @@ function ActiveBatch() {
     const fetchBatchDetails = async () => {
         if (!userProfile?.batchId) return; // Ensure batchId is available
         setLoading(true);
-        const payload = { batchId: userProfile.batchId };
+        const payload = { batchId: userProfile.batchId._id };
         try {
             const response = await axios.post(`${API_BASE_URL}/batch/getBatchById`, payload);
             setBatch(response.data.data[0]);
