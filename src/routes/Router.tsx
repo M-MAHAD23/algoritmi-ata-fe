@@ -59,6 +59,7 @@ function Router() {
                 />
                 <Route path="activeBatch" element={<PrivateRoute element={<ActiveBatch />} />} />
                 <Route path="/quizSubmission" element={<PrivateRoute element={<Panel><QuizSubmission /></Panel>} />} />
+                <Route path="/teacher/quiz/results" element={<PrivateRoute element={<QuizResults />} />} />
                 {/* <Route path="batchQuizzes" element={<PrivateRoute element={<BatchQuizzes />} />} /> */}
 
                 {/* Student */}

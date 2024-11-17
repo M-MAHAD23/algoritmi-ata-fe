@@ -120,13 +120,13 @@ function ActiveBatch() {
                                     <div className="p-2.5 text-center font-medium uppercase">Issued Date</div>
                                     <div className="p-2.5 text-center font-medium uppercase">Deadline</div>
                                     <div className="p-2.5 text-center font-medium uppercase">Submissions</div>
+                                    <div className="p-2.5 text-center font-medium uppercase">Actions</div> {/* Add a column for the button */}
                                 </div>
                                 {batch.batchQuiz?.length ? (
                                     batch.batchQuiz.map(quiz => (
                                         <div
                                             key={quiz._id}
-                                            className="grid grid-cols-6 border-b border-stroke dark:border-strokedark"
-                                            onClick={() => handleQuizClick(quiz._id)} // Redirect on click
+                                            className="grid grid-cols-7 border-b border-stroke dark:border-strokedark"
                                         >
                                             {/* Quiz Topic */}
                                             <div className="p-2.5 text-center">
@@ -157,12 +157,23 @@ function ActiveBatch() {
                                             <div className="p-2.5 text-center">
                                                 <p className="text-black dark:text-white">{quiz.quizSubmitters?.length || 0}</p>
                                             </div>
+
+                                            {/* Action Button */}
+                                            <div className="p-2.5 text-center">
+                                                <button
+                                                    onClick={() => handleQuizClick(quiz._id)} // Redirect on button click
+                                                    className="text-blue-500 hover:text-blue-700 font-semibold px-4 py-2 rounded-md bg-transparent border border-blue-500 hover:bg-blue-500 hover:text-white"
+                                                >
+                                                    View Quiz
+                                                </button>
+                                            </div>
                                         </div>
                                     ))
                                 ) : (
                                     <div className="text-center p-5">No quizzes available.</div>
                                 )}
                             </div>
+
 
                         </>
                     ) : (
