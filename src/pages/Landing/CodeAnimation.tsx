@@ -107,7 +107,7 @@ console.log(greet("World"));`;
         {/* Sidebar */}
         <div className="bg-gray-800 text-gray-400 w-1/5 p-3">
           <p className="text-sm text-gray-300 mb-2 text-left">Explorer</p>
-          <ul className="text-sm text-left mr-10">
+          <ul className="text-xs text-left mr-10">
             <li className="text-blue-400">index.js</li>
             <li>app.css</li>
             <li>package.json</li>
