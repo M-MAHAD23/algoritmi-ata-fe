@@ -1,40 +1,44 @@
-import { faRobot, faComments } from "@fortawesome/free-solid-svg-icons";
+import { faRobot, faComments, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 
 export const Message = ({ role, content }) => {
-  const user = 0;
-  console.log("USER: ", user);
+  const [userProfile, setUserProfile] = useState(null);
+
+  // Load user profile from localStorage
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    setUserProfile(userInfo);
+  }, []);
+
   return (
     <div
-      className={`grid grid-cols-[30px_1fr] gap-5 p-5 ${role === "assistant"
-        ? "bg-gray-600"
-        : role === "notice"
-          ? "bg-red-600"
-          : ""
-        }`}
+      className={`grid max-w-fit grid-cols-[30px_1fr] items-center gap-3 p-4 
+        rounded-full shadow-md 
+        ${role === "user" ? "justify-self-end bg-gray-400" : ""} 
+        ${role === "assistant" ? "justify-self-start bg-gray-300" : ""} 
+        ${role === "notice" ? "bg-red-600 text-white justify-self-center" : ""}`}
     >
-      <div>
-        {role === "user" && !!user && (
-          <img
-            src={user.picture}
-            width={30}
-            height={30}
-            alt="User avatar"
-            className="rounded-sm shadow-md shadow-black/50"
-          />
-        )}
-        {role === "assistant" && (
-          <div className="flex h-[30px] w-[30px] items-center justify-center rounded-sm bg-gray-800 shadow-md shadow-black/50">
-            <FontAwesomeIcon
-              icon={faComments}
-              className="text-white"
-
+      {/* Avatar Section */}
+      <div className="flex items-center justify-center h-[30px] w-[30px] rounded-full shadow-md bg-white">
+        {role === "user" ? (
+          userProfile?.image && userProfile.image !== "" ? (
+            <img
+              src={userProfile.image}
+              alt="User avatar"
+              className="h-full w-full rounded-full object-cover"
             />
-          </div>
+          ) : (
+            <FontAwesomeIcon icon={faUser} className="text-black" />
+          )
+        ) : (
+          <FontAwesomeIcon icon={faComments} className="text-black" />
         )}
       </div>
-      <div className="prose prose-invert text-white">
+
+      {/* Message Content */}
+      <div className="prose prose-invert text-black text-lg">
         <Markdown>{content}</Markdown>
       </div>
     </div>

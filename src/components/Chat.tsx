@@ -1,9 +1,10 @@
-import { faRobot, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faRobot, faComments, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Message } from './Message/index.js';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Loader from '../common/Loader/index.js';
+import Spinner from './Spinner.js';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function ChatPage({ title, messages = [] }) {
@@ -187,77 +188,77 @@ export default function ChatPage({ title, messages = [] }) {
   return (
     <>
       {loading && <Loader />}
-      <div className="h-screen flex flex-col overflow-hidden bg-black">
-        {' '}
-        {/* Light background */}
-        <div className="flex flex-1 flex-col-reverse overflow-y-auto text-gray-900 overflow-x-hidden">
-          {' '}
-          {/* Darker text color */}
-          {/* Display a prompt when there are no messages */}
-          {!allMessages.length && !incomingMessage && (
-            <div className="m-auto flex items-center justify-center text-center">
-              <div>
-                <FontAwesomeIcon
-                  icon={faComments}
-                  className="text-6xl text-white"
-                />
-                <h1 className="mt-2 text-4xl font-bold text-white">
-                  {' '}
-                  {/* Lighter text color */}
-                  Ask me a question!
-                </h1>
-              </div>
-            </div>
-          )}
-          {/* Map and render all messages */}
-          {!!allMessages.length && (
-            <div className="mb-auto">
-              {allMessages.map((message) => (
-                <Message
-                  key={message._id}
-                  role={message.role}
-                  content={message.content}
-                />
-              ))}
-              {/* Render incoming message if route hasn't changed */}
-              {!!incomingMessage && !routeHasChanged && (
-                <Message role="assistant" content={incomingMessage} />
-              )}
-              {/* Show notice message if route has changed */}
-              {!!incomingMessage && !!routeHasChanged && (
-                <Message
-                  role="notice"
-                  content="Only one message at a time. Please allow any other responses to complete before sending another message"
-                />
-              )}
-            </div>
-          )}
-        </div>
-        <footer className="bg-black p-10 shadow-md">
-          <form onSubmit={handleSubmit}>
-            <fieldset className="flex gap-2" disabled={generatingResponse}>
-              <textarea
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                placeholder={generatingResponse ? '' : 'Send a message...'}
-                className="w-full resize-none rounded-md bg-white p-2 text-black placeholder-black focus:border-emerald-500 focus:bg-white focus:outline focus:outline-emerald-500"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault(); // Prevent adding a new line
-                    handleSubmit(e); // Submit the form
-                  }
-                }}
+      {/* <div className=" flex flex-col bg-black overflow-hidden"> */}
+      {/* Main Chat Area */}
+      <div className="flex-1 overflow-y-auto text-gray-900">
+        {/* No Messages Prompt */}
+        {!allMessages.length && !incomingMessage && (
+          <div className="flex items-center justify-center h-full text-center">
+            <div>
+              <FontAwesomeIcon
+                icon={faComments}
+                className="text-6xl text-white"
               />
-              <button
-                type="submit"
-                className="bg-white text-black px-4 py-2 rounded-md hover:bg-gray-500 focus:outline-none"
-              >
-                Send
-              </button>
-            </fieldset>
-          </form>
-        </footer>
+              <h1 className="mt-2 text-4xl font-bold text-white">
+                Ask me a question!
+              </h1>
+            </div>
+          </div>
+        )}
+        {/* Display Messages */}
+        {!!allMessages.length && (
+          <div className="p-4 space-y-2">
+            {allMessages.map((message) => (
+              <Message
+                key={message._id}
+                role={message.role}
+                content={message.content}
+              />
+            ))}
+            {!!incomingMessage && !routeHasChanged && (
+              <Message role="assistant" content={incomingMessage} />
+            )}
+            {!!incomingMessage && !!routeHasChanged && (
+              <Message
+                role="notice"
+                content="Only one message at a time. Please allow any other responses to complete before sending another message."
+              />
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Footer */}
+      <footer className="bg-black rounded-full p-4 shadow-md">
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <textarea
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            placeholder={generatingResponse ? '' : '     Send a message...'}
+            className={`w-full rounded-full resize-none bg-white p-2 text-black placeholder-black focus:ring-2 focus:ring-emerald-500 ${generatingResponse ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={generatingResponse}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
+          />
+          <button
+            type="submit"
+            className={`bg-white text-black p-4 rounded-full hover:bg-gray-500 focus:outline-none ${generatingResponse ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={generatingResponse || !messageText.trim()} // Disable if messageText is empty
+          >
+            {generatingResponse ? (
+              <Spinner size="small" color="black" />
+            ) : (
+              <FontAwesomeIcon icon={faArrowUp} className="text-black" />
+            )}
+          </button>
+        </form>
+      </footer>
+      {/* </div> */}
     </>
   );
+
 }
