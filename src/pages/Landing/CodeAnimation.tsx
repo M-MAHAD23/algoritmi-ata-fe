@@ -89,7 +89,7 @@ console.log(greet("World"));`;
   return (
     <div
       className="bg-gray-900 text-white rounded-lg shadow-lg w-full md:w-10/12 mx-auto border border-gray-700 mt-[-120px]"
-      style={{ height: '400px', overflow: 'hidden' }} // Increased the height to 500px
+      style={{ height: '350px', overflow: 'hidden' }} // Increased the height to 500px
     >
       {/* VS Code Top Bar */}
       <div className="bg-gray-800 text-gray-400 px-4 flex justify-between items-center">
