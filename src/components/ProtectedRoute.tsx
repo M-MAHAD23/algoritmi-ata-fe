@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRoles, token, userInfo }) => {
 
     if (!token) {
         // Redirect to SignIn if not logged in
-        return <Navigate to="/auth/signin" replace />;
+        return <Navigate to="/signin" replace />;
     }
 
     if (!allowedRoles.includes(userInfo.role)) {

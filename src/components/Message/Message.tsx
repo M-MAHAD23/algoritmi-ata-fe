@@ -1,4 +1,4 @@
-import { faRobot } from "@fortawesome/free-solid-svg-icons";
+import { faRobot, faComments } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Markdown from "react-markdown";
 
@@ -26,11 +26,15 @@ export const Message = ({ role, content }) => {
         )}
         {role === "assistant" && (
           <div className="flex h-[30px] w-[30px] items-center justify-center rounded-sm bg-gray-800 shadow-md shadow-black/50">
-            <FontAwesomeIcon icon={faRobot} className="text-emerald-200" />
+            <FontAwesomeIcon
+              icon={faComments}
+              className="text-white"
+
+            />
           </div>
         )}
       </div>
-      <div className="prose prose-invert">
+      <div className="prose prose-invert text-white">
         <Markdown>{content}</Markdown>
       </div>
     </div>

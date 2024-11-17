@@ -7,6 +7,8 @@ import Vector from '../../images/vector/vector.svg';
 import { useSignUp } from '../../hooks/hooks';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import toast, { Toaster } from 'react-hot-toast';
+import { motion } from 'framer-motion';
+import Loader from '../../common/Loader';
 
 
 const SignUp: React.FC = () => {
@@ -44,8 +46,19 @@ const SignUp: React.FC = () => {
   // Handle form field changes
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    // Regular expression for pattern like "20-3822"
+    const pattern = /^\d{2}-\d{4}$/;
+
+    // Update the name state regardless of the format
     setName(value);
-    setNameError('');
+
+    // Check if the value matches the pattern
+    if (pattern.test(value)) {
+      setNameError('');
+    } else {
+      setNameError('Invalid name format. Please use the format XX-XXXX');
+    }
   };
 
   // Handle form field changes
@@ -92,21 +105,60 @@ const SignUp: React.FC = () => {
       return;
     }
 
+    let response;
+
     try {
-      await signUp(name, email, password);
-      toast.success('Sign Up Successfull.');
+      response = await signUp(name, email, password); // Assuming signUp is a function for signup
+      const { userInfo, token } = response;;
+
+      // Store userInfo and token in localStorage
+      localStorage.clear();
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      localStorage.setItem('token', token);
+      toast.success('Sign Up Successful.', {
+        position: 'top-right',
+      });
       setTimeout(() => {
-        navigate('/auth/signin'); // Navigate to the sign-in page on successful signup
-      }, 2000);
-      // Redirect or update UI after successful sign-in (if needed)
+        navigate('/profile'); // Navigate to the profile page on successful signup
+      }, 700);
     } catch (error) {
-      toast.error("Error while signing up.")
-      console.error('Error during sign-in', error);
+      if (error.response && error.response.status === 400) {
+        toast.error('Batch is not enable anymore.', {
+          position: 'top-right',
+        });
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
+      else if (error.response && error.response.status === 403) {
+        toast.error('Already Registerd Please Sign In', {
+          position: 'top-right',
+        });
+        setTimeout(() => {
+          navigate('/signin');
+        }, 1000);
+      }
+      else if (error.response && error.response.status === 404) {
+        toast.error('Contact Admin, User not found.', {
+          position: 'top-right',
+        });
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
+      else {
+        console.error('Error during sign-up', error);
+        toast.error(response?.response?.data?.message, {
+          position: 'top-right',
+        });
+      }
     }
   };
 
+
   return (
     <>
+      {loading && <Loader />}
       <Toaster />
       {/* <Breadcrumb pageName="Sign Up" /> */}
 
@@ -144,12 +196,12 @@ const SignUp: React.FC = () => {
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4">
                     <label className="mb-2.5 block font-medium text-black dark:text-white">
-                      Name
+                      Roll-Id
                     </label>
                     <div className="relative">
                       <input
                         type="text"
-                        placeholder="Enter your full name"
+                        placeholder="Enter your Roll-Id"
                         value={name}
                         onChange={handleNameChange}
                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -340,7 +392,6 @@ const SignUp: React.FC = () => {
           </div>
         </div>
       </div>
-
     </>
   );
 };

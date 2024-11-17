@@ -5,6 +5,9 @@ import { useSignIn } from '../../hooks/hooks';
 // import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import { motion } from 'framer-motion';
+import Loader from '../../common/Loader';
+
 
 const SignIn: React.FC = () => {
   const { signIn, loading, error } = useSignIn(); // Destructure signIn, isLoading, and error from useSignIn
@@ -15,6 +18,12 @@ const SignIn: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // New state for toggling password visibility
   const navigate = useNavigate(); // Initialize navigate
+
+  const pageVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 2 } },
+    exit: { opacity: 0, transition: { duration: 2 } },
+  };
 
   // Validate email format
   const validateEmail = (email: string) => {
@@ -55,6 +64,7 @@ const SignIn: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,24 +81,43 @@ const SignIn: React.FC = () => {
       localStorage.clear();
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
       localStorage.setItem('token', token);
-
-      toast.success('Sign In Successfull.',
-        {
-          position: 'top-right', // Position the toast at the top right corner
-        }
-      );
+      toast.success('Sign In Successful.', {
+        position: 'top-right', // Position the toast at the top right corner
+      });
+      // Delay navigation to allow toast to appear
       setTimeout(() => {
-        navigate('/profile'); // Navigate to the sign-in page on successful signup
-
-      }, 2000);
-      // Redirect or update UI after successful sign-in (if needed)
+        navigate('/profile');
+      }, 700); // Adjust delay as needed (in milliseconds)
     } catch (error) {
-      console.error('Error during sign-in', error);
+
+      if (error.response && error.response.status === 400) {
+        toast.error('Batch is not enable anymore.', {
+          position: 'top-right',
+        });
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      }
+      else if (error.response && error.response.status === 404) {
+        toast.error('User not found please sign up', {
+          position: 'top-right',
+        });
+        setTimeout(() => {
+          navigate('/signup');
+        }, 2000);
+      }
+      else {
+        console.error('Error during sign-in', error);
+        toast.error('An error occurred. Please try again.', {
+          position: 'top-right',
+        });
+      }
     }
   };
 
   return (
     <>
+      {loading && <Loader />}
       <Toaster />
       <div className="bg-[#0E0D15] flex items-center justify-center min-h-screen">
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

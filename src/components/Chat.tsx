@@ -1,8 +1,9 @@
-import { faRobot } from '@fortawesome/free-solid-svg-icons';
+import { faRobot, faComments } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Message } from './Message/index.js';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import Loader from '../common/Loader/index.js';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 
@@ -18,7 +19,7 @@ export default function ChatPage({ title, messages = [] }) {
   const [fullMessage, setFullMessage] = useState('');
   const [originalChatId, setOriginalChatId] = useState(chatId);
   const router = useNavigate();
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
 
   const user = JSON.parse(localStorage.getItem('userInfo'));
   const batchId = user.batchId;
@@ -79,6 +80,48 @@ export default function ChatPage({ title, messages = [] }) {
       router(`/chat/${newChatId}`);
     }
   }, [newChatId, generatingResponse, router]);
+
+  useEffect(() => {
+    const fetchChatData = async () => {
+      const chatId = localStorage.getItem('chatId');
+      const payload = { chatId: chatId };
+
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/chat/getChatById`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to retrieve chat data.');
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        localStorage.setItem('chatId', data._id);
+
+        // Update messages from the API response
+        const updatedMessages = data.chat.map((msg) => ({
+          _id: msg._id,
+          role: msg.role === 'User' ? 'user' : 'assistant',
+          content: msg.message,
+        }));
+
+        setNewChatMessages(updatedMessages);
+        setLoading(false);
+        console.log('API response:', data);
+      } catch (error) {
+        console.error('Error fetching chat data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchChatData();
+  }, [cO]); // Depend on cO if it's meant to trigger this effect when it changes
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -148,17 +191,19 @@ export default function ChatPage({ title, messages = [] }) {
 
   return (
     <>
-      <div className="h-screen flex flex-col overflow-hidden bg-[#1C2434]">
-        <div className="flex flex-1 flex-col-reverse overflow-scroll text-white">
+      {loading && <Loader />}
+      <div className="h-screen flex flex-col overflow-hidden bg-black"> {/* Light background */}
+        <div className="flex flex-1 flex-col-reverse overflow-y-auto text-gray-900 overflow-x-hidden"> {/* Darker text color */}
           {/* Display a prompt when there are no messages */}
           {!allMessages.length && !incomingMessage && (
             <div className="m-auto flex items-center justify-center text-center">
               <div>
                 <FontAwesomeIcon
-                  icon={faRobot}
-                  className="text-6xl text-emerald-200"
+                  icon={faComments}
+                  className="text-6xl text-white"
+
                 />
-                <h1 className="mt-2 text-4xl font-bold text-white/50">
+                <h1 className="mt-2 text-4xl font-bold text-white"> {/* Lighter text color */}
                   Ask me a question!
                 </h1>
               </div>
@@ -190,21 +235,33 @@ export default function ChatPage({ title, messages = [] }) {
           )}
         </div>
 
-        <footer className="bg-gray-800 p-10">
+        <footer className="bg-black p-10 shadow-md">
           <form onSubmit={handleSubmit}>
             <fieldset className="flex gap-2" disabled={generatingResponse}>
               <textarea
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder={generatingResponse ? '' : 'Send a message...'}
-                className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500"
+                className="w-full resize-none rounded-md bg-white p-2 text-black placeholder-black focus:border-emerald-500 focus:bg-white focus:outline focus:outline-emerald-500"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // Prevent adding a new line
+                    handleSubmit(e); // Submit the form
+                  }
+                }}
               />
-              <button type="submit" className="btn">
+              <button
+                type="submit"
+                className="bg-white text-black px-4 py-2 rounded-md hover:bg-gray-500 focus:outline-none"
+              >
                 Send
               </button>
             </fieldset>
           </form>
         </footer>
+
+
+
       </div>
     </>
   );

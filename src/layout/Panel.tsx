@@ -1,6 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import Header from '../components/Header/index';
-import Sidebar from '../components/Sidebar/index';
+import Sidebar from '../components/Sidebar/index'
+
 
 const Panel: React.FC<{ children: any }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

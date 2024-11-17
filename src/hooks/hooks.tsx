@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 import axios from "axios";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const useProfile = async (userId, token) => {
     const [userProfile, setUserProfile] = useState(null);
@@ -99,8 +100,6 @@ export const useSignIn = () => {
                 }
             });
 
-            // Handle successful sign-in
-            console.log('Signed in successfully', response.data);
             return response.data;
         } catch (error: any) {
             setError({ message: error.message });
@@ -128,7 +127,7 @@ export const useSignUp = () => {
 
         try {
             const response = await axios.post(`${API_BASE_URL}/auth/signup`, {
-                name,
+                rollId: name,
                 email,
                 password
             }, {
@@ -138,7 +137,6 @@ export const useSignUp = () => {
             });
 
             // Handle successful sign-in
-            console.log('Signed in successfully', response.data);
             return response.data;
         } catch (error: any) {
             setError(error.response?.data?.message || 'Sign-in failed');
@@ -207,4 +205,52 @@ export const useUserInfo = () => {
     }, []);
 
     return { token, userInfo };
+};
+
+export const useGetUserInfo = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const publicRoutes = ['/signin', '/signup', '/']; // Add public routes here
+        if (publicRoutes.includes(location.pathname)) return;
+
+        const fetchUserInfo = async () => {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+            if (!userInfo) {
+                // Clear all localStorage data and redirect to login
+                localStorage.clear();
+                navigate('/signin');
+                return;
+            }
+
+            try {
+                const response = await axios.post(
+                    `${API_BASE_URL}/user/getUserById`,
+                    { id: userInfo._id }
+                );
+                const updatedUserInfo = response.data.data;
+
+                if (!updatedUserInfo.batchId.isEnable) {
+                    // Handle batch disabled scenario
+                    alert('Your batch is no longer active. Logging out.');
+                    localStorage.clear(); // Clear all data on logout
+                    navigate('/signin');
+                } else {
+                    // Update userInfo in localStorage if necessary
+                    localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
+                }
+            } catch (error) {
+                console.error('Failed to fetch user info:', error);
+                if (error.response?.status === 401) {
+                    // Clear all data on unauthorized access
+                    localStorage.clear();
+                    navigate('/signin');
+                }
+            }
+        };
+
+        fetchUserInfo();
+    }, [location, navigate]);
 };

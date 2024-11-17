@@ -21,6 +21,7 @@
     "apexcharts": "^3.41.0",
     "axios": "^1.7.7",
     "flatpickr": "^4.6.13",
+    "framer-motion": "^11.11.17",
     "headlessui": "^0.0.0",
     "jsvectormap": "^1.5.3",
     "match-sorter": "^6.3.1",
