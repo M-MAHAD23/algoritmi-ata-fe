@@ -162,7 +162,7 @@ const SignUp: React.FC = () => {
       <Toaster />
       {/* <Breadcrumb pageName="Sign Up" /> */}
 
-      <div className="bg-[#0E0D15] flex items-center justify-center min-h-screen">
+      <div className="bg-black flex items-center justify-center min-h-screen">
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="flex flex-wrap items-center">
             <div className="hidden w-full xl:block xl:w-1/2">

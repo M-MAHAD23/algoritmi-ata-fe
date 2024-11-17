@@ -158,7 +158,7 @@ function StudentQuiz() {
                     onClose={handleCloseModal}
                     quiz={selectedQuiz._id}
                     submitterId={userInfo?._id}
-                    batchId={userInfo?.batchId}
+                    batchId={userInfo?.batchId?._id}
                 />
             )}
         </Panel>

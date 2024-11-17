@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import PageTitle from '../components/PageTitle';
+import PageNotFound from '../common/PageNotFound'; // Ensure you import the PageNotFound component
 import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
 import ECommerce from '../pages/Dashboard/ECommerce';
@@ -23,6 +23,7 @@ import StudentQuiz from '../pages/Student/StudentQuiz';
 import QuizResults from '../pages/Student/QuizResults';
 import ChatBot from '../pages/Student/ChatBot';
 import { useGetUserInfo } from '../hooks/hooks';
+import QuizSubmission from '../pages/Teacher/QuizSubmission';
 
 // Wrapper to handle private routes
 const PrivateRoute = ({ element }) => {
@@ -57,20 +58,23 @@ function Router() {
                     element={<PrivateRoute element={<TeacherBatches />} />}
                 />
                 <Route path="activeBatch" element={<PrivateRoute element={<ActiveBatch />} />} />
-                <Route path="batchQuizzes" element={<PrivateRoute element={<BatchQuizzes />} />} />
+                <Route path="/quizSubmission" element={<PrivateRoute element={<Panel><QuizSubmission /></Panel>} />} />
+                {/* <Route path="batchQuizzes" element={<PrivateRoute element={<BatchQuizzes />} />} /> */}
 
                 {/* Student */}
                 <Route path="studentQuiz" element={<PrivateRoute element={<StudentQuiz />} />} />
                 <Route path="chatbot" element={<PrivateRoute element={<ChatBot />} />} />
                 <Route path="/student/quiz/results" element={<PrivateRoute element={<QuizResults />} />} />
 
-                <Route path="/batch/:id" element={<PrivateRoute element={<BatchDetails />} />} />
+                <Route path="/batch" element={<PrivateRoute element={<BatchDetails />} />} />
                 <Route path="tables" element={<PrivateRoute element={<Tables />} />} />
                 <Route path="profile" element={<PrivateRoute element={<Profile />} />} />
-            </Routes >
+
+                {/* Catch-all for 404 Page */}
+                <Route path="*" element={<PageNotFound />} />
+            </Routes>
         </AnimatePresence>
     );
 }
 
 export default Router;
-

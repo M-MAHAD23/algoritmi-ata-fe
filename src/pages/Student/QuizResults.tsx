@@ -51,8 +51,6 @@ function QuizResults() {
     if (loading) return <Loader />;
     if (error) return <div>{error}</div>;
 
-    console.log('===========', submissionDetails)
-
     const {
         ethics,
         copiedFromAI,

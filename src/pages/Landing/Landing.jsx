@@ -114,7 +114,7 @@ function Landing() {
 
     return (
         <>
-            <nav id="header" className="fixed w-full z-30 top-0 text-white bg-[#0E0D15]">
+            <nav id="header" className="fixed w-full z-30 top-0 text-white bg-black">
                 <div className="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
                     <div className="pl-4 flex items-center">
                         <svg width="50px" height="50px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,7 +176,7 @@ function Landing() {
                 <hr className="border-b border-gray-100 opacity-25 my-0 py-0" />
             </nav>
 
-            <div className="bg-[#0E0D15] pt-32 h-[calc(100vh-80px)]">
+            <div className="bg-black pt-32 h-[calc(100vh-80px)]">
                 <div className="container px-3 mx-auto flex flex-wrap flex-col md:flex-row items-center space-y-8 md:space-y-0 h-full">
                     <div className="flex flex-col w-full md:w-2/5 justify-center items-start text-center md:text-left">
                         <p className="uppercase tracking-loose w-full">{visibleText.line1}</p>
@@ -199,7 +199,7 @@ function Landing() {
                     </div>
                 </div>
             </div>
-            <div className="bg-[#0E0D15] relative -mt-12 lg:-mt-24">
+            <div className="bg-black relative -mt-12 lg:-mt-24">
                 <svg viewBox="0 0 1428 174" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -285,8 +285,8 @@ function Landing() {
 
                 </div>
             </section>
-            <section className="bg-[#0E0D15] border-b py-8">
-                <div className="bg-[#0E0D15] container mx-auto flex flex-wrap pt-4 pb-12">
+            <section className="bg-black border-b py-8">
+                <div className="bg-black container mx-auto flex flex-wrap pt-4 pb-12">
                     <h2 className="w-full my-2 text-5xl font-bold leading-tight text-center text-white">
                         Our Team
                     </h2>
@@ -316,7 +316,7 @@ function Landing() {
                                 <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
                                     <div className="flex items-center justify-center">
                                         <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
-                                            <button className="mx-auto lg:mx-0 hover:underline gradient bg-[#0E0D15] text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                                            <button className="mx-auto lg:mx-0 hover:underline gradient bg-black text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
                                                 Contact
                                             </button>
                                         </a>
@@ -344,7 +344,7 @@ function Landing() {
                     Join Us.
                 </button>
             </section>
-            <footer className="bg-[#0E0D15]">
+            <footer className="bg-black">
                 <div className="container mx-auto px-8">
                     <div className="w-full flex flex-col md:flex-row py-6">
 
