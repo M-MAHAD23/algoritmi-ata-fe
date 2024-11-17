@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import Loader from '../common/Loader/index.js';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-
 export default function ChatPage({ title, messages = [] }) {
   const localStorageChatOwner = localStorage.getItem('chatOwner');
   const [cO, setCO] = useState(localStorageChatOwner);
@@ -42,8 +41,8 @@ export default function ChatPage({ title, messages = [] }) {
         .then((response) => response.json())
         .then((data) => {
           if (data?.data) {
-            localStorage.setItem('chatId', data.data._id);  // Use data._id directly
-            localStorage.setItem('chatOwner', data.data.chatOwner);  // Save chatOwner if needed
+            localStorage.setItem('chatId', data.data._id); // Use data._id directly
+            localStorage.setItem('chatOwner', data.data.chatOwner); // Save chatOwner if needed
             setNewChatId(data._id);
           } else {
             console.error('Failed to retrieve chatId');
@@ -122,7 +121,6 @@ export default function ChatPage({ title, messages = [] }) {
     fetchChatData();
   }, [cO]); // Depend on cO if it's meant to trigger this effect when it changes
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGeneratingResponse(true);
@@ -150,16 +148,13 @@ export default function ChatPage({ title, messages = [] }) {
     };
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/chat/updateChatById`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
+      const response = await fetch(`${API_BASE_URL}/chat/updateChatById`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(payload),
+      });
 
       if (!response.ok) {
         console.error('Failed to send message.');
@@ -192,8 +187,12 @@ export default function ChatPage({ title, messages = [] }) {
   return (
     <>
       {loading && <Loader />}
-      <div className="h-screen flex flex-col overflow-hidden bg-black"> {/* Light background */}
-        <div className="flex flex-1 flex-col-reverse overflow-y-auto text-gray-900 overflow-x-hidden"> {/* Darker text color */}
+      <div className="h-screen flex flex-col overflow-hidden bg-black">
+        {' '}
+        {/* Light background */}
+        <div className="flex flex-1 flex-col-reverse overflow-y-auto text-gray-900 overflow-x-hidden">
+          {' '}
+          {/* Darker text color */}
           {/* Display a prompt when there are no messages */}
           {!allMessages.length && !incomingMessage && (
             <div className="m-auto flex items-center justify-center text-center">
@@ -201,15 +200,15 @@ export default function ChatPage({ title, messages = [] }) {
                 <FontAwesomeIcon
                   icon={faComments}
                   className="text-6xl text-white"
-
                 />
-                <h1 className="mt-2 text-4xl font-bold text-white"> {/* Lighter text color */}
+                <h1 className="mt-2 text-4xl font-bold text-white">
+                  {' '}
+                  {/* Lighter text color */}
                   Ask me a question!
                 </h1>
               </div>
             </div>
           )}
-
           {/* Map and render all messages */}
           {!!allMessages.length && (
             <div className="mb-auto">
@@ -234,7 +233,6 @@ export default function ChatPage({ title, messages = [] }) {
             </div>
           )}
         </div>
-
         <footer className="bg-black p-10 shadow-md">
           <form onSubmit={handleSubmit}>
             <fieldset className="flex gap-2" disabled={generatingResponse}>
@@ -259,9 +257,6 @@ export default function ChatPage({ title, messages = [] }) {
             </fieldset>
           </form>
         </footer>
-
-
-
       </div>
     </>
   );
