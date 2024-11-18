@@ -26,8 +26,23 @@ function TeacherBatches() {
     };
 
     useEffect(() => {
-        fetchBatches();
-    }, []);
+        fetchBatches(); // Initial fetch
+
+        // Handle visibility change event to refetch batches when the tab is active again
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                fetchBatches(); // Refetch batches when the page becomes visible again
+            }
+        };
+
+        // Attach the event listener
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Clean up the event listener when the component unmounts
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []); // Only run on mount and unmount
 
     // Updated headers to include Total Students and Total Quizzes
     const headers = ['Batch Number', 'Batch Session', 'Batch Name', 'Total Students', 'Total Quizzes'];
@@ -62,44 +77,40 @@ function TeacherBatches() {
     );
 
     return (
-        loading ? (
-            <Loader />
-        ) : (
-            <Panel>
-                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batches</h4>
-                    {/* // Usage example for rendering the batches table: */}
-                    {renderTable({
-                        headers: ['Batch Number', 'Session', 'Name', 'Students', 'Quizzes'],
-                        rows: batches,
-                        keyExtractor: (batch) => batch._id,
-                        renderRow: (batch) => [
-                            // Batch Number
-                            <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                <p className="text-black dark:text-white">{batch.batchNumber || '-'}</p>
-                            </div>,
-                            // Session
-                            <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                <p className="text-black dark:text-white">{batch.batchSession || '-'}</p>
-                            </div>,
-                            // Name
-                            <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                <p className="text-black dark:text-white">{batch.batchName || '-'}</p>
-                            </div>,
-                            // Students
-                            <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                <p className="text-black dark:text-white">{batch.batchStudent?.length || 0}</p>
-                            </div>,
-                            // Quizzes
-                            <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                <p className="text-black dark:text-white">{batch.batchQuiz?.length || 0}</p>
-                            </div>,
-                        ],
-                    })}
-
-                </div>
-            </Panel>
-        )
+        <Panel>
+            {loading && <Loader />}
+            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batches</h4>
+                {/* Usage example for rendering the batches table */}
+                {renderTable({
+                    headers: ['Batch Number', 'Session', 'Name', 'Students', 'Quizzes'],
+                    rows: batches,
+                    keyExtractor: (batch) => batch._id,
+                    renderRow: (batch) => [
+                        // Batch Number
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{batch.batchNumber || '-'}</p>
+                        </div>,
+                        // Session
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{batch.batchSession || '-'}</p>
+                        </div>,
+                        // Name
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{batch.batchName || '-'}</p>
+                        </div>,
+                        // Students
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{batch.batchStudent?.length || 0}</p>
+                        </div>,
+                        // Quizzes
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{batch.batchQuiz?.length || 0}</p>
+                        </div>,
+                    ],
+                })}
+            </div>
+        </Panel>
     );
 }
 
