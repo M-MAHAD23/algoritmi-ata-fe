@@ -12,6 +12,7 @@ export default function ChatPage({ title, messages = [] }) {
     const localStorageChatOwner = localStorage.getItem('chatOwner');
     const [cO, setCO] = useState(localStorageChatOwner);
     const chatId = localStorage.getItem('chatId');
+    const [cI, setCI] = useState(chatId);
     const [newChatId, setNewChatId] = useState(null);
     const [incomingMessage, setIncomingMessage] = useState('');
     const [messageText, setMessageText] = useState('');
@@ -31,28 +32,26 @@ export default function ChatPage({ title, messages = [] }) {
 
     // Check if chatOwner exists; if not, call the createChat API
     useEffect(() => {
-        if (!cO) {
-            // If no chatOwner, create a new chat
-            fetch(`${API_BASE_URL}/chat/createChat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ chatName, batchId, chatOwner }),
+        // If no chatOwner, create a new chat
+        fetch(`${API_BASE_URL}/chat/createChat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ chatName, batchId, chatOwner }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data?.data) {
+                    localStorage.setItem('chatId', data.data._id); // Use data._id directly
+                    localStorage.setItem('chatOwner', data.data.chatOwner); // Save chatOwner if needed
+                    setNewChatId(data._id);
+                } else {
+                    console.error('Failed to retrieve chatId');
+                }
             })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data?.data) {
-                        localStorage.setItem('chatId', data.data._id); // Use data._id directly
-                        localStorage.setItem('chatOwner', data.data.chatOwner); // Save chatOwner if needed
-                        setNewChatId(data._id);
-                    } else {
-                        console.error('Failed to retrieve chatId');
-                    }
-                })
-                .catch((error) => console.error('Error creating chat:', error));
-        }
-    }, []);
+            .catch((error) => console.error('Error creating chat:', error));
+    }, [!cO || !cI]);
 
     // Reset messages when route changes
     useEffect(() => {
@@ -103,6 +102,7 @@ export default function ChatPage({ title, messages = [] }) {
 
             const data = await response.json();
             localStorage.setItem('chatId', data._id);
+            localStorage.setItem('chatOwner', data.chatOwner);
 
             // Update messages from the API response
             const updatedMessages = data.chat.map((msg) => ({
@@ -191,7 +191,6 @@ export default function ChatPage({ title, messages = [] }) {
             }));
 
             setNewChatMessages(updatedMessages);
-            console.log('API response:', data);
         } catch (error) {
             console.error('Error sending message:', error);
         } finally {
