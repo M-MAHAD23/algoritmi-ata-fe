@@ -12,7 +12,7 @@ function StudentQuiz() {
     const [newQuizzes, setNewQuizzes] = useState([]);
     const [lateQuizzes, setLateQuizzes] = useState([]);
     const [submittedQuizzes, setSubmittedQuizzes] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Start with true loading state
     const [error, setError] = useState(null);
     const [selectedQuiz, setSelectedQuiz] = useState(null); // For modal
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
@@ -33,6 +33,7 @@ function StudentQuiz() {
 
     // Fetch quizzes based on batchId and studentId
     const fetchQuizzes = () => {
+        setLoading(true); // Set loading to true when fetching
         const params = new URLSearchParams(location.search);
         const batchId = params.get('batchId') || userInfo?.batchId;
         const studentId = params.get('studentId') || userInfo?._id;
@@ -48,11 +49,11 @@ function StudentQuiz() {
                     setLateQuizzes(lateQuizzes);
                     setSubmittedQuizzes(submittedQuizzes);
 
-                    setLoading(false);
+                    setLoading(false); // Set loading to false after data is fetched
                 })
                 .catch(() => {
                     setError('Error fetching quizzes');
-                    setLoading(false);
+                    setLoading(false); // Set loading to false on error
                 });
         }
     };
@@ -94,7 +95,6 @@ function StudentQuiz() {
         navigate(`/student/quiz/results?quizId=${quizId}&submitterId=${userInfo?._id}`);
     };
 
-    if (loading) return <Loader />;
     if (error) return <div>{error}</div>;
 
     const renderTable = (title, quizzes, isLate) => (
@@ -187,6 +187,7 @@ function StudentQuiz() {
 
     return (
         <Panel>
+            {loading && <Loader />}
             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
                 <div className="mb-8">{renderTable('New Quizzes', newQuizzes, false)}</div>
