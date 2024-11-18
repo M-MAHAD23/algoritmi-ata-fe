@@ -120,6 +120,10 @@ export default function ChatPage({ title, messages = [] }) {
         }
     };
 
+    useEffect(() => {
+        fetchChatData();
+    }, []);
+
     // Call fetchChatData whenever the page visibility changes
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -128,7 +132,6 @@ export default function ChatPage({ title, messages = [] }) {
                 fetchChatData();
             }
         };
-
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
         // Clean up the event listener when the component is unmounted

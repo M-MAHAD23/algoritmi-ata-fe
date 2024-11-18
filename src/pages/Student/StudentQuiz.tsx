@@ -64,18 +64,20 @@ function StudentQuiz() {
     // Add event listener for visibility change
     useEffect(() => {
         const handleVisibilityChange = () => {
-            console.log('Visibility state:', document.visibilityState); // Check if it's being called
             if (document.visibilityState === 'visible') {
-                fetchQuizzes(); // If the page is visible again, refetch the quizzes
+                // If the page is visible again, refetch the quizzes
+                fetchQuizzes();
             }
         };
 
+        // Attach the visibility change event listener
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
+        // Cleanup the event listener when the component unmounts
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, []);
+    }, [location, userInfo]);
 
     const handleOpenModal = (quiz) => {
         setSelectedQuiz(quiz);
@@ -161,9 +163,8 @@ function StudentQuiz() {
                                                         handleViewResults(quiz?._id);
                                                     } else if (now - lastToastTime > cooldown) {
                                                         toast.error(
-                                                            "Please wait for analysis.", {
-                                                            position: 'top-right'
-                                                        });
+                                                            "Please wait for analysis.",
+                                                        );
                                                         window.lastToastTime = now; // Update the last toast time globally
                                                     }
                                                 }}
