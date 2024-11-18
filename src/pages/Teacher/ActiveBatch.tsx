@@ -324,13 +324,17 @@ function ActiveBatch() {
                             <div className="mt-6 rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
                                 <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
                                     Quizzes
+                                </h4>
+                                {/* Create Quiz Button Below Heading */}
+                                <div className="mt-4 mb-6">
                                     <button
                                         onClick={() => setShowQuizModal(true)}
-                                        className="ml-4 px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                                        className="px-6 py-3 text-white bg-black hover:bg-gray-500 rounded-md shadow-md"
                                     >
-                                        Create Quiz
+                                        Create Quiz +
                                     </button>
-                                </h4>
+                                </div>
+
 
                                 {renderTable({
                                     headers: [
@@ -363,117 +367,297 @@ function ActiveBatch() {
                                         <div className="p-2.5 text-center text-black dark:text-white">
                                             {quiz.quizSubmitters?.length || 0}
                                         </div>,
-                                        <div className="p-2.5 flex text-center">
+                                        <div className="p-2.5 flex flex-wrap justify-center space-y-2 w-full">
+                                            <button
+                                                onClick={() => {
+                                                    setShowQuizHnitModal(true);
+                                                }}
+                                                className={`w-full px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                    ? 'bg-red-300 cursor-not-allowed'
+                                                    : 'bg-black hover:bg-green-500'
+                                                    }`}
+                                                disabled={new Date().toISOString().split('T')[0] === quiz.quizDead}
+                                            >
+                                                Add Hint +
+                                            </button>
                                             <button
                                                 onClick={() => handleQuizClick(quiz._id)}
-                                                className={`px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                className={`w-full px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
                                                     ? 'bg-blue-500 hover:bg-blue-600'
-                                                    : 'bg-gray-300 cursor-not-allowed'
+                                                    : 'bg-black cursor-not-allowed'
                                                     }`}
                                                 disabled={new Date().toISOString().split('T')[0] !== quiz.quizDead}
                                             >
                                                 View Results
                                             </button>
                                             <button
-                                                onClick={() => deleteQuiz(quiz._id)}
-                                                className={`ml-2 px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
-                                                    ? 'bg-gray-300 cursor-not-allowed'
-                                                    : 'bg-red-400 hover:bg-red-500'
+                                                onClick={() => handleQuizClick(quiz._id)}
+                                                className={`w-full px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                    ? 'bg-red-300 cursor-not-allowed'
+                                                    : 'bg-black hover:bg-red-500'
                                                     }`}
                                                 disabled={new Date().toISOString().split('T')[0] === quiz.quizDead}
                                             >
-                                                Delete
+                                                Delete -
                                             </button>
                                         </div>
+
+
                                     ],
                                 })}
 
                                 {/* Quiz Modal */}
                                 {showQuizModal && (
                                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                        <div className="bg-white p-6 rounded shadow-lg">
-                                            {loading && <Spinner />}
-                                            <h3 className="mb-4 text-lg font-bold">Create Quiz</h3>
+                                        <div className="bg-white p-6 rounded shadow-lg relative w-full max-w-lg mx-4 sm:mx-6 md:mx-8 lg:max-w-3xl">
+                                            {/* Close Button */}
+                                            <button
+                                                onClick={() => {
+                                                    setShowQuizModal(false);
+                                                    resetQuizForm();
+                                                }}
+                                                className="absolute top-3 right-3 text-white bg-black hover:bg-gray-500 rounded-full p-3 transition duration-200 ease-in-out"
+                                                aria-label="Close Modal"
+                                            >
+                                                ✕
+                                            </button>
+
+                                            <h3 className="mb-4 text-lg font-bold text-center">Create Quiz</h3>
+
                                             {/* Quiz Fields */}
                                             {Object.keys(quizForm).map((key) => (
                                                 <div className="mb-4" key={key}>
-                                                    <label className="block text-sm font-medium">
+                                                    <label className="block text-sm font-medium mb-2">
                                                         {key.charAt(0).toUpperCase() + key.slice(1)}
                                                     </label>
                                                     <input
-                                                        type={key === 'quizIssued' || key === 'quizDead' ? 'date' : 'text'} // Explicitly show calendar input for specific keys
+                                                        type={key === 'quizIssued' || key === 'quizDead' ? 'date' : 'text'}
                                                         name={key}
                                                         value={quizForm[key]}
                                                         onChange={handleInputChange}
-                                                        className={`w-full rounded border p-2 ${quizErrors[key] ? 'border-red-500' : 'border-gray-300'}`}
+                                                        className={`w-full rounded border p-3 text-sm sm:text-base ${quizErrors[key] ? 'border-red-500' : 'border-gray-300'}`}
                                                     />
-                                                    {quizErrors[key] && <p className="mt-1 text-sm text-red-500">{quizErrors[key]}</p>}
+                                                    {quizErrors[key] && (
+                                                        <p className="mt-1 text-sm text-red-500">{quizErrors[key]}</p>
+                                                    )}
                                                 </div>
                                             ))}
 
-                                            <div className="mt-6 flex justify-end">
-                                                <button
-                                                    onClick={() => {
-                                                        setShowQuizModal(false)
-                                                        resetQuizForm()
-                                                    }
-                                                    }
-                                                    className="mr-2 px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button
-                                                    onClick={createQuiz}
-                                                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                                >
-                                                    Create Quiz
-                                                </button>
+                                            <div className="flex justify-center items-center mt-6 w-full space-x-4">
+                                                {/* Button Wrapper with equal width */}
+                                                <div className="w-full flex space-x-4">
+                                                    {/* Cancel Button */}
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowQuizModal(false);
+                                                            resetQuizForm();
+                                                        }}
+                                                        className="w-full px-4 py-2 text-white bg-gray-300 hover:bg-gray-500 rounded-md"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    {/* Submit Button */}
+                                                    <button
+                                                        onClick={createQuiz}
+                                                        className="w-full px-4 py-2 text-white bg-black hover:bg-gray-500 rounded-md"
+                                                    >
+                                                        Create Quiz
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 )}
 
+
                                 {/* Hint Section */}
                                 {showQuizHnitModal && (
                                     <>
                                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                            <div className="bg-white p-6 rounded shadow-lg">
-                                                <h4 className="mb-2 font-semibold">Quiz Hints</h4>
+                                            <div className="bg-white p-6 rounded shadow-lg w-full max-w-3xl relative">
+                                                {/* Close Button */}
+                                                <button
+                                                    onClick={() => {
+                                                        setShowQuizHnitModal(false);
+                                                        setHintErrors({}); // Reset errors when closing the modal
+                                                    }}
+                                                    className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+                                                >
+                                                    ✕
+                                                </button>
+
+                                                <h4 className="mb-4 font-semibold text-center">Quiz Hints</h4>
+
+                                                {/* Hint Form */}
                                                 {Object.keys(hintForm).map((key) => (
                                                     <div className="mb-4" key={key}>
-                                                        <label className="block text-sm font-medium">
+                                                        <label className="block text-sm font-medium mb-2">
                                                             {key.charAt(0).toUpperCase() + key.slice(1)}
                                                         </label>
-                                                        <input
-                                                            type={key === 'image' ? 'file' : 'text'}
-                                                            name={key}
-                                                            value={hintForm[key]}
-                                                            onChange={handleHintChange}
-                                                            className={`w-full rounded border p-2 ${hintErrors[key] ? 'border-red-500' : 'border-gray-300'}`}
-                                                        />
-                                                        {hintErrors[key] && <p className="mt-1 text-sm text-red-500">{hintErrors[key]}</p>}
+
+                                                        {key === 'hintType' ? (
+                                                            <select
+                                                                name="hintType"
+                                                                value={hintForm.hintType}
+                                                                onChange={handleHintChange}
+                                                                className={`w-full rounded border p-2 ${hintErrors[key] ? 'border-red-500' : 'border-gray-300'
+                                                                    }`}
+                                                            >
+                                                                <option value="Input">Input</option>
+                                                                <option value="Output">Output</option>
+                                                            </select>
+                                                        ) : key === 'image' ? (
+                                                            <>
+                                                                <input
+                                                                    type="file"
+                                                                    name="image"
+                                                                    accept="image/*"
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0];
+                                                                        setHintForm((prev) => ({
+                                                                            ...prev,
+                                                                            image: file,
+                                                                        }));
+                                                                    }}
+                                                                    className={`w-full rounded border p-2 ${hintErrors[key] ? 'border-red-500' : 'border-gray-300'
+                                                                        }`}
+                                                                />
+                                                                {hintForm.image && (
+                                                                    <div className="mt-4">
+                                                                        <p className="text-sm font-medium mb-2">Preview:</p>
+                                                                        <img
+                                                                            src={URL.createObjectURL(hintForm.image)}
+                                                                            alt="Preview"
+                                                                            className="w-full h-auto rounded border"
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <input
+                                                                type="text"
+                                                                name={key}
+                                                                value={hintForm[key]}
+                                                                onChange={handleHintChange}
+                                                                className={`w-full rounded border p-2 ${hintErrors[key] ? 'border-red-500' : 'border-gray-300'
+                                                                    }`}
+                                                            />
+                                                        )}
+
+                                                        {hintErrors[key] && (
+                                                            <p className="mt-1 text-sm text-red-500">{hintErrors[key]}</p>
+                                                        )}
                                                     </div>
                                                 ))}
-                                                <button onClick={addHint} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+
+                                                {/* Add Hint Button */}
+                                                <button
+                                                    onClick={() => {
+                                                        const errors = {};
+
+                                                        // Validate description
+                                                        if (!hintForm.description.trim()) {
+                                                            errors.description = 'Description is required.';
+                                                        }
+
+                                                        // Validate image
+                                                        if (!hintForm.image) {
+                                                            errors.image = 'Image is required.';
+                                                        }
+
+                                                        // Check if there are any errors
+                                                        if (Object.keys(errors).length > 0) {
+                                                            setHintErrors(errors);
+                                                            return;
+                                                        }
+
+                                                        // Reset errors if all fields are valid
+                                                        setHintErrors({});
+
+                                                        // Add hint to the array
+                                                        setQuizHints((prev) => [...prev, hintForm]);
+
+                                                        // Reset the form
+                                                        setHintForm({ description: '', hintType: 'Input', image: null });
+                                                    }}
+                                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mb-6"
+                                                >
                                                     Add Hint
                                                 </button>
-                                                <ul className="mt-4">
-                                                    {quizHints.map((hint) => (
-                                                        <li key={hint._id}>
-                                                            {hint.description} ({hint.hintType})
-                                                            <button
-                                                                onClick={() => deleteHint(hint._id)}
-                                                                className="ml-2 px-2 py-1 text-red-500"
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
+
+                                                {/* Hints Table */}
+                                                {quizHints.length > 0 && (
+                                                    <table className="w-full border mt-4">
+                                                        <thead>
+                                                            <tr className="bg-gray-200">
+                                                                <th className="py-2 px-4 border">Hint Image</th>
+                                                                <th className="py-2 px-4 border">Hint Type</th>
+                                                                <th className="py-2 px-4 border">Hint Description</th>
+                                                                <th className="py-2 px-4 border">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {quizHints.map((hint, index) => (
+                                                                <tr key={index} className="text-center">
+                                                                    <td className="py-2 px-4 border">
+                                                                        {hint.image && (
+                                                                            <img
+                                                                                src={URL.createObjectURL(hint.image)}
+                                                                                alt="Hint"
+                                                                                className="w-12 h-12 rounded"
+                                                                            />
+                                                                        )}
+                                                                    </td>
+                                                                    <td className="py-2 px-4 border">{hint.hintType}</td>
+                                                                    <td className="py-2 px-4 border">{hint.description}</td>
+                                                                    <td className="py-2 px-4 border">
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setQuizHints((prev) =>
+                                                                                    prev.filter((_, i) => i !== index)
+                                                                                );
+                                                                            }}
+                                                                            className="text-red-500 hover:text-red-700"
+                                                                        >
+                                                                            ✕
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                )}
+
+                                                {/* Cancel and Submit Buttons */}
+                                                <div className="flex justify-between mt-6">
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowQuizHnitModal(false);
+                                                            setHintErrors({}); // Reset errors when closing the modal
+                                                        }}
+                                                        className="px-6 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            // Call your API with `quizHints` array
+                                                            addHint(quizHints);
+                                                            setShowQuizHnitModal(false);
+                                                            setQuizHints([]);
+                                                            setHintErrors({}); // Reset errors on submit
+                                                        }}
+                                                        className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                                    >
+                                                        Submit
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </>
                                 )}
+
+
                             </div>
                         </div>
                     </>

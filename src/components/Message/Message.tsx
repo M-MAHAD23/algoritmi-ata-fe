@@ -14,7 +14,7 @@ export const Message = ({ role, content }) => {
 
   return (
     <div
-      className={`relative grid max-w-fit grid-cols-[30px_1fr] items-center gap-3 p-4 shadow-md 
+      className={`relative rounded-[15px] grid max-w-fit grid-cols-[30px_1fr] items-center gap-3 p-4 shadow-md 
         ${role === "user" ? "justify-self-end bg-gray-400" : ""} 
         ${role === "assistant" ? "justify-self-start bg-gray-300" : ""} 
         ${role === "notice" ? "bg-red-600 text-white justify-self-center" : ""}`}
