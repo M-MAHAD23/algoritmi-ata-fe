@@ -36,6 +36,31 @@ function ActiveBatch() {
         navigate(`/quizSubmission?quizId=${quizId}`);
     };
 
+    // Utility function to render a table
+    const renderTable = ({ headers, rows, renderRow, keyExtractor }) => (
+        <div className="mb-8">
+            <div className={`grid grid-cols-${headers.length} bg-gray-2 dark:bg-meta-4 rounded-sm`}>
+                {headers.map((header, index) => (
+                    <div key={index} className="p-2.5 text-center font-medium uppercase">
+                        {header}
+                    </div>
+                ))}
+            </div>
+            {rows.length ? (
+                rows.map((row) => (
+                    <div
+                        key={keyExtractor(row)}
+                        className={`grid grid-cols-${headers.length} items-center border-b border-stroke dark:border-strokedark`}
+                    >
+                        {renderRow(row)}
+                    </div>
+                ))
+            ) : (
+                <div className="text-center p-5">No data available.</div>
+            )}
+        </div>
+    );
+
     return (
         loading ? (
             <Loader />
@@ -45,135 +70,127 @@ function ActiveBatch() {
                     {error && <p className="text-red-500">{error}</p>}
                     {batch ? (
                         <>
-                            {/* Batch Details */}
-                            <div className="mb-6">
-                                <h4 className="text-xl font-semibold text-black dark:text-white mb-4">Batch Details</h4>
-                                <p><strong>Batch Number:</strong> {batch.batchNumber || '-'}</p>
-                                <p><strong>Batch Session:</strong> {batch.batchSession || '-'}</p>
-                                <p><strong>Batch Name:</strong> {batch.batchName || '-'}</p>
-                                <p><strong>Total Students:</strong> {batch.batchStudent?.length || 0}</p>
-                                <p><strong>Total Quizzes:</strong> {batch.batchQuiz?.length || 0}</p>
+                            <div className='bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg space-y-4'>
+                                {/* Go Back Button */}
+                                <button
+                                    onClick={() => navigate(-1)} // Navigate back to the previous page
+                                    className="text-blue-500 dark:text-blue-400 hover:underline mb-4"
+                                >
+                                    &larr; Go Back
+                                </button>
+
+                                {/* Batch Details */}
+                                <div className="mb-6">
+                                    <h4 className="text-xl font-semibold text-black dark:text-white mb-4">Batch Details</h4>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Batch Number:</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{batch.batchNumber || '-'}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Batch Session:</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{batch.batchSession || '-'}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Batch Name:</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{batch.batchName || '-'}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Total Students:</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{batch.batchStudent?.length || 0}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Total Quizzes:</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{batch.batchQuiz?.length || 0}</span>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Students Table */}
-                            <div className="mb-8">
-                                <h4 className="text-xl font-semibold text-black dark:text-white mb-4">Students</h4>
-                                <div className="grid grid-cols-5 bg-gray-2 dark:bg-meta-4 rounded-sm">
-                                    <div className="p-2.5 text-center font-medium uppercase">Image</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Roll ID</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Name</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Email</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Contact</div>
-                                </div>
-                                {batch.batchStudent?.length ? (
-                                    batch.batchStudent.map(student => (
-                                        <div
-                                            key={student._id}
-                                            className="grid grid-cols-5 items-center border-b border-stroke dark:border-strokedark"
-                                        >
-                                            {/* Student Image */}
-                                            <div className="p-2.5 text-center">
-                                                {student.image ? (
-                                                    <img
-                                                        src={student.image}
-                                                        alt={student.name}
-                                                        className="w-10 h-10 rounded-full mx-auto"
-                                                    />
-                                                ) : (
-                                                    <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto"></div>
-                                                )}
-                                            </div>
-
-                                            {/* Student Roll ID */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{student.rollId || '-'}</p>
-                                            </div>
-
-                                            {/* Student Name */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{student.name || '-'}</p>
-                                            </div>
-
-                                            {/* Student Email */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{student.email || '-'}</p>
-                                            </div>
-
-                                            {/* Student Contact */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{student.contact?.[0] || '-'}</p>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-center p-5">No students available.</div>
-                                )}
-                            </div>
+                            {renderTable({
+                                headers: ["Image", "Roll ID", "Name", "Email", "Contact"],
+                                rows: batch.batchStudent || [],
+                                keyExtractor: (student) => student._id,
+                                renderRow: (student) => [
+                                    // Student Image
+                                    <div className="p-2.5 text-center">
+                                        {student.image ? (
+                                            <img
+                                                src={student.image}
+                                                alt={student.name}
+                                                className="w-10 h-10 rounded-full mx-auto"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto"></div>
+                                        )}
+                                    </div>,
+                                    // Student Roll ID
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {student.rollId || '-'}
+                                    </div>,
+                                    // Student Name
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {student.name || '-'}
+                                    </div>,
+                                    // Student Email
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {student.email || '-'}
+                                    </div>,
+                                    // Student Contact
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {student.contact?.[0] || '-'}
+                                    </div>,
+                                ],
+                            })}
 
                             {/* Quizzes Table */}
-                            <div>
-                                <h4 className="text-xl font-semibold text-black dark:text-white mb-4">Quizzes</h4>
-                                <div className="grid grid-cols-6 bg-gray-2 dark:bg-meta-4 rounded-sm">
-                                    <div className="p-2.5 text-center font-medium uppercase">Topic</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Quiz Name</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Description</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Issued Date</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Deadline</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Submissions</div>
-                                    <div className="p-2.5 text-center font-medium uppercase">Actions</div> {/* Add a column for the button */}
-                                </div>
-                                {batch.batchQuiz?.length ? (
-                                    batch.batchQuiz.map(quiz => (
-                                        <div
-                                            key={quiz._id}
-                                            className="grid grid-cols-7 border-b border-stroke dark:border-strokedark"
+                            {renderTable({
+                                headers: [
+                                    "Topic",
+                                    "Quiz Name",
+                                    "Description",
+                                    "Issued Date",
+                                    "Deadline",
+                                    "Submissions",
+                                    "Actions",
+                                ],
+                                rows: batch.batchQuiz || [],
+                                keyExtractor: (quiz) => quiz._id,
+                                renderRow: (quiz) => [
+                                    // Quiz Topic
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {quiz.quizTopic || '-'}
+                                    </div>,
+                                    // Quiz Name
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {quiz.quizName || '-'}
+                                    </div>,
+                                    // Quiz Description
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {quiz.quizDescription || '-'}
+                                    </div>,
+                                    // Quiz Issued Date
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {quiz.quizIssued || '-'}
+                                    </div>,
+                                    // Quiz Deadline
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {quiz.quizDead || '-'}
+                                    </div>,
+                                    // Quiz Submissions
+                                    <div className="p-2.5 text-center text-black dark:text-white">
+                                        {quiz.quizSubmitters?.length || 0}
+                                    </div>,
+                                    // Action Button
+                                    <div className="p-2.5 text-center">
+                                        <button
+                                            onClick={() => handleQuizClick(quiz._id)}
+                                            className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
                                         >
-                                            {/* Quiz Topic */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{quiz.quizTopic || '-'}</p>
-                                            </div>
-
-                                            {/* Quiz Name */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{quiz.quizName || '-'}</p>
-                                            </div>
-
-                                            {/* Quiz Description */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{quiz.quizDescription || '-'}</p>
-                                            </div>
-
-                                            {/* Quiz Issued Date */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{quiz.quizIssued || '-'}</p>
-                                            </div>
-
-                                            {/* Quiz Deadline */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
-                                            </div>
-
-                                            {/* Quiz Submissions */}
-                                            <div className="p-2.5 text-center">
-                                                <p className="text-black dark:text-white">{quiz.quizSubmitters?.length || 0}</p>
-                                            </div>
-
-                                            {/* Action Button */}
-                                            <div className="p-2.5 text-center">
-                                                <button
-                                                    onClick={() => handleQuizClick(quiz._id)} // Redirect on button click
-                                                    className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
-                                                >
-                                                    View Results
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-center p-5">No quizzes available.</div>
-                                )}
-                            </div>
-
+                                            View Results
+                                        </button>
+                                    </div>,
+                                ],
+                            })}
 
                         </>
                     ) : (
