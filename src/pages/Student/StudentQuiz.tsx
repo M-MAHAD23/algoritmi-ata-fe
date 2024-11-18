@@ -75,75 +75,92 @@ function StudentQuiz() {
     if (error) return <div>{error}</div>;
 
     const renderTable = (title, quizzes, isLate) => (
-        <div className="mb-8">
-            <h5 className="mb-4 text-lg font-semibold text-black dark:text-white">{title}</h5>
-            {quizzes?.length === 0 ? (
-                <div className="text-center text-lg p-5">No quizzes available.</div>
-            ) : (
-                <div className="flex flex-col">
-                    <div className="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4">
-                        <div className="p-2.5 text-center xl:p-5">Quiz Name</div>
-                        <div className="p-2.5 text-center xl:p-5">Quiz Topic</div>
-                        <div className="p-2.5 text-center xl:p-5">Description</div>
-                        <div className="p-2.5 text-center xl:p-5">Issued Date</div>
-                        <div className="p-2.5 text-center xl:p-5">Deadline</div>
-                        <div className="p-2.5 text-center xl:p-5">Actions</div>
-                    </div>
-                    {quizzes?.map((quiz, index) => (
-                        <div
-                            className={`grid grid-cols-6 ${index === quizzes?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                            key={quiz?._id}
-                        >
-                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizName || '-'}</div>
-                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizTopic || '-'}</div>
-                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizDescription || '-'}</div>
-                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizIssued || '-'}</div>
-                            <div className="p-2.5 text-center xl:p-5">{quiz?.quizDead || '-'}</div>
-                            <div className="p-2.5 text-center xl:p-5">
-                                {title === "New Quizzes" && !isLate && (
-                                    <button
-                                        onClick={() => handleOpenModal(quiz)}
-                                        className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
-                                    >
-                                        Submit
-                                    </button>
-                                )}
-                                {title === "Late Quizzes" && isLate && (
-                                    <span className="text-red">Late Submission Not Allowed</span>
-                                )}
-                                {title === "Submitted Quizzes" && (
-                                    <>
-                                        <button
-                                            onClick={() => {
-                                                const cooldown = 6000; // 6 seconds
-                                                const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
-                                                const now = Date.now();
+        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
+            {/* Table Wrapper */}
+            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{title}</h4>
 
-                                                if (quiz?.analyzed) {
-                                                    handleViewResults(quiz?._id);
-                                                } else if (now - lastToastTime > cooldown) {
-                                                    toast.error(
-                                                        "Please wait for analysis.",
-                                                    );
-                                                    window.lastToastTime = now; // Update the last toast time globally
-                                                }
-                                            }}
-                                            className={`px-4 py-2 text-white rounded ${quiz?.analyzed ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500"
-                                                }`}
-                                        >
-                                            {quiz?.analyzed ? "View Results" : "Being Analyzed"}
-                                        </button>
-                                    </>
-                                )}
-                                <Toaster />
-                            </div>
+                {quizzes?.length === 0 ? (
+                    <div className="text-center text-lg p-5">No quizzes available.</div>
+                ) : (
+                    <div className="flex flex-col">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4">
+                            <div className="p-2.5 text-center xl:p-5">Quiz Name</div>
+                            <div className="p-2.5 text-center xl:p-5">Quiz Topic</div>
+                            <div className="p-2.5 text-center xl:p-5">Description</div>
+                            <div className="p-2.5 text-center xl:p-5">Issued Date</div>
+                            <div className="p-2.5 text-center xl:p-5">Deadline</div>
+                            <div className="p-2.5 text-center xl:p-5">Actions</div>
                         </div>
-                    ))}
-                </div>
-            )}
+
+                        {/* Table Rows */}
+                        {quizzes?.map((quiz, index) => (
+                            <div
+                                className={`grid grid-cols-6 ${index === quizzes?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                key={quiz?._id}
+                            >
+                                {/* Quiz Name */}
+                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizName || '-'}</div>
+                                {/* Quiz Topic */}
+                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizTopic || '-'}</div>
+                                {/* Quiz Description */}
+                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizDescription || '-'}</div>
+                                {/* Issued Date */}
+                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizIssued || '-'}</div>
+                                {/* Deadline */}
+                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizDead || '-'}</div>
+                                {/* Action Buttons */}
+                                <div className="p-2.5 text-center xl:p-5">
+                                    {/* New Quizzes */}
+                                    {title === "New Quizzes" && !isLate && (
+                                        <button
+                                            onClick={() => handleOpenModal(quiz)}
+                                            className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                                        >
+                                            Submit
+                                        </button>
+                                    )}
+
+                                    {/* Late Quizzes */}
+                                    {title === "Late Quizzes" && isLate && (
+                                        <span className="text-red">Late Submission Not Allowed</span>
+                                    )}
+
+                                    {/* Submitted Quizzes */}
+                                    {title === "Submitted Quizzes" && (
+                                        <>
+                                            <button
+                                                onClick={() => {
+                                                    const cooldown = 6000; // 6 seconds
+                                                    const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
+                                                    const now = Date.now();
+
+                                                    if (quiz?.analyzed) {
+                                                        handleViewResults(quiz?._id);
+                                                    } else if (now - lastToastTime > cooldown) {
+                                                        toast.error(
+                                                            "Please wait for analysis.",
+                                                        );
+                                                        window.lastToastTime = now; // Update the last toast time globally
+                                                    }
+                                                }}
+                                                className={`px-4 py-2 text-white rounded ${quiz?.analyzed ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500"
+                                                    }`}
+                                            >
+                                                {quiz?.analyzed ? "View Results" : "Being Analyzed"}
+                                            </button>
+                                        </>
+                                    )}
+                                    <Toaster />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
-
 
     return (
         <Panel>

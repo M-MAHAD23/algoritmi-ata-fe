@@ -129,19 +129,21 @@ function QuizSubmission() {
                                     <div className="p-2.5 text-center text-black dark:text-white">
                                         {quizDeadline.toLocaleDateString() || '-'}
                                     </div>,
-                                    // Actions (Analyze/View Report buttons)
+                                    // Actions
                                     <div className="p-2.5 text-center">
                                         {analyzed ? (
                                             <button
                                                 onClick={() => handleViewReportClick(submission)}
-                                                className="text-blue-500 hover:underline"
+                                                className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
                                             >
                                                 View Report
                                             </button>
                                         ) : (
                                             <button
                                                 onClick={() => handleAnalyzeClick(submission)}
-                                                className={`px-4 py-2 text-white rounded-md hover:bg-blue-600 ${isPastDeadline ? 'bg-blue-500' : 'bg-gray-500'
+                                                className={`px-4 py-2 text-white rounded ${isPastDeadline
+                                                        ? 'bg-blue-500 hover:bg-blue-600'
+                                                        : 'bg-gray-500 cursor-not-allowed'
                                                     }`}
                                             >
                                                 Analyze

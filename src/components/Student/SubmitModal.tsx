@@ -25,29 +25,28 @@ function SubmitModal({ isOpen, onClose, quiz, submitterId, batchId }) {
     if (!isOpen) return null; // Modal is not visible
 
     const handleEditorWillMount = (monaco) => {
-        // Define the theme before the editor mounts
         monaco.editor.defineTheme('custom-vs-dark', {
             base: 'vs-dark',
             inherit: true,
             rules: [],
             colors: {
-                'editor.background': '#1E1E1E', // Set editor background
+                'editor.background': '#1E1E1E',
             },
         });
     };
 
     const handleEditorDidMount = (editor, monaco) => {
-        // Apply the custom theme after the editor mounts
         monaco.editor.setTheme('custom-vs-dark');
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="max-w-7xl w-full bg-white shadow-lg rounded-lg p-6 relative">
-                {/* Close button */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center overflow-auto">
+            <div className="w-full sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl bg-white shadow-lg rounded-lg p-6 relative mx-4 overflow-y-auto max-h-[90vh]">
+                {/* Enlarged Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+                    className="absolute top-3 right-3 text-white bg-red-300 hover:bg-red-500 rounded-full p-3 transition duration-200 ease-in-out"
+                    aria-label="Close Modal"
                 >
                     ✕
                 </button>
@@ -71,11 +70,11 @@ function SubmitModal({ isOpen, onClose, quiz, submitterId, batchId }) {
                             Preview: {fileName}
                         </h3>
                         <ControlledEditor
-                            height="400px"
+                            height="300px"
                             language="cpp"
                             value={fileContent}
-                            beforeMount={handleEditorWillMount} // Set up theme before mounting
-                            onMount={handleEditorDidMount} // Apply theme after mounting
+                            beforeMount={handleEditorWillMount}
+                            onMount={handleEditorDidMount}
                             options={{
                                 readOnly: true,
                                 minimap: { enabled: false },
@@ -90,18 +89,30 @@ function SubmitModal({ isOpen, onClose, quiz, submitterId, batchId }) {
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 {success && <p className="text-green-500 text-center">File submitted successfully!</p>}
 
-                <div className="text-center">
-                    <button
-                        onClick={submitFile}
-                        disabled={!fileContent || isSubmitting}
-                        className={`w-48 py-2 px-4 text-white font-semibold rounded-md focus:outline-none ${fileContent && !isSubmitting
-                            ? 'bg-blue-500 hover:bg-blue-600'
-                            : 'bg-gray-400 cursor-not-allowed'
-                            } mx-auto`}
-                    >
-                        {isSubmitting ? 'Submitting...' : 'Submit File'}
-                    </button>
+                <div className="flex justify-center items-center mt-6 w-full space-x-4">
+                    {/* Button Wrapper with equal width */}
+                    <div className="w-full flex space-x-4">
+                        {/* Cancel Button */}
+                        <button
+                            onClick={onClose}
+                            className="w-full px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-md"
+                        >
+                            Cancel
+                        </button>
+                        {/* Submit Button */}
+                        <button
+                            onClick={submitFile}
+                            disabled={!fileContent || isSubmitting}
+                            className={`w-full px-4 py-2 text-white font-semibold rounded-md focus:outline-none ${fileContent && !isSubmitting
+                                ? 'bg-blue-500 hover:bg-blue-600'
+                                : 'bg-gray-400 cursor-not-allowed'
+                                }`}
+                        >
+                            {isSubmitting ? 'Submitting...' : 'Submit File'}
+                        </button>
+                    </div>
                 </div>
+
             </div>
         </div>
     );

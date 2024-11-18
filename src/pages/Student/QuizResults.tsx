@@ -63,35 +63,45 @@ function QuizResults() {
     } = submissionDetails || {};
 
     const renderMatchTable = (title, matches) => (
-        <div className="mb-8">
-            <h5 className="mt-25 mb-4 text-lg font-semibold text-black dark:text-white">{title}</h5>
-            {matches?.length === 0 ? (
-                <div className="text-center text-lg p-5">No matches found.</div>
-            ) : (
-                <div className="flex flex-col">
-                    <div className="grid grid-cols-3 rounded-sm bg-black text-white dark:bg-meta-4">
-                        <div className="p-2.5 text-center xl:p-5">Image</div>
-                        <div className="p-2.5 text-center xl:p-5">Student Name</div>
-                        <div className="p-2.5 text-center xl:p-5">Percentage</div>
-                    </div>
-                    {matches?.map((match, index) => (
-                        <div
-                            className={`grid grid-cols-3 ${index === matches?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                            key={match._id}
-                        >
-                            <div className="p-2.5 text-center xl:p-5 flex justify-center items-center">
-                                <img
-                                    src={match.studentId?.image}
-                                    alt={match.studentId?.name}
-                                    className="w-8 h-8 rounded-full object-cover"
-                                />
-                            </div>
-                            <div className="p-2.5 text-center xl:p-5">{match.studentId?.name || "Unknown"}</div>
-                            <div className="p-2.5 text-center xl:p-5">{match.percentage}%</div>
+        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
+            {/* Table Wrapper */}
+            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{title}</h4>
+
+                {matches?.length === 0 ? (
+                    <div className="text-center text-lg p-5">No matches found.</div>
+                ) : (
+                    <div className="flex flex-col">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-3 rounded-sm bg-black text-white dark:bg-meta-4">
+                            <div className="p-2.5 text-center xl:p-5">Image</div>
+                            <div className="p-2.5 text-center xl:p-5">Student Name</div>
+                            <div className="p-2.5 text-center xl:p-5">Percentage</div>
                         </div>
-                    ))}
-                </div>
-            )}
+
+                        {/* Table Rows */}
+                        {matches?.map((match, index) => (
+                            <div
+                                className={`grid grid-cols-3 ${index === matches?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                key={match._id}
+                            >
+                                {/* Image */}
+                                <div className="p-2.5 text-center xl:p-5 flex justify-center items-center">
+                                    <img
+                                        src={match.studentId?.image}
+                                        alt={match.studentId?.name}
+                                        className="w-8 h-8 rounded-full object-cover"
+                                    />
+                                </div>
+                                {/* Student Name */}
+                                <div className="p-2.5 text-center xl:p-5">{match.studentId?.name || "Unknown"}</div>
+                                {/* Percentage */}
+                                <div className="p-2.5 text-center xl:p-5">{match.percentage}%</div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 
