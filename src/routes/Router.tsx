@@ -53,6 +53,10 @@ function Router() {
                 <Route path="quizzes" element={<PrivateRoute element={<Quizzes />} />} />
 
                 {/* Teacher */}
+                {/* Student */}
+                <Route path="chatbot" element={<PrivateRoute element={<ChatBot />} />} />
+
+                {/* Teacher */}
                 <Route
                     path="allBatchesWhereTeacherInvolved"
                     element={<PrivateRoute element={<TeacherBatches />} />}
@@ -64,7 +68,6 @@ function Router() {
 
                 {/* Student */}
                 <Route path="studentQuiz" element={<PrivateRoute element={<StudentQuiz />} />} />
-                <Route path="chatbot" element={<PrivateRoute element={<ChatBot />} />} />
                 <Route path="/student/quiz/results" element={<PrivateRoute element={<QuizResults />} />} />
 
                 <Route path="/batch" element={<PrivateRoute element={<BatchDetails />} />} />
