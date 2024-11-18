@@ -14,11 +14,32 @@ export const Message = ({ role, content }) => {
 
   return (
     <div
-      className={`grid max-w-fit grid-cols-[30px_1fr] items-center gap-3 p-4 shadow-md 
+      className={`relative grid max-w-fit grid-cols-[30px_1fr] items-center gap-3 p-4 shadow-md 
         ${role === "user" ? "justify-self-end bg-gray-400" : ""} 
         ${role === "assistant" ? "justify-self-start bg-gray-300" : ""} 
         ${role === "notice" ? "bg-red-600 text-white justify-self-center" : ""}`}
     >
+      {/* Triangle for Assistant */}
+      {role === "assistant" && (
+        <div
+          className="absolute top-2 left-[-15px] w-0 h-0 
+    border-t-[15px] border-t-transparent 
+    border-b-[15px] border-b-transparent 
+    border-r-[20px] border-r-gray-300"
+        ></div>
+      )}
+
+      {/* Triangle for User */}
+      {role === "user" && (
+        <div
+          className="absolute top-2 right-[-15px] w-0 h-0 
+    border-t-[15px] border-t-transparent 
+    border-b-[15px] border-b-transparent 
+    border-l-[20px] border-l-gray-400"
+        ></div>
+      )}
+
+
       {/* Avatar Section */}
       <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] shadow-md bg-white">
         {role === "user" ? (

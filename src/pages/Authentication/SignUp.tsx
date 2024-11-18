@@ -124,19 +124,19 @@ const SignUp: React.FC = () => {
         toast.error('Batch is not enable anymore.');
         setTimeout(() => {
           navigate('/');
-        }, 1000);
+        }, 3000);
       }
       else if (error.response && error.response.status === 403) {
         toast.error('Already Registerd Please Sign In');
         setTimeout(() => {
           navigate('/signin');
-        }, 1000);
+        }, 3000);
       }
       else if (error.response && error.response.status === 404) {
         toast.error('Contact Admin, User not found.');
         setTimeout(() => {
           navigate('/');
-        }, 1000);
+        }, 3000);
       }
       else {
         console.error('Error during sign-up', error);
