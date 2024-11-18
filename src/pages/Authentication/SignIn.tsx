@@ -99,12 +99,9 @@ const SignIn: React.FC = () => {
         }, 2000);
       }
       else if (error.response && error.response.status === 404) {
-        toast.error('User not found please sign up', {
+        toast.error('Wrong Email or Password.', {
           position: 'top-right',
         });
-        setTimeout(() => {
-          navigate('/signup');
-        }, 2000);
       }
       else {
         console.error('Error during sign-in', error);
