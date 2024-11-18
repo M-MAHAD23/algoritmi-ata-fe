@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
 import { useNavigate } from 'react-router-dom';
+import Spinner from '../Spinner';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -42,7 +43,8 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src={userInfo ? userInfo.image : UserOne} alt="User" />
+          <img src={userInfo ? userInfo.image : <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+          } alt="User" />
         </span>
 
         <svg

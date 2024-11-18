@@ -14,14 +14,13 @@ export const Message = ({ role, content }) => {
 
   return (
     <div
-      className={`grid max-w-fit grid-cols-[30px_1fr] items-center gap-3 p-4 
-        rounded-full shadow-md 
+      className={`grid max-w-fit grid-cols-[30px_1fr] items-center gap-3 p-4 shadow-md 
         ${role === "user" ? "justify-self-end bg-gray-400" : ""} 
         ${role === "assistant" ? "justify-self-start bg-gray-300" : ""} 
         ${role === "notice" ? "bg-red-600 text-white justify-self-center" : ""}`}
     >
       {/* Avatar Section */}
-      <div className="flex items-center justify-center h-[30px] w-[30px] rounded-full shadow-md bg-white">
+      <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] shadow-md bg-white">
         {role === "user" ? (
           userProfile?.image && userProfile.image !== "" ? (
             <img

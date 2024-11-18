@@ -162,9 +162,9 @@ function ActiveBatch() {
                                             <div className="p-2.5 text-center">
                                                 <button
                                                     onClick={() => handleQuizClick(quiz._id)} // Redirect on button click
-                                                    className="text-blue-500 hover:text-blue-700 font-semibold px-4 py-2 rounded-md bg-transparent border border-blue-500 hover:bg-blue-500 hover:text-white"
+                                                    className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
                                                 >
-                                                    View Quiz
+                                                    View Results
                                                 </button>
                                             </div>
                                         </div>

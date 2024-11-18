@@ -112,26 +112,28 @@ function StudentQuiz() {
                                     <span className="text-red">Late Submission Not Allowed</span>
                                 )}
                                 {title === "Submitted Quizzes" && (
-                                    <button
-                                        onClick={() => {
-                                            const cooldown = 6000; // 6 seconds
-                                            const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
-                                            const now = Date.now();
+                                    <>
+                                        <button
+                                            onClick={() => {
+                                                const cooldown = 6000; // 6 seconds
+                                                const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
+                                                const now = Date.now();
 
-                                            if (quiz?.analyzed) {
-                                                handleViewResults(quiz?._id);
-                                            } else if (now - lastToastTime > cooldown) {
-                                                toast.error(
-                                                    "Please wait for analysis.",
-                                                );
-                                                window.lastToastTime = now; // Update the last toast time globally
-                                            }
-                                        }}
-                                        className={`px-4 py-2 text-white rounded ${quiz?.analyzed ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500"
-                                            }`}
-                                    >
-                                        {quiz?.analyzed ? "View Results" : "Being Analyzed"}
-                                    </button>
+                                                if (quiz?.analyzed) {
+                                                    handleViewResults(quiz?._id);
+                                                } else if (now - lastToastTime > cooldown) {
+                                                    toast.error(
+                                                        "Please wait for analysis.",
+                                                    );
+                                                    window.lastToastTime = now; // Update the last toast time globally
+                                                }
+                                            }}
+                                            className={`px-4 py-2 text-white rounded ${quiz?.analyzed ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500"
+                                                }`}
+                                        >
+                                            {quiz?.analyzed ? "View Results" : "Being Analyzed"}
+                                        </button>
+                                    </>
                                 )}
                                 <Toaster />
                             </div>

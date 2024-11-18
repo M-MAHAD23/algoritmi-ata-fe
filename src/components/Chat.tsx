@@ -197,9 +197,9 @@ export default function ChatPage({ title, messages = [] }) {
             <div>
               <FontAwesomeIcon
                 icon={faComments}
-                className="text-6xl text-white"
+                className="text-6xl text-black mt-45"
               />
-              <h1 className="mt-2 text-4xl font-bold text-white">
+              <h1 className="mt-2 text-4xl font-bold text-black mb-75">
                 Ask me a question!
               </h1>
             </div>
@@ -234,8 +234,8 @@ export default function ChatPage({ title, messages = [] }) {
           <textarea
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
-            placeholder={generatingResponse ? '' : '     Send a message...'}
-            className={`w-full rounded-full resize-none bg-white p-2 text-black placeholder-black focus:ring-2 focus:ring-emerald-500 ${generatingResponse ? 'opacity-50 cursor-not-allowed' : ''}`}
+            placeholder={generatingResponse ? '' : 'Send a message...'}
+            className={`w-full rounded-full resize-none bg-white p-2 pl-10 text-black placeholder-black focus:ring-2 focus:ring-emerald-500 ${generatingResponse ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={generatingResponse}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
