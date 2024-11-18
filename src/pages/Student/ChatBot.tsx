@@ -113,7 +113,6 @@ export default function ChatPage({ title, messages = [] }) {
 
             setNewChatMessages(updatedMessages);
             setLoading(false);
-            console.log('API response:', data);
         } catch (error) {
             console.error('Error fetching chat data:', error);
             setLoading(false);
