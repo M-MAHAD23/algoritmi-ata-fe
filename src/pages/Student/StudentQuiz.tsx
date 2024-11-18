@@ -31,7 +31,8 @@ function StudentQuiz() {
         }
     }, []);
 
-    useEffect(() => {
+    // Fetch quizzes based on batchId and studentId
+    const fetchQuizzes = () => {
         const params = new URLSearchParams(location.search);
         const batchId = params.get('batchId') || userInfo?.batchId;
         const studentId = params.get('studentId') || userInfo?._id;
@@ -54,7 +55,27 @@ function StudentQuiz() {
                     setLoading(false);
                 });
         }
-    }, [location, userInfo]);
+    };
+
+    useEffect(() => {
+        fetchQuizzes(); // Initial quiz data fetch
+    }, [location, userInfo]); // Refetch when location or user info changes
+
+    // Add event listener for visibility change
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            console.log('Visibility state:', document.visibilityState); // Check if it's being called
+            if (document.visibilityState === 'visible') {
+                fetchQuizzes(); // If the page is visible again, refetch the quizzes
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
 
     const handleOpenModal = (quiz) => {
         setSelectedQuiz(quiz);
@@ -64,8 +85,8 @@ function StudentQuiz() {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedQuiz(null);
+        fetchQuizzes(); // Refetch quizzes after closing the modal
     };
-
 
     const handleViewResults = (quizId) => {
         navigate(`/student/quiz/results?quizId=${quizId}&submitterId=${userInfo?._id}`);
@@ -140,8 +161,9 @@ function StudentQuiz() {
                                                         handleViewResults(quiz?._id);
                                                     } else if (now - lastToastTime > cooldown) {
                                                         toast.error(
-                                                            "Please wait for analysis.",
-                                                        );
+                                                            "Please wait for analysis.", {
+                                                            position: 'top-right'
+                                                        });
                                                         window.lastToastTime = now; // Update the last toast time globally
                                                     }
                                                 }}
