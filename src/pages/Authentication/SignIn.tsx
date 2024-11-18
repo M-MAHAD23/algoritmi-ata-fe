@@ -81,9 +81,7 @@ const SignIn: React.FC = () => {
       localStorage.clear();
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
       localStorage.setItem('token', token);
-      toast.success('Sign In Successful.', {
-        position: 'top-right', // Position the toast at the top right corner
-      });
+      toast.success('Sign In Successful.');
       // Delay navigation to allow toast to appear
       setTimeout(() => {
         navigate('/profile');
@@ -91,23 +89,18 @@ const SignIn: React.FC = () => {
     } catch (error) {
 
       if (error.response && error.response.status === 400) {
-        toast.error('Batch is not enable anymore.', {
-          position: 'top-right',
-        });
+        toast.error('Batch is not enable anymore.');
         setTimeout(() => {
           navigate('/');
         }, 2000);
       }
       else if (error.response && error.response.status === 404) {
         toast.error('Wrong Email or Password.', {
-          position: 'top-right',
         });
       }
       else {
         console.error('Error during sign-in', error);
-        toast.error('An error occurred. Please try again.', {
-          position: 'top-right',
-        });
+        toast.error('An error occurred. Please try again.');
       }
     }
   };

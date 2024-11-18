@@ -115,42 +115,32 @@ const SignUp: React.FC = () => {
       localStorage.clear();
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
       localStorage.setItem('token', token);
-      toast.success('Sign Up Successful.', {
-        position: 'top-right',
-      });
+      toast.success('Sign Up Successful.');
       setTimeout(() => {
         navigate('/profile'); // Navigate to the profile page on successful signup
       }, 700);
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        toast.error('Batch is not enable anymore.', {
-          position: 'top-right',
-        });
+        toast.error('Batch is not enable anymore.');
         setTimeout(() => {
           navigate('/');
         }, 1000);
       }
       else if (error.response && error.response.status === 403) {
-        toast.error('Already Registerd Please Sign In', {
-          position: 'top-right',
-        });
+        toast.error('Already Registerd Please Sign In');
         setTimeout(() => {
           navigate('/signin');
         }, 1000);
       }
       else if (error.response && error.response.status === 404) {
-        toast.error('Contact Admin, User not found.', {
-          position: 'top-right',
-        });
+        toast.error('Contact Admin, User not found.');
         setTimeout(() => {
           navigate('/');
         }, 1000);
       }
       else {
         console.error('Error during sign-up', error);
-        toast.error(response?.response?.data?.message, {
-          position: 'top-right',
-        });
+        toast.error(response?.response?.data?.message);
       }
     }
   };
