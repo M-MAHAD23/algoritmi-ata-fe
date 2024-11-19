@@ -122,7 +122,7 @@ function QuizResults() {
     );
 
     return (
-        <Panel>
+        <>
             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
 
@@ -215,7 +215,7 @@ function QuizResults() {
                 {renderMatchTable("Syntax Matches", syntaxMatched)}
                 {renderMatchTable("Logic Matches", logicMatched)}
             </div>
-        </Panel>
+        </>
     );
 }
 

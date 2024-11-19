@@ -259,7 +259,7 @@ function ActiveBatch() {
 
     return (
 
-        <Panel>
+        <>
             <Toaster
                 toastOptions={{
                     style: {
@@ -482,7 +482,7 @@ function ActiveBatch() {
                     <div className="text-center p-5">No batch details available.</div>
                 )}
             </div>
-        </Panel >
+        </>
     );
 }
 

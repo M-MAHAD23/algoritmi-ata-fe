@@ -22,15 +22,13 @@ const quizData = [
 // Rendering different tables with different headers and data
 const Tables = () => {
     return (
-        <div>
-            <Panel>
-                <Batches />
-                <Teachers />
-                {/* <DynamicTable title="Batches" headers={['BatchName', 'StartDate', 'EndDate', 'Status']} data={batchesData} />
+        <>
+            <Batches />
+            <Teachers />
+            {/* <DynamicTable title="Batches" headers={['BatchName', 'StartDate', 'EndDate', 'Status']} data={batchesData} />
                 <DynamicTable title="Users" headers={['Name', 'Role', 'Email', 'Status']} data={usersData} />
                 <DynamicTable title="Quizzes" headers={['QuizName', 'DueDate', 'TotalMarks', 'Status']} data={quizData} /> */}
-            </Panel>
-        </div>
+        </>
     );
 };
 

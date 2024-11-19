@@ -12,7 +12,7 @@ import Panel from '../../layout/Panel';
 import Spinner from './../../components/Spinner';
 import Loader from '../../common/Loader/index.js';
 
-export default function ChatPage({ title, messages = [] }) {
+function ChatBot({ title, messages = [] }) {
     const localStorageChatOwner = localStorage.getItem('chatOwner');
     const [cO, setCO] = useState(localStorageChatOwner);
     const chatId = localStorage.getItem('chatId');
@@ -82,7 +82,7 @@ export default function ChatPage({ title, messages = [] }) {
     useEffect(() => {
         if (!generatingResponse && newChatId) {
             setNewChatId(null);
-            router(`/chat/${newChatId}`);
+            // router(`/chat/${newChatId}`);
         }
     }, [newChatId, generatingResponse, router]);
 
@@ -207,7 +207,7 @@ export default function ChatPage({ title, messages = [] }) {
     const allMessages = [...messages, ...newChatMessages];
 
     return (
-        <Panel>
+        <>
             {loading && <Loader />}
             <div className="flex flex-col h-[80vh]">
                 <div className="flex-1 overflow-y-auto p-4 space-y-2 text-gray-900">
@@ -265,14 +265,19 @@ export default function ChatPage({ title, messages = [] }) {
                             }}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSubmit(e);
+                                    // Prevent submit if the textarea is empty or has only spaces
+                                    if (!messageText.trim()) {
+                                        e.preventDefault();
+                                    } else {
+                                        e.preventDefault();
+                                        handleSubmit(e);
+                                    }
                                 }
                             }}
                         />
                         <button
                             type="submit"
-                            className={`bg-white text-black p-4 rounded-full hover:bg-gray-500 focus:outline-none ${generatingResponse ? 'opacity-50 cursor-not-allowed' : ''
+                            className={`bg-white text-black p-4 rounded-full hover:bg-gray-500 focus:outline-none ${generatingResponse || !messageText.trim() ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                             disabled={generatingResponse || !messageText.trim()}
                         >
@@ -285,6 +290,8 @@ export default function ChatPage({ title, messages = [] }) {
                     </form>
                 </footer>
             </div>
-        </Panel>
+        </>
     );
 }
+
+export default ChatBot; 
