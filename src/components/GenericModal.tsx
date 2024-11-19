@@ -1,4 +1,3 @@
-// GenericModal.tsx
 import React from 'react';
 
 const GenericModal = ({
@@ -9,6 +8,7 @@ const GenericModal = ({
     onOkClick,
     cancelButtonText = 'Cancel',
     okButtonText = 'OK',
+    hasScroll = true, // Default to enabling scroll
 }) => {
     if (!isOpen) return null;
 
@@ -25,8 +25,11 @@ const GenericModal = ({
 
                 <h3 className="mb-4 text-lg font-bold text-center">{title}</h3>
 
-                {/* Modal Content */}
-                <div className="overflow-y-auto max-h-[250px] space-y-4">
+                {/* Conditional scroll */}
+                <div
+                    className={`space-y-4 ${hasScroll ? 'overflow-y-auto max-h-[250px]' : ''
+                        }`}
+                >
                     {content}
                 </div>
 

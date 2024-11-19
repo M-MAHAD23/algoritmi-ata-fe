@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
-import SubmitModal from '../../components/Student/SubmitModal'; // Import your SubmitModal component
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import SubmitQuizModal from './Modal/SubmitQuizModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faEye, faHourglassHalf, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -137,23 +139,26 @@ function StudentQuiz() {
                                 <div className="p-2.5 text-center xl:p-5">
                                     {/* New Quizzes */}
                                     {title === "New Quizzes" && !isLate && (
-                                        <button
+                                        <span
                                             onClick={() => handleOpenModal(quiz)}
-                                            className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                                            className="text-black hover:text-gray-550 cursor-pointer"
                                         >
-                                            Submit
-                                        </button>
+                                            <FontAwesomeIcon icon={faPaperPlane} className="text-xl" /> {/* Paper plane icon */}
+                                        </span>
                                     )}
 
                                     {/* Late Quizzes */}
                                     {title === "Late Quizzes" && isLate && (
-                                        <span className="text-red">Late Submission Not Allowed</span>
+                                        <span className="flex items-center justify-center cursor-pointer text-red">
+                                            <FontAwesomeIcon icon={faClock} className="mr-2" /> {/* Clock icon */}
+                                            Late Submission
+                                        </span>
                                     )}
 
                                     {/* Submitted Quizzes */}
                                     {title === "Submitted Quizzes" && (
                                         <>
-                                            <button
+                                            <span
                                                 onClick={() => {
                                                     const cooldown = 6000; // 6 seconds
                                                     const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
@@ -162,17 +167,21 @@ function StudentQuiz() {
                                                     if (quiz?.analyzed) {
                                                         handleViewResults(quiz?._id);
                                                     } else if (now - lastToastTime > cooldown) {
-                                                        toast.error(
-                                                            "Please wait for analysis.",
-                                                        );
+                                                        toast.error("Please wait for analysis.");
                                                         window.lastToastTime = now; // Update the last toast time globally
                                                     }
                                                 }}
-                                                className={`px-4 py-2 text-white rounded ${quiz?.analyzed ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500"
-                                                    }`}
+                                                className={`flex items-center justify-center cursor-pointer text-black hover:text-gray-550`}
                                             >
+                                                {/* Icon */}
+                                                <FontAwesomeIcon
+                                                    icon={quiz?.analyzed ? faEye : faHourglassHalf}
+                                                    className="mr-2" // Space between icon and text
+                                                />
+                                                {/* Icon Text */}
                                                 {quiz?.analyzed ? "View Results" : "Being Analyzed"}
-                                            </button>
+                                            </span>
+
                                         </>
                                     )}
                                     <Toaster />
@@ -196,7 +205,7 @@ function StudentQuiz() {
             </div>
 
             {isModalOpen && selectedQuiz && (
-                <SubmitModal
+                <SubmitQuizModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     quiz={selectedQuiz._id}

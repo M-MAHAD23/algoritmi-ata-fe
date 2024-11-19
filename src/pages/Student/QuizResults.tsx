@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../common/Loader";
 import Panel from "../../layout/Panel";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCode, faEye } from "@fortawesome/free-solid-svg-icons";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -24,29 +26,29 @@ function QuizResults() {
     const quizId = queryParams.get("quizId");
     const submitterId = queryParams.get("submitterId");
 
+    const fetchSubmissionDetails = async () => {
+        if (!quizId || !submitterId) {
+            setError("Invalid parameters.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/quiz/submissionDetailsStudent`,
+                { quizId, submitterId }
+            );
+            setSubmissionDetails(response.data.data); // Adjusted to match the response data structure
+            setLoading(false);
+        } catch (err) {
+            setError("Error fetching submission details");
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchSubmissionDetails = async () => {
-            if (!quizId || !submitterId) {
-                setError("Invalid parameters.");
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const response = await axios.post(
-                    `${API_BASE_URL}/quiz/submissionDetailsStudent`,
-                    { quizId, submitterId }
-                );
-                setSubmissionDetails(response.data.data); // Adjusted to match the response data structure
-                setLoading(false);
-            } catch (err) {
-                setError("Error fetching submission details");
-                setLoading(false);
-            }
-        };
-
-        fetchSubmissionDetails();
-    }, [quizId, submitterId]);
+        fetchSubmissionDetails(); // Refetch the submission details when the page becomes visible again
+    }, []);
 
     // Visibility change logic
     useEffect(() => {
@@ -193,18 +195,16 @@ function QuizResults() {
                     {/* Submitted Code Link */}
                     <div className="mb-6">
                         <div className="flex items-center space-x-2 mb-4">
+                            <FontAwesomeIcon icon={faCode} className="text-gray-500" />
                             <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Submitted Code:</span>
                             <a
                                 href={s3Url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="inline-flex items-center text-blue-500 hover:bg-blue-100 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                             >
-                                {/* SVG Eye Icon */}
                                 View Code
-                                <svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="bi bi-eye ml-5">
-                                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 10.5A2.5 2.5 0 1 1 8 5a2.5 2.5 0 0 1 0 5.5z" />
-                                </svg>
+                                <FontAwesomeIcon icon={faEye} className="ml-2" />
                             </a>
                         </div>
                     </div>

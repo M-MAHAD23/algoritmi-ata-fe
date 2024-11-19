@@ -1,10 +1,8 @@
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import CoverOne from '../images/cover/cover-01.png';
 import userSix from '../images/user/user-06.png';
 import { FaEdit } from 'react-icons/fa'; // Importing the edit icon
-import Panel from '../layout/Panel';
 import { useEffect, useState } from 'react';
-import UserProfileEditModal from '../components/UserProfileEditModal'; // Importing the modal
+import UserProfileEditModal from './Modal/UserProfileEditModal'; // Importing the modal
 import Loader from '../common/Loader';
 
 const Profile = () => {
@@ -28,12 +26,12 @@ const Profile = () => {
     <>
       {loading && <Loader />}
       <div className="overflow-hidden rounded-lg border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark">
-        <div className="relative z-20 h-35 md:h-65 bg-black">
-          {/* <img
+        <div className="relative z-20 h-35 md:h-65">
+          <img
             src={CoverOne}
             alt="profile cover"
             className="h-full w-full rounded-tl-lg rounded-tr-lg object-cover object-center"
-          /> */}
+          />
           {/* Edit Icon in top-right corner */}
           <button
             onClick={handleEditClick}

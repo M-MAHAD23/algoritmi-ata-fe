@@ -7,8 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faEye, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 import toast, { Toaster } from 'react-hot-toast';
-import HintModal from './Modals/HintModal';
-import QuizModal from './Modals/QuizModal';
+import HintModal from './Modal/HintModal';
+import QuizModal from './Modal/QuizModal';
 import RenderCard from '../../components/RenderCard';
 
 function ActiveBatch() {
