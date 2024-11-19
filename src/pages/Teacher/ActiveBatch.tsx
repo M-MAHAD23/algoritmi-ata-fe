@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
 import { useNavigate } from 'react-router-dom';
-import Spinner from '../../components/Spinner';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusCircle, faEye, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+import toast, { Toaster } from 'react-hot-toast';
+import HintModal from './Modals/HintModal';
+import QuizModal from './Modals/QuizModal';
+import RenderCard from '../../components/RenderCard';
 
 function ActiveBatch() {
     const navigate = useNavigate();
@@ -27,10 +32,43 @@ function ActiveBatch() {
     });
     const [hintErrors, setHintErrors] = useState({});
     const [showQuizModal, setShowQuizModal] = useState(false);
-    const [showQuizHnitModal, setShowQuizHnitModal] = useState(false);
+    const [showHintModal, setShowHintModal] = useState(false);
     const [currentQuizId, setCurrentQuizId] = useState(null);
-
     const userProfile = JSON.parse(localStorage.getItem("userInfo"));
+
+    const handleAddHint = () => {
+        const errors = {};
+
+        // Validate description only if it has been touched or is non-empty
+        if (!hintForm.description.trim()) {
+            errors.description = 'Description is required.';
+        }
+
+        // Validate image
+        // if (!hintForm.image) {
+        //     errors.image = 'Image is required.';
+        // }
+
+        // Check if there are any errors
+        if (Object.keys(errors).length > 0) {
+            setHintErrors(errors);
+            return;
+        }
+
+        // Reset errors if all fields are valid
+        setHintErrors({});
+
+        // Add hint to the array
+        setQuizHints((prev) => [...prev, hintForm]);
+
+        // Reset the form
+        setHintForm({ description: '', hintType: 'Input', image: null });
+    };
+    const handleHintChange = (e) => {
+        const { name, value, files } = e.target;
+        setHintForm({ ...hintForm, [name]: files ? files[0] : value });
+        if (hintErrors[name]) setHintErrors({ ...hintErrors, [name]: '' });
+    };
 
     const fetchBatchDetails = async () => {
         if (!userProfile?.batchId) return; // Ensure batchId is available
@@ -38,7 +76,7 @@ function ActiveBatch() {
         const payload = { batchId: userProfile?.batchId?._id };
         try {
             const response = await axios.post(`${API_BASE_URL}/batch/getBatchById`, payload);
-            setBatch(response.data.data[0]);
+            setBatch(response?.data?.data);
             setLoading(false);
         } catch (err) {
             setError('Error fetching batch details');
@@ -73,6 +111,32 @@ function ActiveBatch() {
         navigate(`/quizSubmission?quizId=${quizId}`);
     };
 
+    // Function to handle quiz delete
+    const handleQuizDeleteClick = async (quizId) => {
+        setLoading(true);
+        try {
+            // Show a confirmation dialog before deletion
+            const confirmDelete = window.confirm("Are you sure you want to delete this quiz?");
+            if (!confirmDelete) return;
+
+            // Send a POST request to delete the quiz
+            const response = await axios.post(`${API_BASE_URL}/quiz/deleteQuiz`, {
+                id: quizId,
+            });
+
+            if (response.status === 200) {
+                alert("Quiz deleted successfully!");
+                fetchBatchDetails();
+                setLoading(false);
+            } else {
+                alert(response.data.message || "Failed to delete quiz.");
+            }
+        } catch (error) {
+            console.error("Error deleting quiz:", error);
+            alert("An error occurred while deleting the quiz.");
+        }
+    };
+
     const resetQuizForm = () => {
         setQuizForm({
             quizTopic: '',
@@ -83,17 +147,20 @@ function ActiveBatch() {
         });
     };
 
+    const resetQuizHintForm = () => {
+        setQuizForm({
+            description: '',
+            hintType: 'Input',
+            image: null,
+        });
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setQuizForm({ ...quizForm, [name]: value });
         if (quizErrors[name]) setQuizErrors({ ...quizErrors, [name]: '' });
     };
 
-    const handleHintChange = (e) => {
-        const { name, value, files } = e.target;
-        setHintForm({ ...hintForm, [name]: files ? files[0] : value });
-        if (hintErrors[name]) setHintErrors({ ...hintErrors, [name]: '' });
-    };
 
     const validateQuizForm = () => {
         const errors = {};
@@ -119,49 +186,49 @@ function ActiveBatch() {
             resetQuizForm();
             setLoading(false)
             setShowQuizModal(false)
-            setShowQuizHnitModal(true);
+            setShowHintModal(true);
+            fetchBatchDetails();
         } catch (err) {
             console.error('Error creating quiz:', err);
         }
     };
 
-    const validateHintForm = () => {
-        const errors = {};
-        if (!hintForm.description.trim()) errors.description = 'Hint description is required.';
-        if (!hintForm.hintType.trim()) errors.hintType = 'Hint type is required.';
-        return errors;
-    };
-
-    const addHint = async () => {
-        const errors = validateHintForm();
-        if (Object.keys(errors).length > 0) {
-            setHintErrors(errors);
-            return;
-        }
-
+    const addHint = async (currentQuizId, quizHints) => {
+        setLoading(true);
         try {
             const formData = new FormData();
             formData.append('quizId', currentQuizId);
-            formData.append('description', hintForm.description);
-            formData.append('hintType', hintForm.hintType);
+
+            // Append each hint in the quizHints array to the formData
+            quizHints.forEach((hint) => {
+                formData.append('quizHints[]', JSON.stringify(hint)); // Sending as array in the backend
+            });
+
+            console.log(hintForm.image)
+
+            // If there's an image, append it
             if (hintForm.image) {
                 formData.append('image', hintForm.image);
             }
 
-            const response = await axios.post(`${API_BASE_URL}/hint/create`, formData);
-            setQuizHints([...quizHints, response.data.hint]);
+
+            // API call to add the hint
+            const response = await axios.post(`${API_BASE_URL}/quiz/createQuizHint`, formData);
+
+            // Update the frontend state with the newly created hint
+            // setQuizHints([...quizHints, ...response.data.hints]);
+
+            // Reset form state
             setHintForm({ description: '', hintType: 'Input', image: null });
+
+            // Close the modal only after the API call is successful
+            setShowHintModal(false); // Now this will only happen after the hint is successfully added
+
+            // Set loading false
+            setLoading(false);
+
         } catch (err) {
             console.error('Error adding hint:', err);
-        }
-    };
-
-    const deleteHint = async (hintId) => {
-        try {
-            await axios.delete(`${API_BASE_URL}/hint/delete/${hintId}`);
-            setQuizHints(quizHints.filter((hint) => hint._id !== hintId));
-        } catch (err) {
-            console.error('Error deleting hint:', err);
         }
     };
 
@@ -193,6 +260,16 @@ function ActiveBatch() {
     return (
 
         <Panel>
+            <Toaster
+                toastOptions={{
+                    style: {
+                        width: '300px', // Set a fixed width for all toasts
+                        margin: '10px auto', // Optional: To center the toasts
+                        fontSize: '14px', // Optional: Adjust font size
+                    },
+                    position: 'top-right', // Position the toasts on the top-right
+                }}
+            />
             {loading && <Loader />}
             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 {error && <p className="text-red-500">{error}</p>}
@@ -202,82 +279,25 @@ function ActiveBatch() {
                             {/* Go Back Button */}
                             <button
                                 onClick={() => navigate(-1)} // Navigate back to the previous page
-                                className="text-blue-500 dark:text-blue-400 hover:underline mb-4"
+                                className="text-black hover:underline mb-4"
                             >
                                 &larr; Go Back
                             </button>
 
                             <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batch Details</h4>
 
-                            {/* Batch Number */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Batch Number:</span>
-                                    <span className="text-gray-600 dark:text-gray-400">{batch.batchNumber || '-'}</span>
-                                </div>
-                            </div>
+                            {/* Card Grid */}
+                            <RenderCard
+                                data={{
+                                    batchNumber: batch.batchNumber,
+                                    batchSession: batch.batchSession,
+                                    batchName: batch.batchName,
+                                    batchStudent: batch.batchStudent,
+                                    batchQuiz: batch.batchQuiz,
+                                }}
+                            />
 
-                            {/* Batch Session */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Batch Session:</span>
-                                    <span className="text-gray-600 dark:text-gray-400">{batch.batchSession || '-'}</span>
-                                </div>
-                            </div>
-
-                            {/* Batch Name */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Batch Name:</span>
-                                    <span className="text-gray-600 dark:text-gray-400">{batch.batchName || '-'}</span>
-                                </div>
-                            </div>
-
-                            {/* Total Students */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Total Students:</span>
-                                    <span className="text-gray-600 dark:text-gray-400">{batch.batchStudent?.length || 0}</span>
-                                </div>
-                            </div>
-
-                            {/* Total Quizzes */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Total Quizzes:</span>
-                                    <span className="text-gray-600 dark:text-gray-400">{batch.batchQuiz?.length || 0}</span>
-                                </div>
-                            </div>
-
-                            {/* Status Indicators with Colors */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Ethics Evaluation:</span>
-                                    <span className={`text-lg ${batch.ethics === "Passed" ? 'text-green-500' : 'text-red-500'} dark:text-green-400 ml-2`}>
-                                        {batch.ethics ? batch.ethics : "Unknown"}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* View Button */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">View Batch Details:</span>
-                                    <a
-                                        href="#"
-                                        target="_blank"
-                                        className="inline-flex items-center bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    >
-                                        View Details
-                                        <svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="bi bi-eye ml-2">
-                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
-                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
-
                         <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
                             {/* Students Table */}
                             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
@@ -322,19 +342,18 @@ function ActiveBatch() {
 
                             {/* Quizzes Table */}
                             <div className="mt-6 rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
-                                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
+                                <h4 className="mb-6 text-xl font-bold text-black dark:text-white">
                                     Quizzes
                                 </h4>
                                 {/* Create Quiz Button Below Heading */}
                                 <div className="mt-4 mb-6">
                                     <button
                                         onClick={() => setShowQuizModal(true)}
-                                        className="px-6 py-3 text-white bg-black hover:bg-gray-500 rounded-md shadow-md"
+                                        className="px-6 py-3 font-bold text-white bg-black hover:bg-gray-500 rounded-md shadow-md"
                                     >
                                         Create Quiz +
                                     </button>
                                 </div>
-
 
                                 {renderTable({
                                     headers: [
@@ -367,297 +386,95 @@ function ActiveBatch() {
                                         <div className="p-2.5 text-center text-black dark:text-white">
                                             {quiz.quizSubmitters?.length || 0}
                                         </div>,
-                                        <div className="p-2.5 flex flex-wrap justify-center space-y-2 w-full">
-                                            <button
+                                        <div className="p-2.5 flex justify-center space-x-4">
+                                            {/* Add Hint Icon */}
+                                            <FontAwesomeIcon
+                                                icon={faPlusCircle}
+                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                    ? 'text-gray-500 cursor-not-allowed'
+                                                    : 'text-black hover:text-green-500 cursor-pointer'
+                                                    }`}
                                                 onClick={() => {
-                                                    setShowQuizHnitModal(true);
+                                                    if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
+                                                        setShowHintModal(true);
+                                                        setCurrentQuizId(quiz._id); // Store quiz._id to use in the modal
+                                                    } else {
+                                                        toast.error("Deadline passed, Can't add hint :)");
+                                                    }
                                                 }}
-                                                className={`w-full px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
-                                                    ? 'bg-red-300 cursor-not-allowed'
-                                                    : 'bg-black hover:bg-green-500'
+                                                title="Add Hint"
+                                            />
+
+                                            {/* View Results Icon */}
+                                            <FontAwesomeIcon
+                                                icon={faEye}
+                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                    ? 'text-black cursor-pointer'
+                                                    : 'text-gray-500 cursor-not-allowed'
                                                     }`}
-                                                disabled={new Date().toISOString().split('T')[0] === quiz.quizDead}
-                                            >
-                                                Add Hint +
-                                            </button>
-                                            <button
-                                                onClick={() => handleQuizClick(quiz._id)}
-                                                className={`w-full px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
-                                                    ? 'bg-blue-500 hover:bg-blue-600'
-                                                    : 'bg-black cursor-not-allowed'
+                                                onClick={() => {
+                                                    if (new Date().toISOString().split('T')[0] === quiz.quizDead) {
+                                                        handleQuizClick(quiz._id); // Use quiz._id to view results
+                                                    } else {
+                                                        toast.error("Please wait for the deadline to analyze the results :)");
+                                                    }
+                                                }}
+                                                title="View Results"
+                                            />
+
+                                            {/* Delete Icon */}
+                                            <FontAwesomeIcon
+                                                icon={faTrashAlt}
+                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                    ? 'text-gray-500 cursor-not-allowed'
+                                                    : 'text-black hover:text-red-500 cursor-pointer'
                                                     }`}
-                                                disabled={new Date().toISOString().split('T')[0] !== quiz.quizDead}
-                                            >
-                                                View Results
-                                            </button>
-                                            <button
-                                                onClick={() => handleQuizClick(quiz._id)}
-                                                className={`w-full px-4 py-2 rounded text-white ${new Date().toISOString().split('T')[0] === quiz.quizDead
-                                                    ? 'bg-red-300 cursor-not-allowed'
-                                                    : 'bg-black hover:bg-red-500'
-                                                    }`}
-                                                disabled={new Date().toISOString().split('T')[0] === quiz.quizDead}
-                                            >
-                                                Delete -
-                                            </button>
+                                                onClick={() => {
+                                                    if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
+                                                        handleQuizDeleteClick(quiz._id); // Use quiz._id to delete quiz
+                                                    } else {
+                                                        toast.error("Deadline passed, Can't delete Quiz :)");
+                                                    }
+                                                }}
+                                                title="Delete"
+                                            />
                                         </div>
-
-
                                     ],
                                 })}
 
-                                {/* Quiz Modal */}
-                                {showQuizModal && (
-                                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                        <div className="bg-white p-6 rounded shadow-lg relative w-full max-w-lg mx-4 sm:mx-6 md:mx-8 lg:max-w-3xl">
-                                            {/* Close Button */}
-                                            <button
-                                                onClick={() => {
-                                                    setShowQuizModal(false);
-                                                    resetQuizForm();
-                                                }}
-                                                className="absolute top-3 right-3 text-white bg-black hover:bg-gray-500 rounded-full p-3 transition duration-200 ease-in-out"
-                                                aria-label="Close Modal"
-                                            >
-                                                ✕
-                                            </button>
 
-                                            <h3 className="mb-4 text-lg font-bold text-center">Create Quiz</h3>
+                                <QuizModal
+                                    isOpen={showQuizModal}
+                                    closeModal={() => {
+                                        setShowQuizModal(false);
+                                        setQuizErrors({});
+                                        resetQuizForm();
+                                    }}
+                                    quizForm={quizForm}
+                                    setQuizForm={setQuizForm}
+                                    quizErrors={quizErrors}
+                                    handleInputChange={handleInputChange}
+                                    createQuiz={createQuiz}
+                                />
 
-                                            {/* Quiz Fields */}
-                                            {Object.keys(quizForm).map((key) => (
-                                                <div className="mb-4" key={key}>
-                                                    <label className="block text-sm font-medium mb-2">
-                                                        {key.charAt(0).toUpperCase() + key.slice(1)}
-                                                    </label>
-                                                    <input
-                                                        type={key === 'quizIssued' || key === 'quizDead' ? 'date' : 'text'}
-                                                        name={key}
-                                                        value={quizForm[key]}
-                                                        onChange={handleInputChange}
-                                                        className={`w-full rounded border p-3 text-sm sm:text-base ${quizErrors[key] ? 'border-red-500' : 'border-gray-300'}`}
-                                                    />
-                                                    {quizErrors[key] && (
-                                                        <p className="mt-1 text-sm text-red-500">{quizErrors[key]}</p>
-                                                    )}
-                                                </div>
-                                            ))}
-
-                                            <div className="flex justify-center items-center mt-6 w-full space-x-4">
-                                                {/* Button Wrapper with equal width */}
-                                                <div className="w-full flex space-x-4">
-                                                    {/* Cancel Button */}
-                                                    <button
-                                                        onClick={() => {
-                                                            setShowQuizModal(false);
-                                                            resetQuizForm();
-                                                        }}
-                                                        className="w-full px-4 py-2 text-white bg-gray-300 hover:bg-gray-500 rounded-md"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    {/* Submit Button */}
-                                                    <button
-                                                        onClick={createQuiz}
-                                                        className="w-full px-4 py-2 text-white bg-black hover:bg-gray-500 rounded-md"
-                                                    >
-                                                        Create Quiz
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-
-                                {/* Hint Section */}
-                                {showQuizHnitModal && (
-                                    <>
-                                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                            <div className="bg-white p-6 rounded shadow-lg w-full max-w-3xl relative">
-                                                {/* Close Button */}
-                                                <button
-                                                    onClick={() => {
-                                                        setShowQuizHnitModal(false);
-                                                        setHintErrors({}); // Reset errors when closing the modal
-                                                    }}
-                                                    className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
-                                                >
-                                                    ✕
-                                                </button>
-
-                                                <h4 className="mb-4 font-semibold text-center">Quiz Hints</h4>
-
-                                                {/* Hint Form */}
-                                                {Object.keys(hintForm).map((key) => (
-                                                    <div className="mb-4" key={key}>
-                                                        <label className="block text-sm font-medium mb-2">
-                                                            {key.charAt(0).toUpperCase() + key.slice(1)}
-                                                        </label>
-
-                                                        {key === 'hintType' ? (
-                                                            <select
-                                                                name="hintType"
-                                                                value={hintForm.hintType}
-                                                                onChange={handleHintChange}
-                                                                className={`w-full rounded border p-2 ${hintErrors[key] ? 'border-red-500' : 'border-gray-300'
-                                                                    }`}
-                                                            >
-                                                                <option value="Input">Input</option>
-                                                                <option value="Output">Output</option>
-                                                            </select>
-                                                        ) : key === 'image' ? (
-                                                            <>
-                                                                <input
-                                                                    type="file"
-                                                                    name="image"
-                                                                    accept="image/*"
-                                                                    onChange={(e) => {
-                                                                        const file = e.target.files[0];
-                                                                        setHintForm((prev) => ({
-                                                                            ...prev,
-                                                                            image: file,
-                                                                        }));
-                                                                    }}
-                                                                    className={`w-full rounded border p-2 ${hintErrors[key] ? 'border-red-500' : 'border-gray-300'
-                                                                        }`}
-                                                                />
-                                                                {hintForm.image && (
-                                                                    <div className="mt-4">
-                                                                        <p className="text-sm font-medium mb-2">Preview:</p>
-                                                                        <img
-                                                                            src={URL.createObjectURL(hintForm.image)}
-                                                                            alt="Preview"
-                                                                            className="w-full h-auto rounded border"
-                                                                        />
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <input
-                                                                type="text"
-                                                                name={key}
-                                                                value={hintForm[key]}
-                                                                onChange={handleHintChange}
-                                                                className={`w-full rounded border p-2 ${hintErrors[key] ? 'border-red-500' : 'border-gray-300'
-                                                                    }`}
-                                                            />
-                                                        )}
-
-                                                        {hintErrors[key] && (
-                                                            <p className="mt-1 text-sm text-red-500">{hintErrors[key]}</p>
-                                                        )}
-                                                    </div>
-                                                ))}
-
-                                                {/* Add Hint Button */}
-                                                <button
-                                                    onClick={() => {
-                                                        const errors = {};
-
-                                                        // Validate description
-                                                        if (!hintForm.description.trim()) {
-                                                            errors.description = 'Description is required.';
-                                                        }
-
-                                                        // Validate image
-                                                        if (!hintForm.image) {
-                                                            errors.image = 'Image is required.';
-                                                        }
-
-                                                        // Check if there are any errors
-                                                        if (Object.keys(errors).length > 0) {
-                                                            setHintErrors(errors);
-                                                            return;
-                                                        }
-
-                                                        // Reset errors if all fields are valid
-                                                        setHintErrors({});
-
-                                                        // Add hint to the array
-                                                        setQuizHints((prev) => [...prev, hintForm]);
-
-                                                        // Reset the form
-                                                        setHintForm({ description: '', hintType: 'Input', image: null });
-                                                    }}
-                                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mb-6"
-                                                >
-                                                    Add Hint
-                                                </button>
-
-                                                {/* Hints Table */}
-                                                {quizHints.length > 0 && (
-                                                    <table className="w-full border mt-4">
-                                                        <thead>
-                                                            <tr className="bg-gray-200">
-                                                                <th className="py-2 px-4 border">Hint Image</th>
-                                                                <th className="py-2 px-4 border">Hint Type</th>
-                                                                <th className="py-2 px-4 border">Hint Description</th>
-                                                                <th className="py-2 px-4 border">Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {quizHints.map((hint, index) => (
-                                                                <tr key={index} className="text-center">
-                                                                    <td className="py-2 px-4 border">
-                                                                        {hint.image && (
-                                                                            <img
-                                                                                src={URL.createObjectURL(hint.image)}
-                                                                                alt="Hint"
-                                                                                className="w-12 h-12 rounded"
-                                                                            />
-                                                                        )}
-                                                                    </td>
-                                                                    <td className="py-2 px-4 border">{hint.hintType}</td>
-                                                                    <td className="py-2 px-4 border">{hint.description}</td>
-                                                                    <td className="py-2 px-4 border">
-                                                                        <button
-                                                                            onClick={() => {
-                                                                                setQuizHints((prev) =>
-                                                                                    prev.filter((_, i) => i !== index)
-                                                                                );
-                                                                            }}
-                                                                            className="text-red-500 hover:text-red-700"
-                                                                        >
-                                                                            ✕
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                )}
-
-                                                {/* Cancel and Submit Buttons */}
-                                                <div className="flex justify-between mt-6">
-                                                    <button
-                                                        onClick={() => {
-                                                            setShowQuizHnitModal(false);
-                                                            setHintErrors({}); // Reset errors when closing the modal
-                                                        }}
-                                                        className="px-6 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            // Call your API with `quizHints` array
-                                                            addHint(quizHints);
-                                                            setShowQuizHnitModal(false);
-                                                            setQuizHints([]);
-                                                            setHintErrors({}); // Reset errors on submit
-                                                        }}
-                                                        className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                                    >
-                                                        Submit
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-
+                                <HintModal
+                                    isOpen={showHintModal}
+                                    closeModal={() => {
+                                        setShowHintModal(false);
+                                        setHintErrors({});
+                                        resetQuizHintForm();
+                                    }}
+                                    hintForm={hintForm}
+                                    setHintForm={setHintForm}
+                                    hintErrors={hintErrors}
+                                    handleHintChange={handleHintChange}
+                                    handleAddHint={handleAddHint}
+                                    quizHints={quizHints}
+                                    setQuizHints={setQuizHints}
+                                    addHint={addHint}
+                                    currentQuizId={currentQuizId}
+                                    setHintErrors={setHintErrors}
+                                />
                             </div>
                         </div>
                     </>
@@ -665,7 +482,7 @@ function ActiveBatch() {
                     <div className="text-center p-5">No batch details available.</div>
                 )}
             </div>
-        </Panel>
+        </Panel >
     );
 }
 
