@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Loader from '../../common/Loader';
 import axios from 'axios';
+import profileImage from '../../images/ata/profile.png'
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function BatchDetails() {
     const headers = ['Image', 'Name', 'Email', 'Contact', 'About'];
+    const headersQuiz = ['Name', 'Topic', 'Description', 'Assigned At', 'Deadline'];
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [batch, setBatch] = useState(null);
@@ -50,7 +52,7 @@ function BatchDetails() {
                         {/* Image */}
                         <div className="flex items-center justify-center p-2.5 xl:p-5">
                             <img
-                                src={user.image || 'default-image.jpg'}
+                                src={user.image || profileImage}
                                 alt={user.name}
                                 className="w-12 h-12 rounded-full object-cover"
                             />
@@ -70,6 +72,44 @@ function BatchDetails() {
                         {/* About */}
                         <div className="flex items-center justify-center p-2.5 xl:p-5">
                             <p className="text-black dark:text-white">{user.about || '-'}</p>
+                        </div>
+                    </div>
+                ))
+            )}
+        </>
+    );
+
+    const renderQuizzes = (quizzes) => (
+        <>
+            {loading && <Loader />}
+            {quizzes.length === 0 ? (
+                <div className="text-center text-lg p-5">No data available.</div>
+            ) : (
+                quizzes.map((quiz, index) => (
+                    <div
+                        key={index}
+                        className={`grid grid-cols-5 sm:grid-cols-5 ${index === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'
+                            }`}
+                    >
+                        {/* Name */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{quiz.quizName || '-'}</p>
+                        </div>
+                        {/* Topic */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{quiz.quizTopic || '-'}</p>
+                        </div>
+                        {/* Description */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{quiz.quizDescription || '-'}</p>
+                        </div>
+                        {/* Issue */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{quiz.quizIssued || '-'}</p>
+                        </div>
+                        {/* Dead */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
                         </div>
                     </div>
                 ))
@@ -107,6 +147,19 @@ function BatchDetails() {
                     ))}
                 </div>
                 {renderUsers(batch?.batchStudent || [])}
+            </div>
+
+            {/* Students Section */}
+            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-8">
+                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
+                <div className="grid grid-cols-5 sm:grid-cols-5 bg-gray-2 dark:bg-meta-4 rounded-sm">
+                    {headersQuiz.map((headerQuiz, index) => (
+                        <div key={index} className="p-2.5 text-center font-medium uppercase">
+                            {headerQuiz}
+                        </div>
+                    ))}
+                </div>
+                {renderQuizzes(batch?.batchQuiz || [])}
             </div>
         </div>
     );
