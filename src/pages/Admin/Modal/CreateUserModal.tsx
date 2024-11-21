@@ -222,6 +222,10 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
     const validateForm = () => {
         const newErrors = {
             name: formData.name ? "" : "Name is required",
+            email: formData.email ? "" : "Email is required",
+            rollId: formData.rollId ? "" : "Roll Id is required",
+            role: formData.role ? "" : "Role is required",
+            cnic: formData.cnic ? "" : "Cnic is required",
             contact: formData.contact.every((num) => isValidPakistaniNumber(num))
                 ? ""
                 : "Please enter valid Pakistani contact numbers (e.g., +92 300 1234567).",
@@ -385,7 +389,7 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
 
                 {/* CNIC */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">CNIC (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-700">CNIC</label>
                     <input
                         type="text"
                         name="cnic"

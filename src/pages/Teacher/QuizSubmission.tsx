@@ -98,7 +98,7 @@ function QuizSubmission() {
                 ) : error ? (
                     <p className="text-red-500">{error}</p>
                 ) : (
-                    <>
+                    <div className='mb-6'>
                         <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
                             Quiz Submissions
                         </h4>
@@ -142,8 +142,8 @@ function QuizSubmission() {
                                             <button
                                                 onClick={() => handleAnalyzeClick(submission)}
                                                 className={`px-4 py-2 text-white rounded ${isPastDeadline
-                                                        ? 'bg-blue-500 hover:bg-blue-600'
-                                                        : 'bg-gray-500 cursor-not-allowed'
+                                                    ? 'bg-blue-500 hover:bg-blue-600'
+                                                    : 'bg-gray-500 cursor-not-allowed'
                                                     }`}
                                             >
                                                 Analyze
@@ -153,7 +153,7 @@ function QuizSubmission() {
                                 ];
                             },
                         })}
-                    </>
+                    </div>
                 )}
             </div>
         </>

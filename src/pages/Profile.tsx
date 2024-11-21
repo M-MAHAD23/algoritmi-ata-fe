@@ -52,8 +52,8 @@ const Profile = () => {
   }, []);
   const fetchProfile = async () => {
 
-    const res = await getUserProfile()
-    setProfile(res)
+    const res = await getUserProfile();
+    setProfile(res);
 
   }
 

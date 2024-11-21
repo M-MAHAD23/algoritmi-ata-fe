@@ -145,8 +145,8 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
 
     const validateForm = () => {
         const newErrors = {
-            name: formData.name ? "" : "Name is required",
-            password: formData.password ? "" : "Password is required",
+            // name: formData.name ? "" : "Name is required",
+            // password: formData.password ? "" : "Password is required",
             contact: formData.contact.every((num) => isValidPakistaniNumber(num))
                 ? ""
                 : "Please enter valid Pakistani contact numbers (e.g., +92 300 1234567).",
@@ -228,7 +228,6 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
         });
         setIsModalOpen(false);  // Close the modal
     };
-
 
     const modalContent = (
         <>

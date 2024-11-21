@@ -298,7 +298,7 @@ function ActiveBatch() {
                             />
 
                         </div>
-                        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
+                        <div className="mt-6 mb-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
                             {/* Students Table */}
                             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
                                 <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>

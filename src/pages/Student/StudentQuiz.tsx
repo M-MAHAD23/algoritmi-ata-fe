@@ -108,7 +108,7 @@ function StudentQuiz() {
                 {quizzes?.length === 0 ? (
                     <div className="text-center text-lg p-5">No quizzes available.</div>
                 ) : (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col mb-6">
                         {/* Table Header */}
                         <div className="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4">
                             <div className="p-2.5 text-center xl:p-5">Quiz Name</div>
