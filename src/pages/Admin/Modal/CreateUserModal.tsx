@@ -1,30 +1,40 @@
 import { useState, useContext, useRef } from "react";
-import { useProfileEdit } from "../../hooks/hooks";
-import GenericModal from "../../components/GenericModal";
+import { useProfileEdit } from "../../../hooks/hooks";
 import { toast, Toaster } from "react-hot-toast";
-import Loader from "../../common/Loader";
-import getUserProfile from "../../hooks/profile";
-import LaunchATAContext from "../../context/AppContext";
 import { FaEdit } from "react-icons/fa";
+import LaunchATAContext from "../../../context/AppContext";
+import getUserProfile from "../../../hooks/profile";
+import Loader from "../../../common/Loader";
+import GenericModal from "../../../components/GenericModal";
+import profileImage from "../../../images/ata/profile.png"
 
-const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
+
+
+const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
     const fileInputRef = useRef(null);
     const { profile, setProfile } = useContext(LaunchATAContext);
     const { updateProfile, loading } = useProfileEdit();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
-        name: profile?.name || "",
-        image: profile?.image || "",
-        password: profile?.rawPassword || "",
-        contact: profile?.contact || [],
-        social: profile?.social || [],
-        education: profile?.education || [],
-        work: profile?.work || [],
+        email: "",
+        name: "",
+        image: "",
+        rollId: "",
+        cnic: "",
+        role: "",
+        contact: [],
+        social: [],
+        education: [],
+        work: [],
         profileImage: null,
     });
     const [errors, setErrors] = useState({
+        email: "",
         name: "",
         password: "",
+        rollId: "",
+        cnic: "",
+        role: "",
         contact: "",
         social: "",
         education: "",
@@ -33,6 +43,12 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
 
     const handleChange = (e) => {
         const { name, value, dataset } = e.target;
+
+        const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@platform\.com$/.test(email);
+        const validateCnic = (cnic) => /^\d{5}-\d{7}-\d{1}$/.test(cnic);
+        const validateRollId = (rollId) => /^[A-Za-z]{2}-\d{4}$/.test(rollId);
+        const validateRole = (role) => role === "Teacher" || role === "Student";
+
 
         if (name === "contact") {
             const index = dataset.index;
@@ -60,7 +76,44 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
             if (updatedArray.every((item) => !Object.values(item).some((field) => field.trim() === ""))) {
                 setErrors((prev) => ({ ...prev, [key]: "" }));
             }
-        } else {
+        } else if (name === "email") {
+            setFormData((prev) => ({ ...prev, email: value }));
+            if (value.trim() === "") {
+                setErrors((prev) => ({ ...prev, email: "Email is required" }));
+            } else if (!validateEmail(value)) {
+                setErrors((prev) => ({ ...prev, email: "Invalid email format. Use x@platform.com" }));
+            } else {
+                setErrors((prev) => ({ ...prev, email: "" }));
+            }
+        } else if (name === "rollId") {
+            setFormData((prev) => ({ ...prev, rollId: value }));
+            if (value.trim() === "") {
+                setErrors((prev) => ({ ...prev, rollId: "Roll ID is required" }));
+            } else if (!validateRollId(value)) {
+                setErrors((prev) => ({ ...prev, rollId: "Invalid Roll ID format. Use XX-XXXX" }));
+            } else {
+                setErrors((prev) => ({ ...prev, rollId: "" }));
+            }
+        } else if (name === "cnic") {
+            setFormData((prev) => ({ ...prev, cnic: value }));
+            if (value.trim() === "") {
+                setErrors((prev) => ({ ...prev, cnic: "CNIC is required" }));
+            } else if (!validateCnic(value)) {
+                setErrors((prev) => ({ ...prev, cnic: "Invalid CNIC format. Use XXXXX-XXXXXXX-X" }));
+            } else {
+                setErrors((prev) => ({ ...prev, cnic: "" }));
+            }
+        } else if (name === "role") {
+            setFormData((prev) => ({ ...prev, role: value }));
+            if (value.trim() === "") {
+                setErrors((prev) => ({ ...prev, role: "Role is required" }));
+            } else if (!validateRole(value)) {
+                setErrors((prev) => ({ ...prev, role: "Role must be either 'Teacher' or 'Student'" }));
+            } else {
+                setErrors((prev) => ({ ...prev, role: "" }));
+            }
+        }
+        else {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
@@ -217,21 +270,26 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
             work: profile?.work || [{ work: "", role: "", started: "", ended: "" }],
             profileImage: null,
         });
-        setErrors({           // Reset errors state
+        setErrors({
+            email: "",
             name: "",
             password: "",
+            rollId: "",
+            cnic: "",
+            role: "",
             contact: "",
             social: "",
             education: "",
             work: "",
         });
-        setIsModalOpen(false);  // Close the modal
+        setIsModalOpen(false);
     };
 
 
     const modalContent = (
         <>
             <div className="space-y-4">
+
 
                 {/* Profile Image Section */}
                 <div className="flex items-center flex-col justify-center mb-6">
@@ -240,7 +298,7 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
                             src={
                                 formData.profileImage
                                     ? URL.createObjectURL(formData.profileImage)
-                                    : formData.image
+                                    : profileImage
                             }
                             alt="Profile"
                             className="w-20 h-20 rounded-full object-cover border-2 border-indigo-500"
@@ -264,7 +322,7 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
                     </div>
                 </div>
 
-
+                {/* Name */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Name</label>
                     <input
@@ -277,34 +335,62 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
 
-                <div className="mb-6">
-                    <label className="mb-2.5 block font-medium text-black dark:text-white">Password</label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        <span
-                            className="absolute right-4 top-2 cursor-pointer"
-                            onClick={() => setShowPassword((prev) => !prev)}
-                        >
-                            {showPassword ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M17.94 17.94a10 10 0 0 1-13.88 0M12 12c0-1.5 1.5-2.5 3-2.5s2.5 1 2.5 2.5M3.5 3.5l17 17" />
-                                </svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="3" />
-                                    <path d="M2 12c2-4 5.5-7 10-7s8 3 10 7-5.5 7-10 7-8-3-10-7z" />
-                                </svg>
-                            )}
-                        </span>
-                        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-                    </div>
+                {/* Email */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
+
+                {/* Roll ID */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Roll ID</label>
+                    <input
+                        type="text"
+                        name="rollId"
+                        value={formData.rollId}
+                        onChange={handleChange}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    {errors.rollId && <p className="text-red-500 text-xs mt-1">{errors.rollId}</p>}
+                </div>
+
+                {/* CNIC */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">CNIC (Optional)</label>
+                    <input
+                        type="text"
+                        name="cnic"
+                        value={formData.cnic}
+                        onChange={handleChange}
+                        placeholder="XXXXX-XXXXXXX-X"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    {errors.cnic && <p className="text-red-500 text-xs mt-1">{errors.cnic}</p>}
+                </div>
+
+                {/* Role */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <select
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                        <option value="">Select Role</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Student">Student</option>
+                    </select>
+                    {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}
+                </div>
+
 
                 {/* Contact Section */}
                 <div>
@@ -506,7 +592,7 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
             <GenericModal
                 isOpen={true}
                 closeModal={handleCancel}
-                title="Edit Profile"
+                title="Create User"
                 content={modalContent}
                 onOkClick={handleSave}
             />
@@ -514,4 +600,4 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
     );
 };
 
-export default UserProfileEditModal;
+export default CreateUserModal;

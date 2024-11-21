@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '../Spinner';
+import LaunchATAContext from '../../context/AppContext';
+import profileImage from '../../images/ata/profile.png'
 
 const DropdownUser = () => {
   const navigate = useNavigate();
+  const { profile, setProfile } = useContext(LaunchATAContext)
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
@@ -43,8 +46,7 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src={userInfo ? userInfo.image : <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-          } alt="User" />
+          <img className="rounded-full" src={profile ? profile.image : profileImage} alt="User" />
         </span>
 
         <svg

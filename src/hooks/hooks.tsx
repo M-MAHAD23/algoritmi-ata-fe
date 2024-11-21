@@ -44,25 +44,17 @@ export const useProfile = async (userId, token) => {
 };
 
 export const useProfileEdit = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     // Function to handle the profile update API call
-    const updateProfile = async (profileData) => {
-        setIsLoading(true);
-        setError(null);
+    const updateProfile = async (updatedFormData) => {
         try {
-            // Create a FormData instance
-            const formData = new FormData();
-            // Append each field in profileData to formData
-            for (const key in profileData) {
-                formData.append(key, profileData[key]);
-            }
-
+            console.log(updatedFormData);
             // Send the request with form data
             const response = await fetch(`${API_BASE_URL}/user/updateUser`, {
                 method: 'POST',
-                body: formData,
+                body: updatedFormData,
             });
 
             if (!response.ok) {
@@ -75,11 +67,11 @@ export const useProfileEdit = () => {
             console.error("Error updating profile:", err);
             setError(err.message || "An error occurred while updating the profile.");
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
-    return { updateProfile, isLoading, error };
+    return { updateProfile, loading, error };
 };
 
 export const useSignIn = () => {

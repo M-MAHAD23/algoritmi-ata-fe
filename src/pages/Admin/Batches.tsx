@@ -1,31 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
+import CreateUserModal from './Modal/CreateUserModal';
+import CreateBatchModal from './Modal/CreateBatchModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArchive, faEdit, faEye, faPlusCircle, faTrashAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
-
+import toast, { Toaster } from 'react-hot-toast';
 
 function Batches() {
     const [batches, setBatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [newBatch, setNewBatch] = useState({ batchNumber: '', batchSession: '', batchName: '' });
-    const [showUserModal, setShowUserModal] = useState(false); // User creation modal visibility
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newBatch, setNewBatch] = useState({ batchNumber: '', batchSession: '', batchStart: '', batchEnd: '', batchName: '' });
+    const [showUserModal, setShowUserModal] = useState(false);
     const [newUser, setNewUser] = useState({
         name: '',
-        role: 'Student', // Default role
+        role: 'Student',
         email: '',
         cnic: '',
-        password: '',
-        id: '',
         contact: [],
         education: [],
-        batchId: '', // to be populated from the selected batch
+        batchId: '',
         image: '',
     });
     const { batchId } = useParams();
+
+    // Utility function to render tables
+    const renderTable = ({ headers, rows, renderRow, keyExtractor }) => (
+        <div className="mb-8">
+            <div className={`grid grid-cols-${headers.length} bg-gray-2 dark:bg-meta-4 rounded-sm`}>
+                {headers.map((header, index) => (
+                    <div key={index} className="p-2.5 text-center font-medium uppercase">
+                        {header}
+                    </div>
+                ))}
+            </div>
+            {rows.length ? (
+                rows.map((row) => (
+                    <div
+                        key={keyExtractor(row)}
+                        className={`grid grid-cols-${headers.length} items-center border-b border-stroke dark:border-strokedark`}
+                    >
+                        {renderRow(row)}
+                    </div>
+                ))
+            ) : (
+                <div className="text-center p-5">No data available.</div>
+            )}
+        </div>
+    );
 
     useEffect(() => {
         const fetchBatches = async () => {
@@ -48,31 +75,19 @@ function Batches() {
         fetchBatches();
     }, [batchId]);
 
-    const headers = ['Batch Number', 'Batch Session', 'Batch Name', 'Actions'];
+    const headers = ['Batch Number', 'Batch Start', 'Batch End', 'Batch Name', 'Actions'];
 
-    // Handle Create Batch
     const handleCreateBatch = async () => {
         try {
             const response = await axios.post(`${API_BASE_URL}/batch/createBatch`, newBatch);
-            setBatches([...batches, response.data.data]);
+            setBatches(response.data.data);
             setShowCreateModal(false);
-            setNewBatch({ batchNumber: '', batchSession: '', batchName: '' });
+            setNewBatch({ batchNumber: '', batchSession: '', batchStart: '', batchEnd: '', batchName: '' });
         } catch (err) {
             setError('Error creating batch');
         }
     };
 
-    // Handle Update Batch
-    const handleUpdateeBatch = async (batchId) => {
-        try {
-            await axios.delete(`${API_BASE_URL}/batch/updateBatch/${batchId}`);
-            setBatches(batches.filter(batch => batch._id !== batchId));
-        } catch (err) {
-            setError('Error deleting batch');
-        }
-    };
-
-    // Handle Archive Batch
     const handleArchiveBatch = async (batchId) => {
         try {
             const response = await axios.put(`${API_BASE_URL}/batch/archiveBatch/${batchId}`);
@@ -84,11 +99,9 @@ function Batches() {
         }
     };
 
-    // Handle Create User
     const handleCreateUser = async () => {
         try {
             const response = await axios.post(`${API_BASE_URL}/user/createUser`, newUser);
-            // Optionally add the user to the batch's user list here
             setShowUserModal(false);
             setNewUser({
                 name: '',
@@ -105,198 +118,95 @@ function Batches() {
         }
     };
 
-    if (error) {
-        return <div>{error}</div>;
-    }
-
     return (
         <>
+            <Toaster
+                toastOptions={{
+                    style: {
+                        width: '300px', // Set a fixed width for all toasts
+                        margin: '10px auto', // Optional: To center the toasts
+                        fontSize: '14px', // Optional: Adjust font size
+                    },
+                    position: 'top-right', // Position the toasts on the top-right
+                }}
+            />
             {loading && <Loader />}
             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batches</h4>
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batches</h4>
 
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="mb-6 bg-blue-500 text-white py-2 px-4 rounded"
-                >
-                    Create Batch
-                </button>
-
-                <div className="flex flex-col">
-                    {/* Dynamic Headers */}
-                    <div className="grid grid-cols-4 sm:grid-cols-4 rounded-sm bg-gray-2 dark:bg-meta-4">
-                        {headers.map((header, index) => (
-                            <div key={index} className="p-2.5 text-center xl:p-5">
-                                <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
-                            </div>
-                        ))}
+                    {/* Create Batch Button */}
+                    <div className="mt-4 mb-6">
+                        <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="px-6 py-3 font-bold text-white bg-black hover:bg-gray-500 rounded-md shadow-md"
+                        >
+                            Create Batch +
+                        </button>
                     </div>
 
-                    {/* Dynamic Rows */}
-                    {batches.length === 0 ? (
-                        <div className="text-center text-lg p-5">No batches available.</div>
-                    ) : (
-                        batches.map((batch, rowIndex) => (
-                            <div
-                                key={batch._id}
-                                className={`grid grid-cols-4 sm:grid-cols-4 ${rowIndex === batches.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                            >
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{batch.batchNumber || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{batch.batchSession || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{batch.batchName || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <button
-                                        onClick={() => handleArchiveBatch(batch._id)}
-                                        className="bg-yellow-500 text-white py-1 px-3 rounded"
-                                    >
-                                        {batch.archived ? 'Archived' : 'Archive'}
-                                    </button>
-                                    <button
-                                        onClick={() => handleUpdateBatch(batch._id)}
-                                        className="bg-blue-500 text-white py-1 px-3 rounded ml-2"
-                                    >
-                                        Update
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setNewUser({ ...newUser, batchId: batch._id });
-                                            setShowUserModal(true);
-                                        }}
-                                        className="bg-green-500 text-white py-1 px-3 rounded ml-2"
-                                    >
-                                        +User
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    )}
+                    {/* Render Batches Table */}
+                    {renderTable({
+                        headers,
+                        rows: batches,
+                        keyExtractor: (batch) => batch._id,
+                        renderRow: (batch) => [
+                            <div className="p-2.5 text-center">{batch?.batchNumber || '-'}</div>,
+                            <div className="p-2.5 text-center">{batch?.batchStart || '-'}</div>,
+                            <div className="p-2.5 text-center">{batch?.batchEnd || '-'}</div>,
+                            <div className="p-2.5 text-center">{batch?.batchName || '-'}</div>,
+                            <div className="p-2.5 flex justify-center space-x-4">
+                                {/* Archive Icon */}
+                                <FontAwesomeIcon
+                                    icon={faArchive} // Use archive icon for archiving
+                                    className="text-2xl text-black hover:text-green-500 cursor-pointer"
+                                    onClick={() => {
+                                        handleArchiveBatch(batch._id);
+                                    }}
+                                    title="Archive Batch"
+                                />
+
+                                {/* Update Icon */}
+                                <FontAwesomeIcon
+                                    icon={faEdit} // Use edit icon for updating
+                                    className="text-2xl text-black hover:text-green-500 cursor-pointer"
+                                    onClick={() => {
+                                        handleUpdateBatch(batch._id);
+                                    }}
+                                    title="Update Batch"
+                                />
+
+                                {/* Add User Icon */}
+                                <FontAwesomeIcon
+                                    icon={faUserPlus} // Use user-plus icon for adding a user
+                                    className="text-2xl text-black hover:text-green-500 cursor-pointer"
+                                    onClick={() => {
+                                        setNewUser({ ...newUser, batchId: batch._id });
+                                        setIsModalOpen(true);
+                                    }}
+                                    title="Add User"
+                                />
+                            </div>,
+                        ],
+                    })}
+
                 </div>
             </div>
 
-            {/* Create User Modal */}
-            {showUserModal && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                        <h3 className="text-xl font-semibold mb-4">Create User</h3>
-                        <input
-                            type="text"
-                            placeholder="User Name"
-                            value={newUser.name}
-                            onChange={e => setNewUser({ ...newUser, name: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Password"
-                            value={newUser.password}
-                            onChange={e => setNewUser({ ...newUser, password: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <input
-                            type="text"
-                            placeholder="RollId"
-                            value={newUser.id}
-                            onChange={e => setNewUser({ ...newUser, id: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={newUser.email}
-                            onChange={e => setNewUser({ ...newUser, email: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <input
-                            type="text"
-                            placeholder="CNIC"
-                            value={newUser.cnic}
-                            onChange={e => setNewUser({ ...newUser, cnic: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Contact"
-                            value={newUser.contact.join(', ')}
-                            onChange={e => setNewUser({ ...newUser, contact: e.target.value.split(', ') })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <select
-                            value={newUser.role}
-                            onChange={e => setNewUser({ ...newUser, role: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        >
-                            <option value="Student">Student</option>
-                            <option value="Teacher">Teacher</option>
-                        </select>
-                        <input
-                            type="file"
-                            onChange={e => setNewUser({ ...newUser, image: e.target.files[0] })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <button
-                            onClick={handleCreateUser}
-                            className="bg-green-500 text-white py-2 px-4 rounded w-full"
-                        >
-                            Create User
-                        </button>
-                        <button
-                            onClick={() => setShowUserModal(false)}
-                            className="bg-gray-500 text-white py-2 px-4 rounded w-full mt-2"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
+            {/* Modals for Create User and Create Batch */}
+            {isModalOpen && (
+                <CreateUserModal
+                    setIsModalOpen={setIsModalOpen}
+                    onSubmit={handleCreateUser}
+                />
             )}
-            {/* Create Batch Modal */}
-            {showCreateModal && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <h3 className="text-xl font-semibold mb-4">Create Batch</h3>
-                        <input
-                            type="text"
-                            placeholder="Batch Number"
-                            value={newBatch.batchNumber}
-                            onChange={e => setNewBatch({ ...newBatch, batchNumber: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Batch Session"
-                            value={newBatch.batchSession}
-                            onChange={e => setNewBatch({ ...newBatch, batchSession: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Batch Name"
-                            value={newBatch.batchName}
-                            onChange={e => setNewBatch({ ...newBatch, batchName: e.target.value })}
-                            className="border p-2 mb-4 w-full"
-                        />
-                        <div className="flex justify-between">
-                            <button
-                                onClick={() => setShowCreateModal(false)}
-                                className="bg-gray-400 text-white py-2 px-4 rounded"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleCreateBatch}
-                                className="bg-blue-500 text-white py-2 px-4 rounded"
-                            >
-                                Create
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <CreateBatchModal
+                isOpen={showCreateModal}
+                closeModal={() => setShowCreateModal(false)}
+                handleCreateBatch={handleCreateBatch}
+                newBatch={newBatch}
+                setNewBatch={setNewBatch}
+            />
         </>
     );
 }

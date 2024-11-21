@@ -5,7 +5,7 @@ import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import ProtectedRoute from './components/ProtectedRoute'; // Import the ProtectedRoute component
 import { useUserInfo } from './hooks/hooks';
-
+import LaunchPadProvider from './context/AppProvider';
 // Import pages
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
@@ -36,7 +36,8 @@ function App() {
     <Loader />
   ) : (
     <>
-      <Router />
+      <LaunchPadProvider>      <Router /></LaunchPadProvider>
+
 
     </>
   );

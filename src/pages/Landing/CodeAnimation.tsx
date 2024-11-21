@@ -12,32 +12,11 @@ console.log(greet("World"));`;
 
   const result = `Hello, World!`;
 
-  // Escape special characters like <, >, & for HTML rendering
-  const escapeHtml = (unsafe) => {
-    return unsafe.replace(/[&<>"']/g, (char) => {
-      switch (char) {
-        case '&':
-          return '&amp;';
-        case '<':
-          return '&lt;';
-        case '>':
-          return '&gt;';
-        case '"':
-          return '&quot;';
-        case "'":
-          return '&#39;';
-        default:
-          return char;
-      }
-    });
-  };
-
   // Display code with applied styling
   const highlightSyntax = (code) => {
     return code.split('\n').map((line, lineIndex) => (
       <div key={lineIndex} className="code-line">
-        <span className="text-green-400">{escapeHtml(line)}</span>{' '}
-        {/* Escape HTML special characters */}
+        <span className="text-green-400">{line}</span>
       </div>
     ));
   };
@@ -50,12 +29,16 @@ console.log(greet("World"));`;
         charIndex++;
         if (charIndex === codeSnippet.length) {
           clearInterval(typingInterval);
-          setTimeout(() => setCompiling(true), 500); // Start compiling
+          setTimeout(() => setCompiling(true), 500); // Start compiling after typing finishes
         }
       }, 50);
     };
 
     typeCode();
+    return () => {
+      // Cleanup the interval on component unmount
+      clearInterval();
+    };
   }, []);
 
   useEffect(() => {
@@ -63,7 +46,7 @@ console.log(greet("World"));`;
       const compileTimeout = setTimeout(() => {
         setCompiling(false);
         setShowResult(true); // Show result after compiling
-        setTimeout(() => resetAnimation(), 3000); // Reset the animation
+        setTimeout(() => resetAnimation(), 3000); // Reset animation after result is shown
       }, 1500); // Simulate compile time
       return () => clearTimeout(compileTimeout);
     }
@@ -122,15 +105,11 @@ console.log(greet("World"));`;
           </pre>
           {compiling && (
             <p className="absolute bottom-24 right-4 text-green-400 mt-4">
-              {' '}
-              {/* Right-aligned with margin top */}
               Compiling...
             </p>
           )}
           {showResult && (
             <div className="absolute bottom-24 right-4 bg-gray-800 p-2 rounded-lg mt-4">
-              {' '}
-              {/* Right-aligned with margin top */}
               <p className="text-blue-300">// Output:</p>
               <p className="text-yellow-400">{result}</p>
             </div>
