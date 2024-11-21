@@ -11,7 +11,6 @@ import Landing from '../pages/Landing/Landing';
 import Batches from '../pages/Admin/Batches';
 import Teachers from '../pages/Admin/Teachers';
 import Students from '../pages/Admin/Students';
-import BatchDetails from '../pages/Admin/BatchDetails';
 import Quizzes from '../pages/Admin/Quzziz';
 import TeacherBatches from '../pages/Teacher/TeacherBatches';
 import ActiveBatch from '../pages/Teacher/ActiveBatch';
@@ -24,6 +23,7 @@ import QuizResults from '../pages/Student/QuizResults';
 import ChatBot from '../pages/Student/ChatBot';
 import { useGetUserInfo } from '../hooks/hooks';
 import QuizSubmission from '../pages/Teacher/QuizSubmission';
+import BatchDetails from '../pages/Admin/BatchDetails';
 
 // Wrapper to handle private routes
 const PrivateRoute = ({ element }) => {
@@ -51,6 +51,10 @@ function Router() {
                     path="batches"
                     element={<PrivateRoute element={<Panel><Batches /></Panel>} />}
                 />
+                <Route
+                    path="/batchDetails"
+                    element={<Panel><BatchDetails /></Panel>} />
+
                 <Route
                     path="teachers"
                     element={<PrivateRoute element={<Panel><Teachers /></Panel>} />}

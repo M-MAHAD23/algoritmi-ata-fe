@@ -1,72 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import Panel from '../../layout/Panel';
+import React, { useEffect, useState } from 'react';
 import Loader from '../../common/Loader';
+import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-
 function BatchDetails() {
-    const { id } = useParams();  // Get the batch ID from the URL
-    const [batchDetails, setBatchDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const headers = ['Image', 'Name', 'Email', 'Contact', 'About'];
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [batch, setBatch] = useState(null);
+    const [batchId, setBatchId] = useState(null);
 
+    // Fetch batches inside useEffect
     useEffect(() => {
-        // Fetch batch details (Teachers, Students, Quizzes) using the batch ID
-        axios.post(`${API_BASE_URL}/batch/getBatchDetails`, { batchId: id })
-            .then(response => {
-                setBatchDetails(response.data);
+        // Extract batchId and submitterId from the query string
+        const queryParams = new URLSearchParams(location.search);
+        const batchId = queryParams.get("batchId");
+        setBatchId(batchId);
+        const fetchBatch = async () => {
+            setLoading(true);
+            try {
+                let response;
+                if (batchId) {
+                    response = await axios.post(`${API_BASE_URL}/batch/getBatchById`, { batchId });
+                }
+                setBatch(response.data.data); // Assuming `response.data.data` contains the batches
                 setLoading(false);
-            })
-            .catch(err => {
-                setError('Error fetching batch details');
+            } catch (err) {
+                setError('Error fetching batches');
                 setLoading(false);
-            });
-    }, [id]);
+            }
+        };
 
-    if (loading) {
-        return <Loader />;
-    }
+        fetchBatch();
+    }, []); // This useEffect will run whenever `batchId` changes
 
-    if (error) {
-        return <div>{error}</div>;
-    }
 
-    return (
+    const renderUsers = (users) => (
         <>
             {loading && <Loader />}
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{batchDetails.batchName}</h4>
-
-                <div className="mb-6">
-                    <h5 className="text-lg font-medium">Teachers</h5>
-                    <ul>
-                        {batchDetails.teachers.map((teacher, index) => (
-                            <li key={index}>{teacher.name}</li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="mb-6">
-                    <h5 className="text-lg font-medium">Students</h5>
-                    <ul>
-                        {batchDetails.students.map((student, index) => (
-                            <li key={index}>{student.name}</li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div>
-                    <h5 className="text-lg font-medium">Quizzes</h5>
-                    <ul>
-                        {batchDetails.quizzes.map((quiz, index) => (
-                            <li key={index}>{quiz.name}</li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
+            {users.length === 0 ? (
+                <div className="text-center text-lg p-5">No data available.</div>
+            ) : (
+                users.map((user, index) => (
+                    <div
+                        key={index}
+                        className={`grid grid-cols-5 sm:grid-cols-5 ${index === users.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'
+                            }`}
+                    >
+                        {/* Image */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <img
+                                src={user.image || 'default-image.jpg'}
+                                alt={user.name}
+                                className="w-12 h-12 rounded-full object-cover"
+                            />
+                        </div>
+                        {/* Name */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{user.name || '-'}</p>
+                        </div>
+                        {/* Email */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{user.email || '-'}</p>
+                        </div>
+                        {/* Contact */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{user.contact?.join(', ') || '-'}</p>
+                        </div>
+                        {/* About */}
+                        <div className="flex items-center justify-center p-2.5 xl:p-5">
+                            <p className="text-black dark:text-white">{user.about || '-'}</p>
+                        </div>
+                    </div>
+                ))
+            )}
         </>
+    );
+
+    return (
+        <div className="rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+            <h2 className="text-2xl font-bold mb-5 text-black dark:text-white">
+                Batch: {batch?.batchName || 'N/A'}
+            </h2>
+
+            {/* Teachers Section */}
+            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Teachers</h4>
+                <div className="grid grid-cols-5 sm:grid-cols-5 bg-gray-2 dark:bg-meta-4 rounded-sm">
+                    {headers.map((header, index) => (
+                        <div key={index} className="p-2.5 text-center font-medium uppercase">
+                            {header}
+                        </div>
+                    ))}
+                </div>
+                {renderUsers(batch?.batchTeacher || [])}
+            </div>
+
+            {/* Students Section */}
+            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-8">
+                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
+                <div className="grid grid-cols-5 sm:grid-cols-5 bg-gray-2 dark:bg-meta-4 rounded-sm">
+                    {headers.map((header, index) => (
+                        <div key={index} className="p-2.5 text-center font-medium uppercase">
+                            {header}
+                        </div>
+                    ))}
+                </div>
+                {renderUsers(batch?.batchStudent || [])}
+            </div>
+        </div>
     );
 }
 
