@@ -8,22 +8,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArchive, faEdit, faEye, faPlusCircle, faTrashAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 import toast, { Toaster } from 'react-hot-toast';
+import UpdateBatchModal from './Modal/UpdateBatchModal';
 
 function Batches() {
     const [batches, setBatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newBatch, setNewBatch] = useState({ batchNumber: '', batchSession: '', batchStart: '', batchEnd: '', batchName: '' });
     const [showUserModal, setShowUserModal] = useState(false);
+    const [selectedBatchId, setSelectedBatchId] = useState(null);
+    const [batch, setBatch] = useState(null);
     const [newUser, setNewUser] = useState({
         name: '',
-        role: 'Student',
+        role: '',
         email: '',
         cnic: '',
+        social: [],
         contact: [],
         education: [],
+        work: [],
         batchId: '',
         image: '',
     });
@@ -54,6 +60,23 @@ function Batches() {
         </div>
     );
 
+    const fetchBatches = async () => {
+        setLoading(true);
+        try {
+            let response;
+            if (batchId) {
+                response = await axios.post(`${API_BASE_URL}/batch/getBatchById`, { batchId });
+            } else {
+                response = await axios.post(`${API_BASE_URL}/batch/getAllBatches`);
+            }
+            setBatches(response.data.data);
+            setLoading(false);
+        } catch (err) {
+            setError('Error fetching batches');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const fetchBatches = async () => {
             setLoading(true);
@@ -75,7 +98,7 @@ function Batches() {
         fetchBatches();
     }, [batchId]);
 
-    const headers = ['Batch Number', 'Batch Start', 'Batch End', 'Batch Name', 'Actions'];
+    const headers = ['Batch Number', 'Batch Name', 'Batch Start', 'Batch End', 'Actions'];
 
     const handleCreateBatch = async () => {
         try {
@@ -88,28 +111,42 @@ function Batches() {
         }
     };
 
+    const handleUpdateBatch = async (updatedBatch) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/batch/updateBatch`, updatedBatch);
+            setBatches(response.data.data);
+            setShowUpdateModal(false);
+            setBatch({ batchNumber: '', batchSession: '', batchStart: '', batchEnd: '', batchName: '' });
+            fetchBatches();
+        } catch (err) {
+            setError('Error creating batch');
+        }
+    };
+
     const handleArchiveBatch = async (batchId) => {
         try {
-            const response = await axios.put(`${API_BASE_URL}/batch/archiveBatch/${batchId}`);
-            setBatches(batches.map(batch =>
-                batch._id === batchId ? { ...batch, archived: true } : batch
-            ));
+            const response = await axios.post(`${API_BASE_URL}/batch/toggleBatchStatus`, { batchId });
+            fetchBatches();
         } catch (err) {
             setError('Error archiving batch');
         }
     };
 
-    const handleCreateUser = async () => {
+    const handleCreateUser = async (updatedFormData) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/user/createUser`, newUser);
+            console.log(newUser);
+            console.log
+            const response = await axios.post(`${API_BASE_URL}/user/createUser`, updatedFormData);
             setShowUserModal(false);
             setNewUser({
                 name: '',
                 role: 'Student',
                 email: '',
                 cnic: '',
+                social: [],
                 contact: [],
                 education: [],
+                work: [],
                 batchId: '',
                 image: '',
             });
@@ -152,9 +189,9 @@ function Batches() {
                         keyExtractor: (batch) => batch._id,
                         renderRow: (batch) => [
                             <div className="p-2.5 text-center">{batch?.batchNumber || '-'}</div>,
+                            <div className="p-2.5 text-center">{batch?.batchName || '-'}</div>,
                             <div className="p-2.5 text-center">{batch?.batchStart || '-'}</div>,
                             <div className="p-2.5 text-center">{batch?.batchEnd || '-'}</div>,
-                            <div className="p-2.5 text-center">{batch?.batchName || '-'}</div>,
                             <div className="p-2.5 flex justify-center space-x-4">
                                 {/* Archive Icon */}
                                 <FontAwesomeIcon
@@ -171,7 +208,8 @@ function Batches() {
                                     icon={faEdit} // Use edit icon for updating
                                     className="text-2xl text-black hover:text-green-500 cursor-pointer"
                                     onClick={() => {
-                                        handleUpdateBatch(batch._id);
+                                        setBatch(batch);
+                                        setShowUpdateModal(true);
                                     }}
                                     title="Update Batch"
                                 />
@@ -182,6 +220,7 @@ function Batches() {
                                     className="text-2xl text-black hover:text-green-500 cursor-pointer"
                                     onClick={() => {
                                         setNewUser({ ...newUser, batchId: batch._id });
+                                        setSelectedBatchId(batch._id);
                                         setIsModalOpen(true);
                                     }}
                                     title="Add User"
@@ -193,20 +232,36 @@ function Batches() {
                 </div>
             </div>
 
+            {/* Update Batch Modal */}
+            {showUpdateModal && (
+                <UpdateBatchModal
+                    isOpen={showUpdateModal}
+                    closeModal={() => setShowUpdateModal(false)}
+                    handleUpdateBatch={handleUpdateBatch}
+                    batch={batch}
+                    setBatch={setBatch}
+                />
+            )}
+
             {/* Modals for Create User and Create Batch */}
             {isModalOpen && (
                 <CreateUserModal
                     setIsModalOpen={setIsModalOpen}
                     onSubmit={handleCreateUser}
+                    batchId={selectedBatchId}
                 />
             )}
-            <CreateBatchModal
-                isOpen={showCreateModal}
-                closeModal={() => setShowCreateModal(false)}
-                handleCreateBatch={handleCreateBatch}
-                newBatch={newBatch}
-                setNewBatch={setNewBatch}
-            />
+
+            {/* Create Batch Modal */}
+            {showCreateModal && (
+                <CreateBatchModal
+                    isOpen={showCreateModal}
+                    closeModal={() => setShowCreateModal(false)}
+                    handleCreateBatch={handleCreateBatch}
+                    newBatch={newBatch}
+                    setNewBatch={setNewBatch}
+                />
+            )}
         </>
     );
 }

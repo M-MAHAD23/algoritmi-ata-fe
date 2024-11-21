@@ -6,6 +6,7 @@ import Loader from "../../common/Loader";
 import getUserProfile from "../../hooks/profile";
 import LaunchATAContext from "../../context/AppContext";
 import { FaEdit } from "react-icons/fa";
+import profileImage from "../../images/ata/profile.png"
 
 const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
     const fileInputRef = useRef(null);
@@ -240,7 +241,7 @@ const UserProfileEditModal = ({ setIsModalOpen, userProfile, onSubmit }) => {
                             src={
                                 formData.profileImage
                                     ? URL.createObjectURL(formData.profileImage)
-                                    : formData.image
+                                    : profile.image ? profile.image : profileImage
                             }
                             alt="Profile"
                             className="w-20 h-20 rounded-full object-cover border-2 border-indigo-500"

@@ -88,8 +88,7 @@ const GenericModal = ({
                 {hasScroll && isScrollable && (
                     <button
                         onClick={toggleScroll}
-                        className={`absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-black text-white p-3 rounded-full shadow-lg transition duration-200 ${isAtBottom ? 'rotate-180' : ''
-                            }`}
+                        className={`absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-black text-white p-3 rounded-full shadow-lg transition duration-200 ${isAtBottom ? 'rotate-180' : ''}`}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

@@ -1,28 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GenericModal from '../../../components/GenericModal';
 
-const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, setNewBatch }) => {
+const UpdateBatchModal = ({ isOpen, closeModal, handleUpdateBatch, batch, setBatch }) => {
+    // Local state to track updated batch values
+    const [updatedBatch, setUpdatedBatch] = useState({
+        batchNumber: batch.batchNumber,
+        batchStart: batch.batchStart,
+        batchEnd: batch.batchEnd,
+        batchName: batch.batchName,
+        id: batch._id,
+    });
+
     const [errors, setErrors] = useState({});
+
+    // Ensure the updatedBatch state is updated when batch prop changes
+    useEffect(() => {
+        setUpdatedBatch({
+            batchNumber: batch.batchNumber,
+            batchStart: batch.batchStart,
+            batchEnd: batch.batchEnd,
+            batchName: batch.batchName,
+            id: batch._id,
+        });
+    }, [batch]);
 
     // Validate fields before submission
     const validateFields = () => {
         const newErrors = {};
-        if (!newBatch.batchNumber) {
+        if (!updatedBatch.batchNumber) {
             newErrors.batchNumber = 'Batch number is required.';
-        } else if (isNaN(newBatch.batchNumber)) {
+        } else if (isNaN(updatedBatch.batchNumber)) {
             newErrors.batchNumber = 'Batch number must be a valid number.';
         }
-        if (!newBatch.batchStart) newErrors.batchStart = 'Batch start date is required.';
-        if (!newBatch.batchEnd) newErrors.batchEnd = 'Batch end date is required.';
-        if (!newBatch.batchName) newErrors.batchName = 'Batch name is required.';
+        if (!updatedBatch.batchStart) newErrors.batchStart = 'Batch start date is required.';
+        if (!updatedBatch.batchEnd) newErrors.batchEnd = 'Batch end date is required.';
+        if (!updatedBatch.batchName) newErrors.batchName = 'Batch name is required.';
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Return true if no errors
+        return Object.keys(newErrors).length === 0;
     };
 
-    // Handle create batch
-    const onCreateBatch = () => {
+    // Handle update batch
+    const onUpdateBatch = () => {
         if (validateFields()) {
-            handleCreateBatch(); // Call the parent function only if validation passes
+            handleUpdateBatch(updatedBatch); // Pass updated batch data to parent
         }
     };
 
@@ -32,8 +52,8 @@ const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, set
                 <input
                     type="text"
                     placeholder="Batch Number"
-                    value={newBatch.batchNumber}
-                    onChange={(e) => setNewBatch({ ...newBatch, batchNumber: e.target.value })}
+                    value={updatedBatch.batchNumber}
+                    onChange={(e) => setUpdatedBatch({ ...updatedBatch, batchNumber: e.target.value })}
                     className={`border p-2 w-full ${errors.batchNumber ? 'border-red-500' : ''}`}
                 />
                 {errors.batchNumber && (
@@ -44,8 +64,8 @@ const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, set
                 <input
                     type="date"
                     placeholder="Batch Start"
-                    value={newBatch.batchStart}
-                    onChange={(e) => setNewBatch({ ...newBatch, batchStart: e.target.value })}
+                    value={updatedBatch.batchStart}
+                    onChange={(e) => setUpdatedBatch({ ...updatedBatch, batchStart: e.target.value })}
                     className={`border p-2 w-full ${errors.batchStart ? 'border-red-500' : ''}`}
                 />
                 {errors.batchStart && (
@@ -56,8 +76,8 @@ const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, set
                 <input
                     type="date"
                     placeholder="Batch End"
-                    value={newBatch.batchEnd}
-                    onChange={(e) => setNewBatch({ ...newBatch, batchEnd: e.target.value })}
+                    value={updatedBatch.batchEnd}
+                    onChange={(e) => setUpdatedBatch({ ...updatedBatch, batchEnd: e.target.value })}
                     className={`border p-2 w-full ${errors.batchEnd ? 'border-red-500' : ''}`}
                 />
                 {errors.batchEnd && (
@@ -68,8 +88,8 @@ const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, set
                 <input
                     type="text"
                     placeholder="Batch Name"
-                    value={newBatch.batchName}
-                    onChange={(e) => setNewBatch({ ...newBatch, batchName: e.target.value })}
+                    value={updatedBatch.batchName}
+                    onChange={(e) => setUpdatedBatch({ ...updatedBatch, batchName: e.target.value })}
                     className={`border p-2 w-full ${errors.batchName ? 'border-red-500' : ''}`}
                 />
                 {errors.batchName && (
@@ -83,12 +103,12 @@ const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, set
         <GenericModal
             isOpen={isOpen}
             closeModal={closeModal}
-            title="Create Batch"
+            title="Update Batch"
             content={content}
-            onOkClick={onCreateBatch}
+            onOkClick={onUpdateBatch}
             cancelButtonText="Cancel"
         />
     );
 };
 
-export default CreateBatchModal;
+export default UpdateBatchModal;

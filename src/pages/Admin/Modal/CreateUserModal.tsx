@@ -10,7 +10,7 @@ import profileImage from "../../../images/ata/profile.png"
 
 
 
-const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
+const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
     const fileInputRef = useRef(null);
     const { profile, setProfile } = useContext(LaunchATAContext);
     const { updateProfile, loading } = useProfileEdit();
@@ -31,7 +31,7 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
     const [errors, setErrors] = useState({
         email: "",
         name: "",
-        password: "",
+        image: "",
         rollId: "",
         cnic: "",
         role: "",
@@ -44,17 +44,29 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
     const handleChange = (e) => {
         const { name, value, dataset } = e.target;
 
-        const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@platform\.com$/.test(email);
-        const validateCnic = (cnic) => /^\d{5}-\d{7}-\d{1}$/.test(cnic);
-        const validateRollId = (rollId) => /^[A-Za-z]{2}-\d{4}$/.test(rollId);
-        const validateRole = (role) => role === "Teacher" || role === "Student";
+        // Helper functions to format input with hyphens
+        const formatRollId = (value) => {
+            // Remove non-numeric characters, then insert hyphen after first two digits
+            return value.replace(/\D/g, '').slice(0, 6).replace(/^(\d{2})(\d{4})$/, '$1-$2');
+        };
 
+        const formatCnic = (value) => {
+            // Remove non-numeric characters, then insert hyphen in the correct format
+            return value.replace(/\D/g, '').slice(0, 15).replace(/^(\d{5})(\d{7})(\d{1})$/, '$1-$2-$3');
+        };
+
+        const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+        const validateCnic = (cnic) => /^\d{5}-\d{7}-\d{1}$/.test(cnic);
+        const validateRollId = (rollId) => /^\d{2}-\d{4}$/.test(rollId);
+        const validateRole = (role) => role === "Teacher" || role === "Student";
 
         if (name === "contact") {
             const index = dataset.index;
             const updatedContact = [...formData.contact];
             updatedContact[index] = value;
             setFormData((prev) => ({ ...prev, contact: updatedContact }));
+
+            // Validate and clear errors
             if (updatedContact.every((contact) => contact.trim() !== "")) {
                 setErrors((prev) => ({ ...prev, contact: "" }));
             }
@@ -63,21 +75,26 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
             const updatedSocial = [...formData.social];
             updatedSocial[index] = value;
             setFormData((prev) => ({ ...prev, social: updatedSocial }));
+
+            // Validate and clear errors
             if (updatedSocial.every((social) => social.trim() !== "")) {
                 setErrors((prev) => ({ ...prev, social: "" }));
             }
         } else if (name.startsWith("education") || name.startsWith("work")) {
             const [key, index] = name.split("-");
             const updatedArray = [...formData[key]];
-            const fieldKey = dataset.key; // Get the correct field key
+            const fieldKey = dataset.key;
             updatedArray[index][fieldKey] = value; // Update the correct field
             setFormData((prev) => ({ ...prev, [key]: updatedArray }));
 
+            // Validate and clear errors
             if (updatedArray.every((item) => !Object.values(item).some((field) => field.trim() === ""))) {
                 setErrors((prev) => ({ ...prev, [key]: "" }));
             }
         } else if (name === "email") {
             setFormData((prev) => ({ ...prev, email: value }));
+
+            // Email validation
             if (value.trim() === "") {
                 setErrors((prev) => ({ ...prev, email: "Email is required" }));
             } else if (!validateEmail(value)) {
@@ -86,25 +103,33 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
                 setErrors((prev) => ({ ...prev, email: "" }));
             }
         } else if (name === "rollId") {
-            setFormData((prev) => ({ ...prev, rollId: value }));
-            if (value.trim() === "") {
+            const formattedRollId = formatRollId(value); // Format rollId
+            setFormData((prev) => ({ ...prev, rollId: formattedRollId }));
+
+            // Roll ID validation
+            if (formattedRollId.trim() === "") {
                 setErrors((prev) => ({ ...prev, rollId: "Roll ID is required" }));
-            } else if (!validateRollId(value)) {
+            } else if (!validateRollId(formattedRollId)) {
                 setErrors((prev) => ({ ...prev, rollId: "Invalid Roll ID format. Use XX-XXXX" }));
             } else {
                 setErrors((prev) => ({ ...prev, rollId: "" }));
             }
         } else if (name === "cnic") {
-            setFormData((prev) => ({ ...prev, cnic: value }));
-            if (value.trim() === "") {
+            const formattedCnic = formatCnic(value); // Format cnic
+            setFormData((prev) => ({ ...prev, cnic: formattedCnic }));
+
+            // CNIC validation
+            if (formattedCnic.trim() === "") {
                 setErrors((prev) => ({ ...prev, cnic: "CNIC is required" }));
-            } else if (!validateCnic(value)) {
+            } else if (!validateCnic(formattedCnic)) {
                 setErrors((prev) => ({ ...prev, cnic: "Invalid CNIC format. Use XXXXX-XXXXXXX-X" }));
             } else {
                 setErrors((prev) => ({ ...prev, cnic: "" }));
             }
         } else if (name === "role") {
             setFormData((prev) => ({ ...prev, role: value }));
+
+            // Role validation
             if (value.trim() === "") {
                 setErrors((prev) => ({ ...prev, role: "Role is required" }));
             } else if (!validateRole(value)) {
@@ -112,8 +137,7 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
             } else {
                 setErrors((prev) => ({ ...prev, role: "" }));
             }
-        }
-        else {
+        } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
@@ -198,7 +222,6 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
     const validateForm = () => {
         const newErrors = {
             name: formData.name ? "" : "Name is required",
-            password: formData.password ? "" : "Password is required",
             contact: formData.contact.every((num) => isValidPakistaniNumber(num))
                 ? ""
                 : "Please enter valid Pakistani contact numbers (e.g., +92 300 1234567).",
@@ -213,13 +236,16 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
         try {
             const { profileImage, ...restFormData } = formData;
             const updatedFormData = new FormData();
+            updatedFormData.append("email", restFormData.email);
             updatedFormData.append("name", restFormData.name);
-            updatedFormData.append("password", restFormData.password);
+            updatedFormData.append("rollId", restFormData.rollId);
+            updatedFormData.append("cnic", restFormData.cnic);
+            updatedFormData.append("role", restFormData.role);
+            updatedFormData.append("batchId", batchId);
             updatedFormData.append("contact", JSON.stringify(restFormData.contact));
             updatedFormData.append("social", JSON.stringify(restFormData.social));
             updatedFormData.append("education", JSON.stringify(restFormData.education));
             updatedFormData.append("work", JSON.stringify(restFormData.work));
-            updatedFormData.append("id", profile._id);
 
             if (profileImage instanceof File) {
                 updatedFormData.append("files", profileImage);
@@ -229,12 +255,10 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
                 console.log(`${key}: ${value}`);
             }
 
-            await updateProfile(updatedFormData);
             const userProfileFromAPI = await getUserProfile();
             setProfile(userProfileFromAPI);
             setIsModalOpen(false);
             onSubmit(updatedFormData);
-            toast.success("Profile updated successfully!");
         } catch (error) {
             console.error("Failed to update profile:", error);
             toast.error("Failed to update profile!");
@@ -260,20 +284,20 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
     };
 
     const handleCancel = () => {
-        setFormData({          // Reset formData to initial state
-            name: profile?.name || "",
-            image: profile?.image || "",
-            password: profile?.rawPassword || "",
-            contact: profile?.contact || [""],
-            social: profile?.social || [""],
-            education: profile?.education || [{ degree: "", role: "", started: "", ended: "" }],
-            work: profile?.work || [{ work: "", role: "", started: "", ended: "" }],
+        setFormData({
+            email: "",
+            name: "",
+            image: "",
+            contact: [""],
+            social: [""],
+            education: [{ degree: "", role: "", started: "", ended: "" }],
+            work: [{ work: "", role: "", started: "", ended: "" }],
             profileImage: null,
         });
         setErrors({
             email: "",
             name: "",
-            password: "",
+            image: "",
             rollId: "",
             cnic: "",
             role: "",
@@ -289,8 +313,6 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
     const modalContent = (
         <>
             <div className="space-y-4">
-
-
                 {/* Profile Image Section */}
                 <div className="flex items-center flex-col justify-center mb-6">
                     <div className="relative">
@@ -595,6 +617,8 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit }) => {
                 title="Create User"
                 content={modalContent}
                 onOkClick={handleSave}
+                modalClass="relative flex items-center justify-center z-50 bg-black bg-opacity-50"
+                modalContentClass="bg-white dark:bg-boxdark rounded-lg w-full max-w-lg sm:max-w-md lg:max-w-4xl p-6"
             />
         </>
     );

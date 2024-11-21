@@ -46,7 +46,7 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img className="rounded-full" src={profile ? profile.image : profileImage} alt="User" />
+          <img className="rounded-full" src={profile?.image && profile?.image !== "" ? profile.image : profileImage} alt="User" />
         </span>
 
         <svg
