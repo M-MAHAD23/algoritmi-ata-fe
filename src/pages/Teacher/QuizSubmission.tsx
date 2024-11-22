@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../../common/Loader';
 import toast, { Toaster } from 'react-hot-toast';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faHourglassHalf } from '@fortawesome/free-solid-svg-icons';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -76,7 +78,7 @@ function QuizSubmission() {
             await axios.post(`${API_BASE_URL}/quiz/analyzeQuiz`, { submission });
             fetchSubmissions();
             navigate(
-                `/teacher/quiz/results?quizId=${submission?.quizId?._id}&submissionId=${submission?._id}`
+                `/teacher/quiz/results?quizId=${submission?.quizId?._id}&submitterId=${submission?.submitterId?._id}`
             );
         } catch (err) {
             setError('Error analyzing submission');
@@ -132,24 +134,21 @@ function QuizSubmission() {
                                     // Actions
                                     <div className="p-2.5 text-center">
                                         {analyzed ? (
-                                            <button
+                                            <FontAwesomeIcon
+                                                icon={faEye}
+                                                className="text-black hover:text-gray-600 cursor-pointer"
                                                 onClick={() => handleViewReportClick(submission)}
-                                                className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
-                                            >
-                                                View Report
-                                            </button>
+                                                title="View Report"
+                                            />
                                         ) : (
-                                            <button
-                                                onClick={() => handleAnalyzeClick(submission)}
-                                                className={`px-4 py-2 text-white rounded ${isPastDeadline
-                                                    ? 'bg-blue-500 hover:bg-blue-600'
-                                                    : 'bg-gray-500 cursor-not-allowed'
-                                                    }`}
-                                            >
-                                                Analyze
-                                            </button>
+                                            <FontAwesomeIcon
+                                                icon={faHourglassHalf}
+                                                className={`cursor-pointer ${isPastDeadline ? 'text-black hover:text-gray-600' : 'text-gray-500 cursor-not-allowed'}`}
+                                                onClick={() => isPastDeadline && handleAnalyzeClick(submission)}
+                                                title="Analyze"
+                                            />
                                         )}
-                                    </div>,
+                                    </div>
                                 ];
                             },
                         })}

@@ -141,12 +141,12 @@ function QuizResults() {
                     {/* Submitter Information */}
                     <div className="mb-6">
                         <div className="flex items-center space-x-2 mb-4">
-                            <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Submitter:</span>
-                            <span className="text-gray-600 dark:text-gray-400">{submissionDetails?.submitterId?.name || "Unknown"}</span>
+                            <span className="font-semibold text-lg text-black dark:text-gray-200">Submitter:</span>
+                            <span className="text-gray-700 dark:text-gray-400">{submissionDetails?.submitterId?.name || "Unknown"}</span>
                         </div>
                         <div className="flex items-center space-x-2 mb-4">
-                            <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Submission Date:</span>
-                            <span className="text-gray-600 dark:text-gray-400">
+                            <span className="font-semibold text-lg text-black dark:text-gray-200">Submission Date:</span>
+                            <span className="text-gray-700 dark:text-gray-400">
                                 {submissionDetails?.submitDate
                                     ? new Date(submissionDetails.submitDate).toLocaleString("en-US", {
                                         month: "long",
@@ -165,14 +165,14 @@ function QuizResults() {
                     {/* Ethics Evaluation - with "See More" */}
                     <div className="mb-6">
                         <div className="flex items-center mb-4">
-                            <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Ethics Evaluation:</span>
-                            <span className={`text-lg ${ethics === "Passed" ? 'text-green-500' : 'text-red-500'} dark:text-green-400 ml-2`}>
+                            <span className="font-semibold text-lg text-black dark:text-gray-200">Ethics Evaluation:</span>
+                            <span className={`text-lg ${ethics === "Passed" ? 'text-gray-800' : 'text-gray-500'} dark:text-gray-300 ml-2`}>
                                 {isEthicsVisible ? ethics : `${ethics.slice(0, 10)}...`}
                             </span>
                             {ethics && (
                                 <span className="ml-2">
                                     <button
-                                        className="text-blue-500 dark:text-blue-400 hover:underline"
+                                        className="text-gray-800 dark:text-gray-300 hover:text-black dark:hover:text-gray-100 focus:outline-none"
                                         onClick={toggleEthicsVisibility}
                                     >
                                         {isEthicsVisible ? "See Less" : "See More"}
@@ -185,8 +185,8 @@ function QuizResults() {
                     {/* Copied from AI */}
                     <div className="mb-6">
                         <div className="flex items-center space-x-2 mb-4">
-                            <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Copied from AI:</span>
-                            <span className={`text-lg ${copiedFromAI === 0 ? 'text-green-500' : 'text-red-500'} dark:text-green-400`}>
+                            <span className="font-semibold text-lg text-black dark:text-gray-200">Copied from AI:</span>
+                            <span className={`text-lg ${copiedFromAI === 0 ? 'text-gray-800' : 'text-gray-500'} dark:text-gray-300`}>
                                 {copiedFromAI === 0 ? "No" : "Yes"}
                             </span>
                         </div>
@@ -195,16 +195,16 @@ function QuizResults() {
                     {/* Submitted Code Link */}
                     <div className="mb-6">
                         <div className="flex items-center space-x-2 mb-4">
-                            <FontAwesomeIcon icon={faCode} className="text-gray-500" />
-                            <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">Submitted Code:</span>
+                            <FontAwesomeIcon icon={faCode} className="text-gray-600 dark:text-gray-400" />
+                            <span className="font-semibold text-lg text-black dark:text-gray-200">Submitted Code:</span>
                             <a
                                 href={s3Url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center text-blue-500 hover:bg-blue-100 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="inline-flex items-center text-gray-800 hover:text-black hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                             >
                                 View Code
-                                <FontAwesomeIcon icon={faEye} className="ml-2" />
+                                <FontAwesomeIcon icon={faEye} className="ml-2 text-gray-600 dark:text-gray-400" />
                             </a>
                         </div>
                     </div>

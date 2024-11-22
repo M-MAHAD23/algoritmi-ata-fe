@@ -53,7 +53,6 @@ function TeacherBatches() {
                 {batches.length > 0 && (
                     <RenderCards
                         data={batches.map((batch) => ({
-                            id: batch._id,
                             batchName: batch.batchName || 'Unnamed Batch',
                             batchNumber: batch.batchNumber || '-',
                             batchSession: batch.batchSession || '-',

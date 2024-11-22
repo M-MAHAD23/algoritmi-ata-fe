@@ -10,6 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import HintModal from './Modal/HintModal';
 import QuizModal from './Modal/QuizModal';
 import RenderCard from '../../components/RenderCard';
+import profileImage from '../../images/ata/profile.png'
 
 function ActiveBatch() {
     const navigate = useNavigate();
@@ -317,7 +318,7 @@ function ActiveBatch() {
                                         <div className="p-2.5 text-center">
                                             {student.image ? (
                                                 <img
-                                                    src={student.image}
+                                                    src={student.image || profileImage}
                                                     alt={student.name}
                                                     className="w-10 h-10 rounded-full mx-auto"
                                                 />
