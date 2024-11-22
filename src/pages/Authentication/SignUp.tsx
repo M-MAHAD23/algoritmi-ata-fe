@@ -4,6 +4,7 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 import Vector from '../../images/vector/vector.svg';
+import Colab from '../../images/ata/colab.png';
 import { useSignUp } from '../../hooks/hooks';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import toast, { Toaster } from 'react-hot-toast';
@@ -168,10 +169,8 @@ const SignUp: React.FC = () => {
                 <p className="2xl:px-20">
                   Unlock your full potential with the guidance of our Artificial Teaching Assistant. Sign up now!
                 </p>
-
-                <span className="mt-15 inline-block">
-                  <img src={Vector} alt="SVG Image" />
-
+                <span className="inline-block">
+                  <img className='h-100' src={Colab} alt="SVG Image" />
                 </span>
               </div>
             </div>
@@ -364,14 +363,14 @@ const SignUp: React.FC = () => {
                       type="submit"
                       value={isLoading ? 'Signing Up...' : 'Sign Up'}
                       disabled={isLoading || !name || !email || !password || !valid || nameError || emailError || passwordError || validError}
-                      className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                      className="w-full cursor-pointer rounded-lg border border-black bg-black p-4 text-white transition hover:bg-opacity-90"
                     />
                   </div>
 
                   <div className="mt-6 text-center">
                     <p>
                       Already have an account?{' '}
-                      <Link to="/signin" className="text-primary">
+                      <Link to="/signin" className="text-black hover:underline">
                         Sign in
                       </Link>
                     </p>

@@ -197,35 +197,40 @@ function ActiveBatch() {
         setLoading(true);
         try {
             const formData = new FormData();
-            formData.append('quizId', currentQuizId);
+            formData.append('quizId', currentQuizId);  // Append quiz ID
 
-            // Append each hint in the quizHints array to the formData
-            quizHints.forEach((hint) => {
-                formData.append('quizHints[]', JSON.stringify(hint)); // Sending as array in the backend
+            // Loop through hints to append each hint as a JSON string and image file
+            quizHints.forEach((hint, index) => {
+                // Remove the file from hint object before appending
+                const { image, ...hintData } = hint;
+
+                // Append the hint data as JSON
+                formData.append(`quizHints`, JSON.stringify(hintData));
+
+                // Append the image if it exists
+                if (image) {
+                    formData.append(`files`, image);  // 'images' array for all files
+                }
             });
 
-            console.log(hintForm.image)
+            try {
+                const response = await axios.post(`${API_BASE_URL}/quiz/createQuizHint`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                // Reset form state
+                setHintForm({ description: '', hintType: 'Input', image: null });
 
-            // If there's an image, append it
-            if (hintForm.image) {
-                formData.append('image', hintForm.image);
+                // Close the modal only after the API call is successful
+                setShowHintModal(false); // Now this will only happen after the hint is successfully added
+
+                // Set loading false
+                setLoading(false);
+                // Handle success response
+            } catch (error) {
+                console.error('Error uploading quiz hints:', error);
             }
-
-
-            // API call to add the hint
-            const response = await axios.post(`${API_BASE_URL}/quiz/createQuizHint`, formData);
-
-            // Update the frontend state with the newly created hint
-            // setQuizHints([...quizHints, ...response.data.hints]);
-
-            // Reset form state
-            setHintForm({ description: '', hintType: 'Input', image: null });
-
-            // Close the modal only after the API call is successful
-            setShowHintModal(false); // Now this will only happen after the hint is successfully added
-
-            // Set loading false
-            setLoading(false);
 
         } catch (err) {
             console.error('Error adding hint:', err);

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CodeAnimation from './CodeAnimation';
-import colab from './colab.png';
-import globe from './globe.png';
+import colab from '../../images/ata/colab.png';
+import globe from '../../images/ata/globe.png';
 
 function Landing() {
   const [token, setToken] = useState(null);
@@ -15,7 +15,7 @@ function Landing() {
       imgSrc:
         'https://media.licdn.com/dms/image/v2/C4D03AQEFh_zzw78iGA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1663251846384?e=1736985600&v=beta&t=hQTNyrl2dA0RvGRlbb2kbrBv-x9CFdyjKgvnJ2wE600',
       description:
-        'Programming Language Trainer | Project Advisor | TFT Author | Programming Coach | Dev Mentor | Helping individuals to learn and improve computing foundations 🛡️',
+        'Programming Language Trainer | Project Advisor | Programming Coach | Helping individuals to learn and improve computing foundations 🛡️',
       linkedin: 'https://www.linkedin.com/in/dr-nabeel-sabir-khan-8904a4221/',
     },
     {
@@ -36,15 +36,15 @@ function Landing() {
         'Coding the Future Together! I am a Software Engineer with expertise in Python, Designing, and Architecture. Let’s keep solving 🛡️',
       linkedin: 'https://www.linkedin.com/in/muhammad-ahad-9a2b43268/',
     },
-    {
-      name: 'Muhammad Ahmad',
-      role: 'Tester',
-      imgSrc:
-        'https://scontent.flhe13-1.fna.fbcdn.net/v/t39.30808-6/343163896_770153518161561_6751047617848390799_n.jpg?stp=c5.0.306.306a_dst-jpg_s206x206&_nc_cat=108&ccb=1-7&_nc_sid=fe5ecc&_nc_ohc=4we9_5V6cVMQ7kNvgGQ0do5&_nc_zt=23&_nc_ht=scontent.flhe13-1.fna&_nc_gid=A9jLI1gcUzZW0hQMx4yeCyh&oh=00_AYDO8TFNdpW7Flh0m2y8bMZSEFjl8QzfGWvYG_eNfwiMKA&oe=673B3B81',
-      description:
-        'Responsible for ensuring the quality, functionality, and reliability of software through meticulous testing and validation of features and fixes before release 🛡️',
-      linkedin: 'your-link-here',
-    },
+    // {
+    //   name: 'Muhammad Ahmad',
+    //   role: 'Tester',
+    //   imgSrc:
+    //     'https://scontent.flhe13-1.fna.fbcdn.net/v/t39.30808-6/343163896_770153518161561_6751047617848390799_n.jpg?stp=c5.0.306.306a_dst-jpg_s206x206&_nc_cat=108&ccb=1-7&_nc_sid=fe5ecc&_nc_ohc=4we9_5V6cVMQ7kNvgGQ0do5&_nc_zt=23&_nc_ht=scontent.flhe13-1.fna&_nc_gid=A9jLI1gcUzZW0hQMx4yeCyh&oh=00_AYDO8TFNdpW7Flh0m2y8bMZSEFjl8QzfGWvYG_eNfwiMKA&oe=673B3B81',
+    //   description:
+    //     'Responsible for ensuring the quality, functionality, and reliability of software through meticulous testing and validation of features and fixes before release 🛡️',
+    //   linkedin: 'your-link-here',
+    // },
   ];
   const [currentLine, setCurrentLine] = useState(0); // Tracks which line is being typed
   const [visibleText, setVisibleText] = useState({
@@ -358,7 +358,7 @@ function Landing() {
                 className="w-full sm:w-1/2 md:w-1/3 p-6 flex flex-col flex-grow flex-shrink rounded-lg"
               >
                 <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow flex flex-col items-center justify-center">
-                  <div className="mt-15 w-full font-bold text-xl text-gray-800 px-6 text-center">
+                  <div className="mt-15 w-full font-bold text-2xl text-gray-800 px-6 text-center">
                     {member.name}
                   </div>
                   <img
@@ -366,10 +366,10 @@ function Landing() {
                     alt="Profile"
                     className="mt-15 w-50 h-50 rounded-full mb-4 object-cover"
                   />
-                  <div className="w-full font-bold text-xl text-gray-800 px-6 text-center">
+                  <div className="w-full font-bold text-2xl text-gray-800 px-6 text-center">
                     {member.role}
                   </div>
-                  <p className="text-gray-800 text-base px-6 mb-5 text-center">
+                  <p className="text-gray-800 text-2xl px-6 mb-5 text-center">
                     {member.description}
                   </p>
                 </div>

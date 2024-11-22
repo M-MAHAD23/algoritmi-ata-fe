@@ -77,7 +77,7 @@ export default function ChatPage({ title, messages = [] }) {
   useEffect(() => {
     if (!generatingResponse && newChatId) {
       setNewChatId(null);
-      router(`/chat/${newChatId}`);
+      // router(`/chat/${newChatId}`);
     }
   }, [newChatId, generatingResponse, router]);
 

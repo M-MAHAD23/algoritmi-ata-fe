@@ -3,6 +3,7 @@ import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
 import { useParams } from 'react-router-dom';
+import profileImage from '../../images/ata/profile.png';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 
@@ -64,34 +65,34 @@ function Teachers() {
                     </div>
 
                     {/* Dynamic Rows */}
-                    {teachers.length === 0 ? (
+                    {teachers?.length === 0 ? (
                         <div className="text-center text-lg p-5">No teachers available.</div>
                     ) : (
-                        teachers.map((teacher, rowIndex) => (
+                        teachers?.map((teacher, rowIndex) => (
                             <div
-                                className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === teachers.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === teachers?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
                                 key={rowIndex}
                             >
                                 {/* Image Column */}
                                 <div className="flex items-center justify-center p-2.5 xl:p-5">
                                     <img
-                                        src={teacher.image || 'default-image.jpg'} // Add default image URL if teacher doesn't have one
-                                        alt={teacher.name}
+                                        src={teacher?.image || profileImage} // Add default image URL if teacher? doesn't have one
+                                        alt={teacher?.name}
                                         className="w-12 h-12 rounded-full object-cover"
                                     />
                                 </div>
                                 {/* Other Columns */}
                                 <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{teacher.name || '-'}</p>
+                                    <p className="text-black dark:text-white">{teacher?.name || '-'}</p>
                                 </div>
                                 <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{teacher.email || '-'}</p>
+                                    <p className="text-black dark:text-white">{teacher?.email || '-'}</p>
                                 </div>
                                 <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{teacher.contact?.join(', ') || '-'}</p>
+                                    <p className="text-black dark:text-white">{teacher?.contact?.join(', ') || '-'}</p>
                                 </div>
                                 <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{teacher.about || '-'}</p>
+                                    <p className="text-black dark:text-white">{teacher?.about || '-'}</p>
                                 </div>
                             </div>
                         ))

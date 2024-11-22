@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Loader from '../../common/Loader';
 import axios from 'axios';
 import profileImage from '../../images/ata/profile.png'
+import { useNavigate } from 'react-router-dom';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function BatchDetails() {
@@ -11,6 +12,7 @@ function BatchDetails() {
     const [error, setError] = useState(false);
     const [batch, setBatch] = useState(null);
     const [batchId, setBatchId] = useState(null);
+    const navigate = useNavigate();
 
     // Fetch batches inside useEffect
     useEffect(() => {
@@ -119,6 +121,16 @@ function BatchDetails() {
 
     return (
         <div className="rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+
+            {/* Go Back Button */}
+            <button
+                onClick={() => navigate(-1)} // Navigate back to the previous page
+                className="text-black hover:underline mb-4"
+            >
+                &larr; Go Back
+            </button>
+
+
             <h2 className="text-2xl font-bold mb-5 text-black dark:text-white">
                 Batch: {batch?.batchName || 'N/A'}
             </h2>

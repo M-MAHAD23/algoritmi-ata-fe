@@ -6,6 +6,7 @@ import { useSignIn } from '../../hooks/hooks';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import Colab from '../../images/ata/colab.png';
 import Loader from '../../common/Loader';
 
 
@@ -125,8 +126,8 @@ const SignIn: React.FC = () => {
                 <p className="2xl:px-20">
                   Ready to enhance your skills? Sign in to start your AI-powered learning journey.
                 </p>
-                <span className="mt-15 inline-block">
-                  <img src={Vector} alt="SVG Image" />
+                <span className="inline-block">
+                  <img className='h-100' src={Colab} alt="SVG Image" />
                 </span>
               </div>
             </div>
@@ -238,14 +239,14 @@ const SignIn: React.FC = () => {
                       type="submit"
                       value={isLoading ? 'Signing In...' : 'Sign In'}
                       disabled={isLoading || !email || !password || emailError || passwordError}
-                      className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                      className="w-full cursor-pointer rounded-lg border border-black bg-black p-4 text-white transition hover:bg-opacity-90"
                     />
                   </div>
 
                   <div className="mt-6 text-center">
                     <p>
                       Don’t have an account?{' '}
-                      <Link to="/signup" className="text-primary">
+                      <Link to="/signup" className="text-black hover:underline">
                         Sign Up
                       </Link>
                     </p>

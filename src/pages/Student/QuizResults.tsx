@@ -131,7 +131,7 @@ function QuizResults() {
                     {/* Go Back Button */}
                     <button
                         onClick={() => navigate(-1)} // Navigate back to the previous page
-                        className="text-blue-500 dark:text-blue-400 hover:underline mb-4"
+                        className="text-black hover:underline mb-4"
                     >
                         &larr; Go Back
                     </button>
