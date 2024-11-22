@@ -170,7 +170,7 @@ const SignUp: React.FC = () => {
                   Unlock your full potential with the guidance of our Artificial Teaching Assistant. Sign up now!
                 </p>
                 <span className="inline-block">
-                  <img className='h-100' src={Colab} alt="SVG Image" />
+                  <img className='h-75' src={Colab} alt="SVG Image" />
                 </span>
               </div>
             </div>

@@ -76,7 +76,7 @@ const Profile = () => {
             onClick={handleEditClick}
             className="absolute top-4 right-4 text-white bg-black rounded-full p-2 shadow-lg"
           >
-            <FaEdit />
+            <FaEdit className="text-3xl" />
           </button>
         </div>
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
@@ -113,7 +113,7 @@ const Profile = () => {
           </div>
 
           {/* Password */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Password</label>
               <input

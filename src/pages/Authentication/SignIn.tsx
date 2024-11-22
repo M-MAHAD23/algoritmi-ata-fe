@@ -127,7 +127,7 @@ const SignIn: React.FC = () => {
                   Ready to enhance your skills? Sign in to start your AI-powered learning journey.
                 </p>
                 <span className="inline-block">
-                  <img className='h-100' src={Colab} alt="SVG Image" />
+                  <img className='h-75' src={Colab} alt="SVG Image" />
                 </span>
               </div>
             </div>
