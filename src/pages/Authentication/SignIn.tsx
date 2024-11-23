@@ -93,8 +93,10 @@ const SignIn: React.FC = () => {
         toast.error('Batch is not enable anymore.');
       }
       else if (error.response && error.response.status === 404) {
-        toast.error('Wrong Email or Password.', {
-        });
+        toast.error('Wrong Email or Password.');
+      }
+      else if (error.response && error.response.status === 403) {
+        toast.error('Please Sign Up 1st.');
       }
       else {
         console.error('Error during sign-in', error);
