@@ -45,20 +45,25 @@ const SignUp: React.FC = () => {
   };
 
   // Handle form field changes
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleNameChange = (e) => {
+    let value = e.target.value;
 
-    // Regular expression for pattern like "20-3822"
-    const pattern = /^\d{2}-\d{4}$/;
+    // Remove any non-numeric characters
+    value = value.replace(/\D/g, '');
 
-    // Update the name state regardless of the format
+    // Automatically add '-' after the first two digits
+    if (value.length > 2) {
+      value = `${value.slice(0, 2)}-${value.slice(2, 6)}`;
+    }
+
+    // Update state with formatted Roll-Id
     setName(value);
 
-    // Check if the value matches the pattern
-    if (pattern.test(value)) {
+    // Optional: Validate Roll-Id length and format
+    if (value.length === 7 && /^[0-9]{2}-[0-9]{4}$/.test(value)) {
       setNameError('');
     } else {
-      setNameError('Invalid name format. Please use the format XX-XXXX');
+      setNameError('Invalid Roll-Id format. Use XX-XXXX.');
     }
   };
 
@@ -184,9 +189,9 @@ const SignUp: React.FC = () => {
                         placeholder="Enter your Roll-Id"
                         value={name}
                         onChange={handleNameChange}
+                        maxLength={7} // Limiting input length to 7 chars (XX-XXXX)
                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
-
                       <span className="absolute right-4 top-4">
                         <svg
                           className="fill-current"
@@ -208,9 +213,7 @@ const SignUp: React.FC = () => {
                           </g>
                         </svg>
                       </span>
-                      {nameError && (
-                        <p className="text-red-500 text-sm">{nameError}</p>
-                      )}
+                      {nameError && <p className="text-red-500 text-sm">{nameError}</p>}
                     </div>
                   </div>
 
