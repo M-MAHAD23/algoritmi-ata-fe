@@ -275,218 +275,220 @@ function ActiveBatch() {
                     position: 'top-right', // Position the toasts on the top-right
                 }}
             />
-            {loading && <Loader />}
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                {error && <p className="text-red-500">{error}</p>}
-                {batch ? (
-                    <>
-                        <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
-                            {/* Go Back Button */}
-                            <button
-                                onClick={() => navigate(-1)} // Navigate back to the previous page
-                                className="text-black hover:underline mb-4"
-                            >
-                                &larr; Go Back
-                            </button>
-
-                            <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batch Details</h4>
-
-                            {/* Card Grid */}
-                            <RenderCard
-                                data={{
-                                    batchNumber: batch.batchNumber,
-                                    batchSession: batch.batchSession,
-                                    batchName: batch.batchName,
-                                    batchStudent: batch.batchStudent,
-                                    batchQuiz: batch.batchQuiz,
-                                }}
-                            />
-
-                        </div>
-                        <div className="mt-6 mb-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
-                            {/* Students Table */}
+            <Panel>
+                {loading && <Loader />}
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                    {error && <p className="text-red-500">{error}</p>}
+                    {batch ? (
+                        <>
                             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
-                                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
+                                {/* Go Back Button */}
+                                <button
+                                    onClick={() => navigate(-1)} // Navigate back to the previous page
+                                    className="text-black hover:underline mb-4"
+                                >
+                                    &larr; Go Back
+                                </button>
 
-                                {renderTable({
-                                    headers: ["Image", "Roll ID", "Name", "Email", "Contact"],
-                                    rows: batch.batchStudent || [],
-                                    keyExtractor: (student) => student._id,
-                                    renderRow: (student) => [
-                                        // Student Image
-                                        <div className="p-2.5 text-center">
-                                            {student.image ? (
-                                                <img
-                                                    src={student.image || profileImage}
-                                                    alt={student.name}
-                                                    className="w-10 h-10 rounded-full mx-auto"
-                                                />
-                                            ) : (
-                                                <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto"></div>
-                                            )}
-                                        </div>,
-                                        // Student Roll ID
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {student.rollId || '-'}
-                                        </div>,
-                                        // Student Name
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {student.name || '-'}
-                                        </div>,
-                                        // Student Email
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {student.email || '-'}
-                                        </div>,
-                                        // Student Contact
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {student.contact?.[0] || '-'}
-                                        </div>,
-                                    ],
-                                })}
+                                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batch Details</h4>
+
+                                {/* Card Grid */}
+                                <RenderCard
+                                    data={{
+                                        batchNumber: batch.batchNumber,
+                                        batchSession: batch.batchSession,
+                                        batchName: batch.batchName,
+                                        batchStudent: batch.batchStudent,
+                                        batchQuiz: batch.batchQuiz,
+                                    }}
+                                />
+
                             </div>
+                            <div className="mt-6 mb-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
+                                {/* Students Table */}
+                                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+                                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
 
-                            {/* Quizzes Table */}
-                            <div className="mt-6 rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
-                                <h4 className="mb-6 text-xl font-bold text-black dark:text-white">
-                                    Quizzes
-                                </h4>
-                                {/* Create Quiz Button Below Heading */}
-                                <div className="mt-4 mb-6">
-                                    <button
-                                        onClick={() => setShowQuizModal(true)}
-                                        className="px-6 py-3 font-bold text-white bg-black hover:bg-gray-500 rounded-md shadow-md"
-                                    >
-                                        Create Quiz +
-                                    </button>
+                                    {renderTable({
+                                        headers: ["Image", "Roll ID", "Name", "Email", "Contact"],
+                                        rows: batch.batchStudent || [],
+                                        keyExtractor: (student) => student._id,
+                                        renderRow: (student) => [
+                                            // Student Image
+                                            <div className="p-2.5 text-center">
+                                                {student.image ? (
+                                                    <img
+                                                        src={student.image || profileImage}
+                                                        alt={student.name}
+                                                        className="w-10 h-10 rounded-full mx-auto"
+                                                    />
+                                                ) : (
+                                                    <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto"></div>
+                                                )}
+                                            </div>,
+                                            // Student Roll ID
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {student.rollId || '-'}
+                                            </div>,
+                                            // Student Name
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {student.name || '-'}
+                                            </div>,
+                                            // Student Email
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {student.email || '-'}
+                                            </div>,
+                                            // Student Contact
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {student.contact?.[0] || '-'}
+                                            </div>,
+                                        ],
+                                    })}
                                 </div>
 
-                                {renderTable({
-                                    headers: [
-                                        'Topic',
-                                        'Quiz Name',
-                                        'Description',
-                                        'Issued Date',
-                                        'Deadline',
-                                        'Submissions',
-                                        'Actions',
-                                    ],
-                                    rows: batch.batchQuiz || [],
-                                    keyExtractor: (quiz) => quiz._id,
-                                    renderRow: (quiz) => [
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {quiz.quizTopic || '-'}
-                                        </div>,
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {quiz.quizName || '-'}
-                                        </div>,
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {quiz.quizDescription || '-'}
-                                        </div>,
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {quiz.quizIssued || '-'}
-                                        </div>,
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {quiz.quizDead || '-'}
-                                        </div>,
-                                        <div className="p-2.5 text-center text-black dark:text-white">
-                                            {quiz.quizSubmitters?.length || 0}
-                                        </div>,
-                                        <div className="p-2.5 flex justify-center space-x-4">
-                                            {/* Add Hint Icon */}
-                                            <FontAwesomeIcon
-                                                icon={faPlusCircle}
-                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
-                                                    ? 'text-gray-500 cursor-not-allowed'
-                                                    : 'text-black hover:text-green-500 cursor-pointer'
-                                                    }`}
-                                                onClick={() => {
-                                                    if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
-                                                        setShowHintModal(true);
-                                                        setCurrentQuizId(quiz._id); // Store quiz._id to use in the modal
-                                                    } else {
-                                                        toast.error("Deadline passed, Can't add hint :)");
-                                                    }
-                                                }}
-                                                title="Add Hint"
-                                            />
+                                {/* Quizzes Table */}
+                                <div className="mt-6 rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+                                    <h4 className="mb-6 text-xl font-bold text-black dark:text-white">
+                                        Quizzes
+                                    </h4>
+                                    {/* Create Quiz Button Below Heading */}
+                                    <div className="mt-4 mb-6">
+                                        <button
+                                            onClick={() => setShowQuizModal(true)}
+                                            className="px-6 py-3 font-bold text-white bg-black hover:bg-gray-500 rounded-md shadow-md"
+                                        >
+                                            Create Quiz +
+                                        </button>
+                                    </div>
 
-                                            {/* View Results Icon */}
-                                            <FontAwesomeIcon
-                                                icon={faEye}
-                                                className={`text-2xl ${new Date().toISOString().split('T')[0] >= quiz.quizDead
-                                                    ? 'text-black cursor-pointer'
-                                                    : 'text-gray-500 cursor-not-allowed'
-                                                    }`}
-                                                onClick={() => {
-                                                    if (new Date().toISOString().split('T')[0] >= quiz.quizDead) {
-                                                        handleQuizClick(quiz._id); // Use quiz._id to view results
-                                                    } else {
-                                                        toast.error("Please wait for the deadline to analyze the results :)");
-                                                    }
-                                                }}
-                                                title="View Results"
-                                            />
+                                    {renderTable({
+                                        headers: [
+                                            'Topic',
+                                            'Quiz Name',
+                                            'Description',
+                                            'Issued Date',
+                                            'Deadline',
+                                            'Submissions',
+                                            'Actions',
+                                        ],
+                                        rows: batch.batchQuiz || [],
+                                        keyExtractor: (quiz) => quiz._id,
+                                        renderRow: (quiz) => [
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {quiz.quizTopic || '-'}
+                                            </div>,
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {quiz.quizName || '-'}
+                                            </div>,
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {quiz.quizDescription || '-'}
+                                            </div>,
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {quiz.quizIssued || '-'}
+                                            </div>,
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {quiz.quizDead || '-'}
+                                            </div>,
+                                            <div className="p-2.5 text-center text-black dark:text-white">
+                                                {quiz.quizSubmitters?.length || 0}
+                                            </div>,
+                                            <div className="p-2.5 flex justify-center space-x-4">
+                                                {/* Add Hint Icon */}
+                                                <FontAwesomeIcon
+                                                    icon={faPlusCircle}
+                                                    className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                        ? 'text-gray-500 cursor-not-allowed'
+                                                        : 'text-black hover:text-green-500 cursor-pointer'
+                                                        }`}
+                                                    onClick={() => {
+                                                        if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
+                                                            setShowHintModal(true);
+                                                            setCurrentQuizId(quiz._id); // Store quiz._id to use in the modal
+                                                        } else {
+                                                            toast.error("Deadline passed, Can't add hint :)");
+                                                        }
+                                                    }}
+                                                    title="Add Hint"
+                                                />
 
-                                            {/* Delete Icon */}
-                                            <FontAwesomeIcon
-                                                icon={faTrashAlt}
-                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
-                                                    ? 'text-gray-500 cursor-not-allowed'
-                                                    : 'text-black hover:text-red-500 cursor-pointer'
-                                                    }`}
-                                                onClick={() => {
-                                                    if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
-                                                        handleQuizDeleteClick(quiz._id); // Use quiz._id to delete quiz
-                                                    } else {
-                                                        toast.error("Deadline passed, Can't delete Quiz :)");
-                                                    }
-                                                }}
-                                                title="Delete"
-                                            />
-                                        </div>
-                                    ],
-                                })}
+                                                {/* View Results Icon */}
+                                                <FontAwesomeIcon
+                                                    icon={faEye}
+                                                    className={`text-2xl ${new Date().toISOString().split('T')[0] >= quiz.quizDead
+                                                        ? 'text-black cursor-pointer'
+                                                        : 'text-gray-500 cursor-not-allowed'
+                                                        }`}
+                                                    onClick={() => {
+                                                        if (new Date().toISOString().split('T')[0] >= quiz.quizDead) {
+                                                            handleQuizClick(quiz._id); // Use quiz._id to view results
+                                                        } else {
+                                                            toast.error("Please wait for the deadline to analyze the results :)");
+                                                        }
+                                                    }}
+                                                    title="View Results"
+                                                />
+
+                                                {/* Delete Icon */}
+                                                <FontAwesomeIcon
+                                                    icon={faTrashAlt}
+                                                    className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                        ? 'text-gray-500 cursor-not-allowed'
+                                                        : 'text-black hover:text-red-500 cursor-pointer'
+                                                        }`}
+                                                    onClick={() => {
+                                                        if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
+                                                            handleQuizDeleteClick(quiz._id); // Use quiz._id to delete quiz
+                                                        } else {
+                                                            toast.error("Deadline passed, Can't delete Quiz :)");
+                                                        }
+                                                    }}
+                                                    title="Delete"
+                                                />
+                                            </div>
+                                        ],
+                                    })}
 
 
-                                <QuizModal
-                                    isOpen={showQuizModal}
-                                    closeModal={() => {
-                                        setShowQuizModal(false);
-                                        setQuizErrors({});
-                                        resetQuizForm();
-                                    }}
-                                    quizForm={quizForm}
-                                    setQuizForm={setQuizForm}
-                                    quizErrors={quizErrors}
-                                    handleInputChange={handleInputChange}
-                                    createQuiz={createQuiz}
-                                />
+                                    <QuizModal
+                                        isOpen={showQuizModal}
+                                        closeModal={() => {
+                                            setShowQuizModal(false);
+                                            setQuizErrors({});
+                                            resetQuizForm();
+                                        }}
+                                        quizForm={quizForm}
+                                        setQuizForm={setQuizForm}
+                                        quizErrors={quizErrors}
+                                        handleInputChange={handleInputChange}
+                                        createQuiz={createQuiz}
+                                    />
 
-                                <HintModal
-                                    isOpen={showHintModal}
-                                    closeModal={() => {
-                                        setShowHintModal(false);
-                                        setHintErrors({});
-                                        resetQuizHintForm();
-                                    }}
-                                    hintForm={hintForm}
-                                    setHintForm={setHintForm}
-                                    hintErrors={hintErrors}
-                                    handleHintChange={handleHintChange}
-                                    handleAddHint={handleAddHint}
-                                    quizHints={quizHints}
-                                    setQuizHints={setQuizHints}
-                                    addHint={addHint}
-                                    currentQuizId={currentQuizId}
-                                    setHintErrors={setHintErrors}
-                                />
+                                    <HintModal
+                                        isOpen={showHintModal}
+                                        closeModal={() => {
+                                            setShowHintModal(false);
+                                            setHintErrors({});
+                                            resetQuizHintForm();
+                                        }}
+                                        hintForm={hintForm}
+                                        setHintForm={setHintForm}
+                                        hintErrors={hintErrors}
+                                        handleHintChange={handleHintChange}
+                                        handleAddHint={handleAddHint}
+                                        quizHints={quizHints}
+                                        setQuizHints={setQuizHints}
+                                        addHint={addHint}
+                                        currentQuizId={currentQuizId}
+                                        setHintErrors={setHintErrors}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </>
-                ) : (
-                    <div className="text-center p-5">No batch details available.</div>
-                )}
-            </div>
+                        </>
+                    ) : (
+                        <div className="text-center p-5">No batch details available.</div>
+                    )}
+                </div>
+            </Panel>
         </>
     );
 }

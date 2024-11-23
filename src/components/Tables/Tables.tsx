@@ -2,6 +2,7 @@ import React from 'react';
 import DynamicTable from './DynamicTable';
 import Panel from '../../layout/Panel';
 import Batches from './../../pages/Admin/Batches';
+import Teachers from '../../pages/Admin/Teachers';
 
 // Example data for different entities
 const batchesData = [

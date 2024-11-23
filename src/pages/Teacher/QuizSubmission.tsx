@@ -5,6 +5,7 @@ import Loader from '../../common/Loader';
 import toast, { Toaster } from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faHourglassHalf, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import Panel from '../../layout/Panel';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -112,67 +113,69 @@ function QuizSubmission() {
     return (
         <>
             <Toaster />
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                {loading ? (
-                    <Loader />
-                ) : error ? (
-                    <p className="text-red-500">{error}</p>
-                ) : (
-                    <div className='mb-6'>
-                        <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
-                            Quiz Submissions
-                        </h4>
-                        {renderTable({
-                            headers: [
-                                'Student Name',
-                                'Submission Date',
-                                'Quiz Deadline',
-                                'Actions',
-                            ],
-                            rows: submissions,
-                            keyExtractor: (submission) => submission._id,
-                            renderRow: (submission) => {
-                                const { submitterId, submitDate, analyzed, quizId } = submission;
-                                const quizDeadline = new Date(quizId.quizDead);
-                                const isPastDeadline = new Date() > quizDeadline;
+            <Panel>
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                    {loading ? (
+                        <Loader />
+                    ) : error ? (
+                        <p className="text-red-500">{error}</p>
+                    ) : (
+                        <div className='mb-6'>
+                            <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+                                Quiz Submissions
+                            </h4>
+                            {renderTable({
+                                headers: [
+                                    'Student Name',
+                                    'Submission Date',
+                                    'Quiz Deadline',
+                                    'Actions',
+                                ],
+                                rows: submissions,
+                                keyExtractor: (submission) => submission._id,
+                                renderRow: (submission) => {
+                                    const { submitterId, submitDate, analyzed, quizId } = submission;
+                                    const quizDeadline = new Date(quizId.quizDead);
+                                    const isPastDeadline = new Date() > quizDeadline;
 
-                                return [
-                                    // Student Name
-                                    <div className="p-2.5 text-center text-black dark:text-white">
-                                        {submitterId.name || '-'}
-                                    </div>,
-                                    // Submission Date
-                                    <div className="p-2.5 text-center text-black dark:text-white">
-                                        {new Date(submitDate).toLocaleDateString() || '-'}
-                                    </div>,
-                                    // Quiz Deadline
-                                    <div className="p-2.5 text-center text-black dark:text-white">
-                                        {quizDeadline.toLocaleDateString() || '-'}
-                                    </div>,
-                                    // Actions
-                                    <div className="p-2.5 text-center">
-                                        {analyzed ? (
-                                            <FontAwesomeIcon
-                                                icon={faEye}
-                                                className="text-black hover:text-gray-600 cursor-pointer"
-                                                onClick={() => handleViewReportClick(submission)}
-                                                title="View Report"
-                                            />
-                                        ) : (
-                                            <FontAwesomeIcon
-                                                icon={analyzingId === submission._id ? faSpinner : faHourglassHalf} // Show spinner for the specific row
-                                                className={`cursor-pointer ${isPastDeadline ? 'text-black hover:text-gray-600' : 'text-gray-500 cursor-not-allowed'} ${analyzingId === submission._id ? 'animate-spin' : ''}`}
-                                                onClick={() => isPastDeadline && analyzingId !== submission._id && handleAnalyzeClick(submission)}
-                                                title={analyzingId === submission._id ? "Analyzing..." : "Analyze"}
-                                            />
-                                        )}
-                                    </div>
-                                ];
-                            },
-                        })}
-                    </div>
-                )}
-            </div>
+                                    return [
+                                        // Student Name
+                                        <div className="p-2.5 text-center text-black dark:text-white">
+                                            {submitterId.name || '-'}
+                                        </div>,
+                                        // Submission Date
+                                        <div className="p-2.5 text-center text-black dark:text-white">
+                                            {new Date(submitDate).toLocaleDateString() || '-'}
+                                        </div>,
+                                        // Quiz Deadline
+                                        <div className="p-2.5 text-center text-black dark:text-white">
+                                            {quizDeadline.toLocaleDateString() || '-'}
+                                        </div>,
+                                        // Actions
+                                        <div className="p-2.5 text-center">
+                                            {analyzed ? (
+                                                <FontAwesomeIcon
+                                                    icon={faEye}
+                                                    className="text-black hover:text-gray-600 cursor-pointer"
+                                                    onClick={() => handleViewReportClick(submission)}
+                                                    title="View Report"
+                                                />
+                                            ) : (
+                                                <FontAwesomeIcon
+                                                    icon={analyzingId === submission._id ? faSpinner : faHourglassHalf} // Show spinner for the specific row
+                                                    className={`cursor-pointer ${isPastDeadline ? 'text-black hover:text-gray-600' : 'text-gray-500 cursor-not-allowed'} ${analyzingId === submission._id ? 'animate-spin' : ''}`}
+                                                    onClick={() => isPastDeadline && analyzingId !== submission._id && handleAnalyzeClick(submission)}
+                                                    title={analyzingId === submission._id ? "Analyzing..." : "Analyze"}
+                                                />
+                                            )}
+                                        </div>
+                                    ];
+                                },
+                            })}
+                        </div>
+                    )}
+                </div>
+            </Panel>
         </>
     );
 }

@@ -49,69 +49,69 @@ function Router() {
                 {/* Admin */}
                 <Route
                     path="batches"
-                    element={<PrivateRoute element={<Panel><Batches /></Panel>} />}
+                    element={<PrivateRoute element={<Batches />} />}
                 />
                 <Route
                     path="/batch-details"
-                    element={<Panel><BatchDetails /></Panel>} />
+                    element={<BatchDetails />} />
 
                 <Route
                     path="teachers"
-                    element={<PrivateRoute element={<Panel><Teachers /></Panel>} />}
+                    element={<PrivateRoute element={<Teachers />} />}
                 />
                 <Route
                     path="students"
-                    element={<PrivateRoute element={<Panel><Students /></Panel>} />}
+                    element={<PrivateRoute element={<Students />} />}
                 />
                 <Route
                     path="quizzes"
-                    element={<PrivateRoute element={<Panel><Quizzes /></Panel>} />}
+                    element={<PrivateRoute element={<Quizzes />} />}
                 />
 
                 {/* Teacher */}
                 <Route
                     path="teacher-batches"
-                    element={<PrivateRoute element={<Panel><TeacherBatches /></Panel>} />}
+                    element={<PrivateRoute element={<TeacherBatches />} />}
                 />
                 <Route
                     path="teacher-active-batch"
-                    element={<PrivateRoute element={<Panel><ActiveBatch /></Panel>} />}
+                    element={<PrivateRoute element={<ActiveBatch />} />}
                 />
                 <Route
                     path="/quiz-submission"
-                    element={<PrivateRoute element={<Panel><QuizSubmission /></Panel>} />}
+                    element={<PrivateRoute element={<QuizSubmission />} />}
                 />
                 <Route
                     path="/quiz-results"
-                    element={<PrivateRoute element={<Panel><QuizResults /></Panel>} />}
+                    element={<PrivateRoute element={<QuizResults />} />}
                 />
 
                 {/* Both */}
                 <Route
                     path="chatbot"
-                    element={<PrivateRoute element={<Panel><ChatBot /></Panel>} />}
+                    element={<PrivateRoute element={<ChatBot />} />}
                 />
 
                 {/* Student */}
                 <Route
                     path="student-quiz"
-                    element={<PrivateRoute element={<Panel><StudentQuiz /></Panel>} />}
+                    element={<PrivateRoute element={<StudentQuiz />} />}
                 />
                 <Route
                     path="/student/quiz/results"
-                    element={<PrivateRoute element={<Panel><QuizResults /></Panel>} />}
+                    element={<PrivateRoute element={<QuizResults />} />}
                 />
                 <Route
                     path="/batch"
-                    element={<PrivateRoute element={<Panel><BatchDetails /></Panel>} />}
+                    element={<PrivateRoute element={<BatchDetails />} />}
                 />
                 <Route
                     path="tables"
-                    element={<PrivateRoute element={<Panel><Tables /></Panel>} />}
+                    element={<PrivateRoute element={<Tables />} />}
                 />
                 <Route
                     path="profile"
-                    element={<PrivateRoute element={<Panel><Profile /></Panel>} />}
+                    element={<PrivateRoute element={<Profile />} />}
                 />
                 {/* Catch-all for 404 Page */}
                 <Route path="*" element={<PageNotFound />} />

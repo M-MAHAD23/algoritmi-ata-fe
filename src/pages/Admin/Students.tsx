@@ -50,55 +50,57 @@ function Students() {
 
     return (
         <>
-            {loading && <Loader />}
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
+            <Panel>
+                {loading && <Loader />}
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
 
-                <div className="flex flex-col">
-                    {/* Dynamic Headers */}
-                    <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-black text-white dark:bg-meta-4">
-                        {headers.map((header, index) => (
-                            <div key={index} className="p-2.5 text-center xl:p-5">
-                                <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
-                            </div>
-                        ))}
+                    <div className="flex flex-col">
+                        {/* Dynamic Headers */}
+                        <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-black text-white dark:bg-meta-4">
+                            {headers.map((header, index) => (
+                                <div key={index} className="p-2.5 text-center xl:p-5">
+                                    <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Dynamic Rows */}
+                        {students?.length === 0 ? (
+                            <div className="text-center text-lg p-5">No students available.</div>
+                        ) : (
+                            students?.map((student, rowIndex) => (
+                                <div
+                                    className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === students?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                    key={rowIndex}
+                                >
+                                    {/* Image Column */}
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <img
+                                            src={student?.image || profileImage} // Add default image URL if student doesn't have one
+                                            alt={student?.name}
+                                            className="w-12 h-12 rounded-full object-cover"
+                                        />
+                                    </div>
+                                    {/* Other Columns */}
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{student?.name || '-'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{student?.email || '-'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{student?.contact?.join(', ') || '-'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{student?.about || '-'}</p>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
-
-                    {/* Dynamic Rows */}
-                    {students?.length === 0 ? (
-                        <div className="text-center text-lg p-5">No students available.</div>
-                    ) : (
-                        students?.map((student, rowIndex) => (
-                            <div
-                                className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === students?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                                key={rowIndex}
-                            >
-                                {/* Image Column */}
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <img
-                                        src={student?.image || profileImage} // Add default image URL if student doesn't have one
-                                        alt={student?.name}
-                                        className="w-12 h-12 rounded-full object-cover"
-                                    />
-                                </div>
-                                {/* Other Columns */}
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{student?.name || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{student?.email || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{student?.contact?.join(', ') || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{student?.about || '-'}</p>
-                                </div>
-                            </div>
-                        ))
-                    )}
                 </div>
-            </div>
+            </Panel>
         </>
     );
 }

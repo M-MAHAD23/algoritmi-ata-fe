@@ -67,9 +67,6 @@ function QuizResults() {
         };
     }, []);
 
-    if (loading) return <Loader />;
-    if (error) return <div>{error}</div>;
-
     const {
         ethics,
         copiedFromAI,
@@ -126,96 +123,99 @@ function QuizResults() {
 
     return (
         <>
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <div className="rounded-sm mb-6 border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+            <Panel>
+                {loading && <Loader />}
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                    <div className="rounded-sm mb-6 border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
 
-                    {/* Go Back Button */}
-                    <button
-                        onClick={() => navigate(-1)} // Navigate back to the previous page
-                        className="text-black hover:underline mb-4"
-                    >
-                        &larr; Go Back
-                    </button>
+                        {/* Go Back Button */}
+                        <button
+                            onClick={() => navigate(-1)} // Navigate back to the previous page
+                            className="text-black hover:underline mb-4"
+                        >
+                            &larr; Go Back
+                        </button>
 
-                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Submission Details</h4>
+                        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Submission Details</h4>
 
-                    {/* Submitter Information */}
-                    <div className="mb-6">
-                        <div className="flex items-center space-x-2 mb-4">
-                            <span className="font-semibold text-lg text-black dark:text-gray-200">Submitter:</span>
-                            <span className="text-gray-700 dark:text-gray-400">{submissionDetails?.submitterId?.name || "Unknown"}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-4">
-                            <span className="font-semibold text-lg text-black dark:text-gray-200">Submission Date:</span>
-                            <span className="text-gray-700 dark:text-gray-400">
-                                {submissionDetails?.submitDate
-                                    ? new Date(submissionDetails.submitDate).toLocaleString("en-US", {
-                                        month: "long",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        hour: "numeric",
-                                        minute: "numeric",
-                                        second: "numeric",
-                                        hour12: true,
-                                    })
-                                    : "Unknown"}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Ethics Evaluation - with "See More" */}
-                    <div className="mb-6">
-                        <div className="flex items-center mb-4">
-                            <span className="font-semibold text-lg text-black dark:text-gray-200">Ethics Evaluation:</span>
-                            <span className={`text-lg ${ethics === "Passed" ? 'text-gray-800' : 'text-gray-500'} dark:text-gray-300 ml-2`}>
-                                {isEthicsVisible ? ethics : `${ethics.slice(0, 10)}...`}
-                            </span>
-                            {ethics && (
-                                <span className="ml-2">
-                                    <button
-                                        className="text-gray-800 dark:text-gray-300 hover:text-black dark:hover:text-gray-100 focus:outline-none"
-                                        onClick={toggleEthicsVisibility}
-                                    >
-                                        {isEthicsVisible ? "See Less" : "See More"}
-                                    </button>
+                        {/* Submitter Information */}
+                        <div className="mb-6">
+                            <div className="flex items-center space-x-2 mb-4">
+                                <span className="font-semibold text-lg text-black dark:text-gray-200">Submitter:</span>
+                                <span className="text-gray-700 dark:text-gray-400">{submissionDetails?.submitterId?.name || "Unknown"}</span>
+                            </div>
+                            <div className="flex items-center space-x-2 mb-4">
+                                <span className="font-semibold text-lg text-black dark:text-gray-200">Submission Date:</span>
+                                <span className="text-gray-700 dark:text-gray-400">
+                                    {submissionDetails?.submitDate
+                                        ? new Date(submissionDetails.submitDate).toLocaleString("en-US", {
+                                            month: "long",
+                                            day: "numeric",
+                                            year: "numeric",
+                                            hour: "numeric",
+                                            minute: "numeric",
+                                            second: "numeric",
+                                            hour12: true,
+                                        })
+                                        : "Unknown"}
                                 </span>
-                            )}
+                            </div>
+                        </div>
+
+                        {/* Ethics Evaluation - with "See More" */}
+                        <div className="mb-6">
+                            <div className="flex items-center mb-4">
+                                <span className="font-semibold text-lg text-black dark:text-gray-200">Ethics Evaluation:</span>
+                                <span className={`text-lg ${ethics === "Passed" ? 'text-gray-800' : 'text-gray-500'} dark:text-gray-300 ml-2`}>
+                                    {isEthicsVisible ? ethics : `${ethics?.slice(0, 10)}...`}
+                                </span>
+                                {ethics && (
+                                    <span className="ml-2">
+                                        <button
+                                            className="text-gray-800 dark:text-gray-300 hover:text-black dark:hover:text-gray-100 focus:outline-none"
+                                            onClick={toggleEthicsVisibility}
+                                        >
+                                            {isEthicsVisible ? "See Less" : "See More"}
+                                        </button>
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Copied from AI */}
+                        <div className="mb-6">
+                            <div className="flex items-center space-x-2 mb-4">
+                                <span className="font-semibold text-lg text-black dark:text-gray-200">Copied from AI:</span>
+                                <span className={`text-lg ${copiedFromAI === 0 ? 'text-gray-800' : 'text-gray-500'} dark:text-gray-300`}>
+                                    {copiedFromAI === 0 ? "No" : "Yes"}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Submitted Code Link */}
+                        <div className="mb-6">
+                            <div className="flex items-center space-x-2 mb-4">
+                                <FontAwesomeIcon icon={faCode} className="text-gray-600 dark:text-gray-400" />
+                                <span className="font-semibold text-lg text-black dark:text-gray-200">Submitted Code:</span>
+                                <a
+                                    href={s3Url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center text-gray-800 hover:text-black hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                >
+                                    View Code
+                                    <FontAwesomeIcon icon={faEye} className="ml-2 text-gray-600 dark:text-gray-400" />
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Copied from AI */}
-                    <div className="mb-6">
-                        <div className="flex items-center space-x-2 mb-4">
-                            <span className="font-semibold text-lg text-black dark:text-gray-200">Copied from AI:</span>
-                            <span className={`text-lg ${copiedFromAI === 0 ? 'text-gray-800' : 'text-gray-500'} dark:text-gray-300`}>
-                                {copiedFromAI === 0 ? "No" : "Yes"}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Submitted Code Link */}
-                    <div className="mb-6">
-                        <div className="flex items-center space-x-2 mb-4">
-                            <FontAwesomeIcon icon={faCode} className="text-gray-600 dark:text-gray-400" />
-                            <span className="font-semibold text-lg text-black dark:text-gray-200">Submitted Code:</span>
-                            <a
-                                href={s3Url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center text-gray-800 hover:text-black hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
-                            >
-                                View Code
-                                <FontAwesomeIcon icon={faEye} className="ml-2 text-gray-600 dark:text-gray-400" />
-                            </a>
-                        </div>
-                    </div>
+                    {/* Matching Details Tables */}
+                    {renderMatchTable("Text Matches", textMatched)}
+                    {renderMatchTable("Syntax Matches", syntaxMatched)}
+                    {renderMatchTable("Logic Matches", logicMatched)}
                 </div>
-
-                {/* Matching Details Tables */}
-                {renderMatchTable("Text Matches", textMatched)}
-                {renderMatchTable("Syntax Matches", syntaxMatched)}
-                {renderMatchTable("Logic Matches", logicMatched)}
-            </div>
+            </Panel>
         </>
     );
 }

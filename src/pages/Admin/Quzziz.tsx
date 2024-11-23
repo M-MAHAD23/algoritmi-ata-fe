@@ -56,49 +56,51 @@ function Quizzes() {
 
     return (
         <>
-            {loading && <Loader />}
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
+            <Panel>
+                {loading && <Loader />}
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
 
-                <div className="flex flex-col">
-                    {/* Dynamic Headers */}
-                    <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-black text-white dark:bg-meta-4">
-                        {headers.map((header, index) => (
-                            <div key={index} className="p-2.5 text-center xl:p-5">
-                                <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
-                            </div>
-                        ))}
+                    <div className="flex flex-col">
+                        {/* Dynamic Headers */}
+                        <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-black text-white dark:bg-meta-4">
+                            {headers.map((header, index) => (
+                                <div key={index} className="p-2.5 text-center xl:p-5">
+                                    <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Dynamic Rows */}
+                        {quizzes.length === 0 ? (
+                            <div className="text-center text-lg p-5">No quizzes available.</div>
+                        ) : (
+                            quizzes.map((quiz, rowIndex) => (
+                                <div
+                                    className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                    key={rowIndex}
+                                >
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{quiz.quizName || '-'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{quiz.quizTopic || '-'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{quiz.quizDescription || '-'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{quiz.quizIssued || '-'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
-
-                    {/* Dynamic Rows */}
-                    {quizzes.length === 0 ? (
-                        <div className="text-center text-lg p-5">No quizzes available.</div>
-                    ) : (
-                        quizzes.map((quiz, rowIndex) => (
-                            <div
-                                className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                                key={rowIndex}
-                            >
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizName || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizTopic || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizDescription || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizIssued || '-'}</p>
-                                </div>
-                                <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                    <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
-                                </div>
-                            </div>
-                        ))
-                    )}
                 </div>
-            </div>
+            </Panel>
         </>
     );
 }
