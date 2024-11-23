@@ -31,6 +31,17 @@ const DropdownUser = () => {
     navigate('/');
   };
 
+  // const handleLogout = () => {
+  //   setLoading(true); // Set loading state to true
+
+  //   // Set a timeout for 2 seconds (2000 milliseconds)
+  //   setTimeout(() => {
+  //     localStorage.clear(); // Clear the entire local storage
+  //     setLoading(false);     // Set loading state to false before navigating
+  //     navigate('/');         // Navigate to the home page
+  //   }, 2000);  // 2-second delay
+  // };
+
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
       <Link

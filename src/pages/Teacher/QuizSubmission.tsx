@@ -78,7 +78,7 @@ function QuizSubmission() {
             await axios.post(`${API_BASE_URL}/quiz/analyzeQuiz`, { submission });
             fetchSubmissions();
             navigate(
-                `/teacher/quiz/results?quizId=${submission?.quizId?._id}&submitterId=${submission?.submitterId?._id}`
+                `/quiz-results?quizId=${submission?.quizId?._id}&submitterId=${submission?.submitterId?._id}`
             );
         } catch (err) {
             setError('Error analyzing submission');
@@ -87,7 +87,7 @@ function QuizSubmission() {
 
     const handleViewReportClick = (submission) => {
         navigate(
-            `/teacher/quiz/results?quizId=${submission?.quizId?._id}&submitterId=${submission?.submitterId?._id}`
+            `/quiz-results?quizId=${submission?.quizId?._id}&submitterId=${submission?.submitterId?._id}`
         );
     };
 

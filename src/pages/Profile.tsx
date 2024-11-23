@@ -23,8 +23,18 @@ const Profile = () => {
     // Re-fetch batch details when the page becomes visible again
     const handleVisibilityChange = () => {
       if (document.hidden === false) {
+        if (profile) {
+          fetchProfile()
+          // setProfile(JSON.parse(userInfo))
+        }
+        setLoading(false);
       }
     };
+    if (profile) {
+      fetchProfile()
+      // setProfile(JSON.parse(userInfo))
+    }
+    setLoading(false);
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 

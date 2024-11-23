@@ -109,7 +109,7 @@ function ActiveBatch() {
 
     // Function to handle quiz click
     const handleQuizClick = (quizId) => {
-        navigate(`/quizSubmission?quizId=${quizId}`);
+        navigate(`/quiz-submission?quizId=${quizId}`);
     };
 
     // Function to handle quiz delete
@@ -180,7 +180,6 @@ function ActiveBatch() {
             return;
         }
         setLoading(true);
-
         try {
             const response = await axios.post(`${API_BASE_URL}/quiz/createQuiz`, { batchId: userProfile?.batchId?._id, quizzerId: userProfile?._id, ...quizForm });
             setCurrentQuizId(response.data.quizId);
@@ -414,12 +413,12 @@ function ActiveBatch() {
                                             {/* View Results Icon */}
                                             <FontAwesomeIcon
                                                 icon={faEye}
-                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                className={`text-2xl ${new Date().toISOString().split('T')[0] >= quiz.quizDead
                                                     ? 'text-black cursor-pointer'
                                                     : 'text-gray-500 cursor-not-allowed'
                                                     }`}
                                                 onClick={() => {
-                                                    if (new Date().toISOString().split('T')[0] === quiz.quizDead) {
+                                                    if (new Date().toISOString().split('T')[0] >= quiz.quizDead) {
                                                         handleQuizClick(quiz._id); // Use quiz._id to view results
                                                     } else {
                                                         toast.error("Please wait for the deadline to analyze the results :)");

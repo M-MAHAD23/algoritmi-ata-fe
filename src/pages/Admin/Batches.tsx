@@ -60,15 +60,16 @@ function Batches() {
             {/* View Details Button */}
             {
                 batch.isEnable ?
-                    <>            <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                        onClick={() => {
-                            // Navigate to the BatchDetails screen with the selected batch ID
-                            window.location.href = `/batchDetails?batchId=${batch._id}`;
-                        }}
-                        title="View Batch Details"
-                    />
+                    <>
+                        <FontAwesomeIcon
+                            icon={faEye}
+                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                            onClick={() => {
+                                // Navigate to the BatchDetails screen with the selected batch ID
+                                window.location.href = `/batch-details?batchId=${batch._id}`;
+                            }}
+                            title="View Batch Details"
+                        />
                         <FontAwesomeIcon
                             icon={faArchive}
                             className="text-1xl text-black hover:text-green-500 cursor-pointer"
@@ -103,6 +104,14 @@ function Batches() {
                             onClick={() => handleArchiveBatch(batch._id)}
                             title="Archive Batch"
                         />
+                        {/* <FontAwesomeIcon
+                            icon={faEye}
+                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                            onClick={() => {
+                                window.location.href = `/batch-details?batchId=${batch._id}`;
+                            }}
+                            title="View Batch Details"
+                        /> */}
                     </>
             }
         </div>,

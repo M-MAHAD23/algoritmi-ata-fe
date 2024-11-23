@@ -52,7 +52,7 @@ function Router() {
                     element={<PrivateRoute element={<Panel><Batches /></Panel>} />}
                 />
                 <Route
-                    path="/batchDetails"
+                    path="/batch-details"
                     element={<Panel><BatchDetails /></Panel>} />
 
                 <Route
@@ -70,19 +70,19 @@ function Router() {
 
                 {/* Teacher */}
                 <Route
-                    path="allBatchesWhereTeacherInvolved"
+                    path="teacher-batches"
                     element={<PrivateRoute element={<Panel><TeacherBatches /></Panel>} />}
                 />
                 <Route
-                    path="activeBatch"
+                    path="teacher-active-batch"
                     element={<PrivateRoute element={<Panel><ActiveBatch /></Panel>} />}
                 />
                 <Route
-                    path="/quizSubmission"
+                    path="/quiz-submission"
                     element={<PrivateRoute element={<Panel><QuizSubmission /></Panel>} />}
                 />
                 <Route
-                    path="/teacher/quiz/results"
+                    path="/quiz-results"
                     element={<PrivateRoute element={<Panel><QuizResults /></Panel>} />}
                 />
 
@@ -94,7 +94,7 @@ function Router() {
 
                 {/* Student */}
                 <Route
-                    path="studentQuiz"
+                    path="student-quiz"
                     element={<PrivateRoute element={<Panel><StudentQuiz /></Panel>} />}
                 />
                 <Route
