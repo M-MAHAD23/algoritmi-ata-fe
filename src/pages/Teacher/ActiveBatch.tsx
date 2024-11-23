@@ -183,12 +183,12 @@ function ActiveBatch() {
         }
         setLoading(true);
         try {
-            const response = await axios.post(`${API_BASE_URL}/quiz/createQuiz`, { batchId: userProfile?.batchId?._id, quizzerId: userProfile?._id, ...quizForm });
+            const response = await axios.post(`${API_BASE_URL}/quiz/createQuiz`, { batchId: teacherSelectedBatch ? teacherSelectedBatch : userProfile?.batchId?._id, quizzerId: userProfile?._id, ...quizForm });
             setCurrentQuizId(response.data.quizId);
             resetQuizForm();
             setLoading(false)
             setShowQuizModal(false)
-            setShowHintModal(true);
+            // setShowHintModal(true);
             fetchBatchDetails();
         } catch (err) {
             console.error('Error creating quiz:', err);
