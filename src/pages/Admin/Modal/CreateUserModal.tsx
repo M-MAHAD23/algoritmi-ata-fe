@@ -7,10 +7,10 @@ import getUserProfile from "../../../hooks/profile";
 import Loader from "../../../common/Loader";
 import GenericModal from "../../../components/GenericModal";
 import profileImage from "../../../images/ata/profile.png"
+import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-
-
-const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
+const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId, existingTeachers, existingStudents }) => {
     const fileInputRef = useRef(null);
     const { profile, setProfile } = useContext(LaunchATAContext);
     const { updateProfile, loading } = useProfileEdit();
@@ -40,6 +40,34 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
         education: "",
         work: "",
     });
+    const [viewMode, setViewMode] = useState('initial');
+    const [selectedUser, setSelectedUser] = useState(null);
+
+    const handleAddExisting = async () => {
+        if (selectedUser) {
+            try {
+                const response = await axios.post(`${API_BASE_URL}/user/addExisting`, {
+                    user: selectedUser,
+                    batchId: batchId,
+                });
+
+                if (response.data.success) {
+                    toast.success('User successfully added to the batch!');
+                    setIsModalOpen(false);
+                } else {
+                    toast.error('Failed to add user. Please try again.');
+                }
+            } catch (error) {
+                toast.error(`Error: ${error.response?.data?.error || 'Something went wrong!'}`);
+            }
+        } else {
+            toast.warn('Please select a user to add.');
+        }
+    };
+
+    const handleModeChange = (mode) => {
+        setViewMode(mode);
+    };
 
     const handleChange = (e) => {
         const { name, value, dataset } = e.target;
@@ -313,10 +341,15 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
         setIsModalOpen(false);
     };
 
-
-    const modalContent = (
+    const modalContent1 = (
         <>
             <div className="space-y-4">
+                <button
+                    onClick={() => handleModeChange('initial')}
+                    className="text-black hover:underline"
+                >
+                    {`← Go Back`}
+                </button>
                 {/* Profile Image Section */}
                 <div className="flex items-center flex-col justify-center mb-6">
                     <div className="relative">
@@ -606,7 +639,68 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
                         Add Work
                     </button>
                 </div>
+            </div>
 
+        </>
+    );
+
+    const modalContent2 = (
+        <>
+            <div className="space-y-4">
+                <button
+                    onClick={() => handleModeChange('initial')}
+                    className="text-black hover:underline"
+                >
+                    {`← Go Back`}
+                </button>
+                <h3 className="text-lg font-semibold">Select an Existing User</h3>
+                <select
+                    onChange={(e) => setSelectedUser(JSON.parse(e.target.value))}
+                    className="block w-full px-3 py-2 border rounded-md"
+                >
+                    <option value="">Select User</option>
+                    <optgroup label="Teachers">
+                        {existingTeachers?.map((teacher) => (
+                            <option key={teacher.id} value={JSON.stringify(teacher)}>
+                                {teacher.name}
+                            </option>
+                        ))}
+                    </optgroup>
+                    <optgroup label="Students">
+                        {existingStudents?.map((student) => (
+                            <option key={student.id} value={JSON.stringify(student)}>
+                                {student.name}
+                            </option>
+                        ))}
+                    </optgroup>
+                </select>
+                <button
+                    onClick={handleAddExisting}
+                    className="btn-primary mt-4"
+                    disabled={!selectedUser}
+                >
+                    Add User
+                </button>
+            </div>
+        </>
+    );
+
+    const modalContent3 = (
+        <>
+            {/* Buttons */}
+            <div className=" flex justify-around space-x-4 mt-4">
+                <button
+                    onClick={() => handleModeChange('existing')}
+                    className=" px-4 py-2 text-white bg-black hover:bg-gray-500 rounded-md"
+                >
+                    Add Existing
+                </button>
+                <button
+                    onClick={() => handleModeChange('new')}
+                    className=" px-4 py-2 text-white bg-black hover:bg-gray-500 rounded-md"
+                >
+                    Add New
+                </button>
             </div>
         </>
     );
@@ -619,7 +713,7 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId }) => {
                 isOpen={true}
                 closeModal={handleCancel}
                 title="Create User"
-                content={modalContent}
+                content={viewMode === "initial" ? modalContent3 : viewMode === "existing" ? modalContent2 : viewMode === "new" ? modalContent1 : null}
                 onOkClick={handleSave}
                 modalClass="relative flex items-center justify-center z-50 bg-black bg-opacity-50"
                 modalContentClass="bg-white dark:bg-boxdark rounded-lg w-full max-w-lg sm:max-w-md lg:max-w-4xl p-6"

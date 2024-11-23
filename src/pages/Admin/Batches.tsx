@@ -34,6 +34,8 @@ function Batches() {
     });
     const [showUserModal, setShowUserModal] = useState(false);
     const [selectedBatchId, setSelectedBatchId] = useState(null);
+    const [existingTeachers, setExistingTeachers] = useState([]);
+    const [existingStudents, setExistingStudents] = useState([]);
     const [batch, setBatch] = useState(null);
     const [newUser, setNewUser] = useState({
         name: '',
@@ -92,7 +94,7 @@ function Batches() {
                             className="text-1xl text-black hover:text-green-500 cursor-pointer"
                             onClick={() => {
                                 setNewUser({ ...newUser, batchId: batch._id });
-                                setSelectedBatchId(batch._id);
+                                setSelectedBatchId(batch?._id);
                                 setIsModalOpen(true);
                             }}
                             title="Add User"
@@ -170,6 +172,19 @@ function Batches() {
                 response = await axios.post(`${API_BASE_URL}/batch/getAllBatches`);
             }
             setBatches(response.data.data);
+            const batchesData = response.data.data;
+            const teachers = [];
+            const students = [];
+            batchesData.forEach(batch => {
+                if (batch.batchTeacher) {
+                    teachers.push(...batch.batchTeacher);
+                }
+                if (batch.batchStudent) {
+                    students.push(...batch.batchStudent);
+                }
+            });
+            setExistingTeachers(teachers);
+            setExistingStudents(students);
             setLoading(false);
         } catch (err) {
             setError('Error fetching batches');
@@ -179,7 +194,19 @@ function Batches() {
 
     useEffect(() => {
         fetchBatches();
-    }, [batchId]);
+        // Re-fetch batch details when the page becomes visible again
+        const handleVisibilityChange = () => {
+            if (document.hidden === false) {
+                fetchBatches();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [batchId || isModalOpen === false]);
 
     const headers = [
         'Batch Number',
@@ -348,6 +375,8 @@ function Batches() {
                         setIsModalOpen={setIsModalOpen}
                         onSubmit={handleCreateUser}
                         batchId={selectedBatchId}
+                        existingTeachers={existingTeachers}
+                        existingStudents={existingStudents}
                     />
                 )}
 

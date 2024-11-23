@@ -224,7 +224,7 @@ export const useGetUserInfo = () => {
                 );
                 const updatedUserInfo = response.data.data;
 
-                if (!updatedUserInfo.batchId.isEnable) {
+                if (updatedUserInfo?.role !== "Admin" && !updatedUserInfo?.batchId?.isEnable) {
                     // Handle batch disabled scenario
                     alert('Your batch is no longer active. Logging out.');
                     localStorage.clear(); // Clear all data on logout
