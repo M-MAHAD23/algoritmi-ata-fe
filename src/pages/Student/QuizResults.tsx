@@ -5,6 +5,7 @@ import Loader from "../../common/Loader";
 import Panel from "../../layout/Panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faEye } from "@fortawesome/free-solid-svg-icons";
+import profileImage from "../../images/ata/profile.png";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -106,7 +107,7 @@ function QuizResults() {
                                 {/* Image */}
                                 <div className="p-2.5 text-center xl:p-5 flex justify-center items-center">
                                     <img
-                                        src={match.studentId?.image}
+                                        src={match.studentId?.image || profileImage}
                                         alt={match.studentId?.name}
                                         className="w-8 h-8 rounded-full object-cover"
                                     />

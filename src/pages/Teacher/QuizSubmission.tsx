@@ -84,12 +84,11 @@ function QuizSubmission() {
         const isPastDeadline = new Date() >= quizDeadline;
 
         if (!isPastDeadline) {
-            toast.error("Please wait for the deadline to Analyze :)", {
-                position: 'top-right',
-            });
+            toast.error("Please wait for the deadline to Analyze :)");
             return;
         }
 
+        toast.success("Please wait submission being analyzed :)");
         try {
             setAnalyzingId(submission._id); // Set analyzing row
             await axios.post(`${API_BASE_URL}/quiz/analyzeQuiz`, { submission });
