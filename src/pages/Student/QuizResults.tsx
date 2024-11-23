@@ -82,6 +82,15 @@ function QuizResults() {
         <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
             {/* Table Wrapper */}
             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+
+                {/* Go Back Button */}
+                <button
+                    onClick={() => navigate(-1)} // Navigate back to the previous page
+                    className="text-black hover:underline mb-4"
+                >
+                    &larr; Go Back
+                </button>
+
                 <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{title}</h4>
 
                 {matches?.length === 0 ? (

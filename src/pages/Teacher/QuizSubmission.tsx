@@ -115,6 +115,13 @@ function QuizSubmission() {
             <Toaster />
             <Panel>
                 <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                    {/* Go Back Button */}
+                    <button
+                        onClick={() => navigate(-1)} // Navigate back to the previous page
+                        className="text-black hover:underline mb-4"
+                    >
+                        &larr; Go Back
+                    </button>
                     {loading ? (
                         <Loader />
                     ) : error ? (

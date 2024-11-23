@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../../common/Loader';
 import CreateUserModal from './Modal/CreateUserModal';
@@ -48,6 +48,7 @@ function Batches() {
         image: '',
     });
     const { batchId } = useParams();
+    const navigate = useNavigate();
 
     const renderRow = (batch) => [
         <div className="p-2 text-center">{batch?.batchNumber || '-'}</div>,
@@ -290,6 +291,15 @@ function Batches() {
             <Panel>
                 {loading && <Loader />}
                 <div className="overflow-x-auto rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+
+                    {/* Go Back Button */}
+                    <button
+                        onClick={() => navigate(-1)} // Navigate back to the previous page
+                        className="text-black hover:underline mb-4"
+                    >
+                        &larr; Go Back
+                    </button>
+
                     {/* <div className="overflow-x-auto"> */}
                     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                         <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">

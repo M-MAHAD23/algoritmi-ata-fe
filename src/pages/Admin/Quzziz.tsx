@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 
@@ -11,6 +11,7 @@ function Quizzes() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -49,7 +50,6 @@ function Quizzes() {
         'Deadline',
     ];
 
-
     if (error) {
         return <div>{error}</div>;
     }
@@ -59,6 +59,15 @@ function Quizzes() {
             <Panel>
                 {loading && <Loader />}
                 <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+
+                    {/* Go Back Button */}
+                    <button
+                        onClick={() => navigate(-1)} // Navigate back to the previous page
+                        className="text-black hover:underline mb-4"
+                    >
+                        &larr; Go Back
+                    </button>
+
                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
 
                     <div className="flex flex-col">

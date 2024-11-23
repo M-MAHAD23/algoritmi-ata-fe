@@ -43,8 +43,14 @@ const getUserProfile = async () => {
         // Handle unauthorized access (401 error)
         if (error.response?.status === 401) {
             clearLocalStorageAndRedirect();
+            return;
         }
 
+        // Handle unauthorized access (401 error)
+        if (error.response?.status === 404) {
+            clearLocalStorageAndRedirect();
+            return;
+        }
         // Hide loader in case of error
         document.body.classList.remove('loading');
     }
