@@ -79,7 +79,9 @@ function TeacherBatches() {
                             _id: batch?._id,  // Ensure each batch has an ID
                             batchName: batch?.batchName || 'Unnamed Batch',
                             batchNumber: batch?.batchNumber || '-',
-                            batchSession: batch?.batchSession || '-',
+                            // batchSession: batch?.batchSession || '-',
+                            batchStart: batch?.batchStart || '-',
+                            batchEnd: batch?.batchEnd || '-',
                             batchStudent: batch?.batchStudent || [],
                             batchQuiz: batch?.batchQuiz || [],
                         }))}

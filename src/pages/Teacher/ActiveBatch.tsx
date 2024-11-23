@@ -297,11 +297,13 @@ function ActiveBatch() {
                                 {/* Card Grid */}
                                 <RenderCard
                                     data={{
-                                        batchNumber: batch.batchNumber,
-                                        batchSession: batch.batchSession,
-                                        batchName: batch.batchName,
-                                        batchStudent: batch.batchStudent,
-                                        batchQuiz: batch.batchQuiz,
+                                        batchNumber: batch?.batchNumber,
+                                        // batchSession: batch?.batchSession,
+                                        batchStart: batch?.batchStart,
+                                        batchEnd: batch?.batchEnd,
+                                        batchName: batch?.batchName,
+                                        batchStudent: batch?.batchStudent,
+                                        batchQuiz: batch?.batchQuiz,
                                     }}
                                 />
 
