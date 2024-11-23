@@ -209,88 +209,97 @@ function ChatBot({ title, messages = [] }) {
     return (
         <>
             <Panel>
-                {loading && <Loader />}
-                <div className="flex flex-col h-[80vh]">
-                    <div className="flex-1 overflow-y-auto p-4 space-y-2 text-gray-900">
-                        {!allMessages.length && !incomingMessage && (
-                            <div className="flex items-center justify-center h-full text-center">
-                                <div>
-                                    <FontAwesomeIcon
-                                        icon={faComments}
-                                        className="text-6xl text-black mt-45"
-                                    />
-                                    <h1 className="mt-2 text-4xl font-bold text-black mb-75">
-                                        Ask me a question!
-                                    </h1>
-                                </div>
-                            </div>
-                        )}
-                        {!!allMessages.length && (
-                            <div className="space-y-2">
-                                {allMessages.map((message) => (
-                                    <Message
-                                        key={message._id}
-                                        role={message.role}
-                                        content={message.content}
-                                    />
-                                ))}
-                                {!!incomingMessage && !routeHasChanged && (
-                                    <Message role="assistant" content={incomingMessage} />
-                                )}
-                                {!!incomingMessage && !!routeHasChanged && (
-                                    <Message
-                                        role="notice"
-                                        content="Only one message at a time. Please allow any other responses to complete before sending another message."
-                                    />
-                                )}
-                            </div>
-                        )}
-                    </div>
+                {
+                    loading
+                        ?
+                        <Loader />
+                        :
+                        (
+                            <>
+                                <div className="flex flex-col h-[80vh]">
+                                    <div className="flex-1 overflow-y-auto p-4 space-y-2 text-gray-900">
+                                        {!allMessages.length && !incomingMessage && (
+                                            <div className="flex items-center justify-center h-full text-center">
+                                                <div>
+                                                    <FontAwesomeIcon
+                                                        icon={faComments}
+                                                        className="text-6xl text-black mt-45"
+                                                    />
+                                                    <h1 className="mt-2 text-4xl font-bold text-black mb-75">
+                                                        Ask me a question!
+                                                    </h1>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {!!allMessages.length && (
+                                            <div className="space-y-2">
+                                                {allMessages.map((message) => (
+                                                    <Message
+                                                        key={message._id}
+                                                        role={message.role}
+                                                        content={message.content}
+                                                    />
+                                                ))}
+                                                {!!incomingMessage && !routeHasChanged && (
+                                                    <Message role="assistant" content={incomingMessage} />
+                                                )}
+                                                {!!incomingMessage && !!routeHasChanged && (
+                                                    <Message
+                                                        role="notice"
+                                                        content="Only one message at a time. Please allow any other responses to complete before sending another message."
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
 
-                    <footer className="bg-black p-4 shadow-md rounded-[15px] flex justify-between items-center">
-                        <form onSubmit={handleSubmit} className="flex gap-2 w-full">
-                            <textarea
-                                value={messageText}
-                                onChange={(e) => setMessageText(e.target.value)}
-                                placeholder={generatingResponse ? '' : 'Send a message...'}
-                                className={`w-full rounded-[15px] resize-none bg-white p-2 pl-10 text-black placeholder-black focus:ring-2 focus:ring-emerald-500 ${generatingResponse ? 'opacity-50 cursor-not-allowed' : ''
-                                    } custom-scrollbar`}
-                                disabled={generatingResponse}
-                                style={{
-                                    overflowY: messageText.split('\n').length > 10 ? 'auto' : 'hidden', // Show scrollbar if needed
-                                    maxHeight: '10rem', // Limit the height to 10 lines (approx.)
-                                }}
-                                onInput={(e) => {
-                                    e.target.style.height = 'auto'; // Reset height to auto
-                                    e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`; // Adjust height up to a limit
-                                }}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        // Prevent submit if the textarea is empty or has only spaces
-                                        if (!messageText.trim()) {
-                                            e.preventDefault();
-                                        } else {
-                                            e.preventDefault();
-                                            handleSubmit(e);
-                                        }
-                                    }
-                                }}
-                            />
-                            <button
-                                type="submit"
-                                className={`bg-white text-black p-4 rounded-full hover:bg-gray-500 focus:outline-none ${generatingResponse || !messageText.trim() ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
-                                disabled={generatingResponse || !messageText.trim()}
-                            >
-                                {generatingResponse ? (
-                                    <Spinner size="small" color="black" />
-                                ) : (
-                                    <FontAwesomeIcon icon={faArrowUp} className="text-black" />
-                                )}
-                            </button>
-                        </form>
-                    </footer>
-                </div>
+                                    <footer className="bg-black p-4 shadow-md rounded-[15px] flex justify-between items-center">
+                                        <form onSubmit={handleSubmit} className="flex gap-2 w-full">
+                                            <textarea
+                                                value={messageText}
+                                                onChange={(e) => setMessageText(e.target.value)}
+                                                placeholder={generatingResponse ? '' : 'Send a message...'}
+                                                className={`w-full rounded-[15px] resize-none bg-white p-2 pl-10 text-black placeholder-black focus:ring-2 focus:ring-emerald-500 ${generatingResponse ? 'opacity-50 cursor-not-allowed' : ''
+                                                    } custom-scrollbar`}
+                                                disabled={generatingResponse}
+                                                style={{
+                                                    overflowY: messageText.split('\n').length > 10 ? 'auto' : 'hidden', // Show scrollbar if needed
+                                                    maxHeight: '10rem', // Limit the height to 10 lines (approx.)
+                                                }}
+                                                onInput={(e) => {
+                                                    e.target.style.height = 'auto'; // Reset height to auto
+                                                    e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`; // Adjust height up to a limit
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                        // Prevent submit if the textarea is empty or has only spaces
+                                                        if (!messageText.trim()) {
+                                                            e.preventDefault();
+                                                        } else {
+                                                            e.preventDefault();
+                                                            handleSubmit(e);
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                            <button
+                                                type="submit"
+                                                className={`bg-white text-black p-4 rounded-full hover:bg-gray-500 focus:outline-none ${generatingResponse || !messageText.trim() ? 'opacity-50 cursor-not-allowed' : ''
+                                                    }`}
+                                                disabled={generatingResponse || !messageText.trim()}
+                                            >
+                                                {generatingResponse ? (
+                                                    <Spinner size="small" color="black" />
+                                                ) : (
+                                                    <FontAwesomeIcon icon={faArrowUp} className="text-black" />
+                                                )}
+                                            </button>
+                                        </form>
+                                    </footer>
+                                </div>
+                            </>
+                        )
+                }
             </Panel>
         </>
     );

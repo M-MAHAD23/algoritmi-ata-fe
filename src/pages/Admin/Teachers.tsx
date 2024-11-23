@@ -52,64 +52,69 @@ function Teachers() {
     return (
         <>
             <Panel>
-                {loading && <Loader />}
-                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                    {/* Go Back Button */}
-                    <button
-                        onClick={() => navigate(-1)} // Navigate back to the previous page
-                        className="text-black hover:underline mb-4"
-                    >
-                        &larr; Go Back
-                    </button>
-                    <div className='rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1'>
-                        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Teachers</h4>
+                {loading ? <Loader />
+                    :
+                    (
+                        <>
+                            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                                {/* Go Back Button */}
+                                <button
+                                    onClick={() => navigate(-1)} // Navigate back to the previous page
+                                    className="text-black hover:underline mb-4"
+                                >
+                                    &larr; Go Back
+                                </button>
+                                <div className='rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1'>
+                                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Teachers</h4>
 
-                        <div className="flex flex-col">
-                            {/* Dynamic Headers */}
-                            <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-black text-white dark:bg-meta-4">
-                                {headers.map((header, index) => (
-                                    <div key={index} className="p-2.5 text-center xl:p-5">
-                                        <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
+                                    <div className="flex flex-col">
+                                        {/* Dynamic Headers */}
+                                        <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-black text-white dark:bg-meta-4">
+                                            {headers.map((header, index) => (
+                                                <div key={index} className="p-2.5 text-center xl:p-5">
+                                                    <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Dynamic Rows */}
+                                        {teachers?.length === 0 ? (
+                                            <div className="text-center text-lg p-5">No teachers available.</div>
+                                        ) : (
+                                            teachers?.map((teacher, rowIndex) => (
+                                                <div
+                                                    className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === teachers?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                                    key={rowIndex}
+                                                >
+                                                    {/* Image Column */}
+                                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                                        <img
+                                                            src={teacher?.image || profileImage} // Add default image URL if teacher? doesn't have one
+                                                            alt={teacher?.name}
+                                                            className="w-12 h-12 rounded-full object-cover"
+                                                        />
+                                                    </div>
+                                                    {/* Other Columns */}
+                                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                                        <p className="text-black dark:text-white">{teacher?.name || '-'}</p>
+                                                    </div>
+                                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                                        <p className="text-black dark:text-white">{teacher?.email || '-'}</p>
+                                                    </div>
+                                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                                        <p className="text-black dark:text-white">{teacher?.contact?.join(', ') || '-'}</p>
+                                                    </div>
+                                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                                        <p className="text-black dark:text-white">{teacher?.about || '-'}</p>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
-                                ))}
+                                </div>
                             </div>
-
-                            {/* Dynamic Rows */}
-                            {teachers?.length === 0 ? (
-                                <div className="text-center text-lg p-5">No teachers available.</div>
-                            ) : (
-                                teachers?.map((teacher, rowIndex) => (
-                                    <div
-                                        className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === teachers?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                                        key={rowIndex}
-                                    >
-                                        {/* Image Column */}
-                                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                            <img
-                                                src={teacher?.image || profileImage} // Add default image URL if teacher? doesn't have one
-                                                alt={teacher?.name}
-                                                className="w-12 h-12 rounded-full object-cover"
-                                            />
-                                        </div>
-                                        {/* Other Columns */}
-                                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                            <p className="text-black dark:text-white">{teacher?.name || '-'}</p>
-                                        </div>
-                                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                            <p className="text-black dark:text-white">{teacher?.email || '-'}</p>
-                                        </div>
-                                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                            <p className="text-black dark:text-white">{teacher?.contact?.join(', ') || '-'}</p>
-                                        </div>
-                                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                            <p className="text-black dark:text-white">{teacher?.about || '-'}</p>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
+                        </>
+                    )}
             </Panel>
         </>
     );

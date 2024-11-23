@@ -321,80 +321,87 @@ function Batches() {
                 }}
             />
             <Panel>
-                {loading && <Loader />}
-                <div className="overflow-x-auto rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                {loading ? <Loader />
+                    :
+                    (
+                        <>
+                            <div className="overflow-x-auto rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
 
-                    {/* Go Back Button */}
-                    <button
-                        onClick={() => navigate(-1)} // Navigate back to the previous page
-                        className="text-black hover:underline mb-4"
-                    >
-                        &larr; Go Back
-                    </button>
+                                {/* Go Back Button */}
+                                <button
+                                    onClick={() => navigate(-1)} // Navigate back to the previous page
+                                    className="text-black hover:underline mb-4"
+                                >
+                                    &larr; Go Back
+                                </button>
 
-                    {/* <div className="overflow-x-auto"> */}
-                    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-                            Active Batches
-                        </h4>
-                        <button
-                            onClick={() => setShowCreateModal(true)}
-                            className="px-6 py-3 font-bold text-white bg-black hover:bg-gray-500 rounded-md shadow-md mb-4"
-                        >
-                            Create Batch +
-                        </button>
-                        {renderTable({
-                            headers,
-                            rows: activeBatches,
-                            keyExtractor: (batch) => batch._id,
-                            renderRow,
-                        })}
-                    </div>
-                    <div className="mt-6 rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
-                        <h4 className="mb-6 text-xl font-bold text-black dark:text-white">
-                            Archived Batches
-                        </h4>
-                        {renderTable({
-                            headers,
-                            rows: archivedBatches,
-                            keyExtractor: (batch) => batch._id,
-                            renderRow,
-                        })}
-                    </div>
-                </div>
+                                {/* <div className="overflow-x-auto"> */}
+                                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
+                                        Active Batches
+                                    </h4>
+                                    <button
+                                        onClick={() => setShowCreateModal(true)}
+                                        className="px-6 py-3 font-bold text-white bg-black hover:bg-gray-500 rounded-md shadow-md mb-4"
+                                    >
+                                        Create Batch +
+                                    </button>
+                                    {renderTable({
+                                        headers,
+                                        rows: activeBatches,
+                                        keyExtractor: (batch) => batch._id,
+                                        renderRow,
+                                    })}
+                                </div>
+                                <div className="mt-6 rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+                                    <h4 className="mb-6 text-xl font-bold text-black dark:text-white">
+                                        Archived Batches
+                                    </h4>
+                                    {renderTable({
+                                        headers,
+                                        rows: archivedBatches,
+                                        keyExtractor: (batch) => batch._id,
+                                        renderRow,
+                                    })}
+                                </div>
+                            </div>
 
-                {/* Update Batch Modal */}
-                {showUpdateModal && (
-                    <UpdateBatchModal
-                        isOpen={showUpdateModal}
-                        closeModal={() => setShowUpdateModal(false)}
-                        handleUpdateBatch={handleUpdateBatch}
-                        batch={batch}
-                        setBatch={setBatch}
-                    />
-                )}
+                            {/* Update Batch Modal */}
+                            {showUpdateModal && (
+                                <UpdateBatchModal
+                                    isOpen={showUpdateModal}
+                                    closeModal={() => setShowUpdateModal(false)}
+                                    handleUpdateBatch={handleUpdateBatch}
+                                    batch={batch}
+                                    setBatch={setBatch}
+                                />
+                            )}
 
-                {/* Modals for Create User and Create Batch */}
-                {isModalOpen && (
-                    <CreateUserModal
-                        setIsModalOpen={setIsModalOpen}
-                        onSubmit={handleCreateUser}
-                        batchId={selectedBatchId}
-                        existingTeachers={existingTeachers}
-                        existingStudents={existingStudents}
-                    />
-                )}
+                            {/* Modals for Create User and Create Batch */}
+                            {isModalOpen && (
+                                <CreateUserModal
+                                    setIsModalOpen={setIsModalOpen}
+                                    onSubmit={handleCreateUser}
+                                    batchId={selectedBatchId}
+                                    existingTeachers={existingTeachers}
+                                    existingStudents={existingStudents}
+                                />
+                            )}
 
-                {/* Create Batch Modal */}
-                {showCreateModal && (
-                    <CreateBatchModal
-                        isOpen={showCreateModal}
-                        closeModal={() => setShowCreateModal(false)}
-                        handleCreateBatch={handleCreateBatch}
-                        newBatch={newBatch}
-                        setNewBatch={setNewBatch}
-                    />
-                )}
+                            {/* Create Batch Modal */}
+                            {showCreateModal && (
+                                <CreateBatchModal
+                                    isOpen={showCreateModal}
+                                    closeModal={() => setShowCreateModal(false)}
+                                    handleCreateBatch={handleCreateBatch}
+                                    newBatch={newBatch}
+                                    setNewBatch={setNewBatch}
+                                />
+                            )}
+                        </>
+                    )
+                }
+
             </Panel>
         </>
     );

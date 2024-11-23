@@ -59,37 +59,46 @@ function TeacherBatches() {
 
     return (
         <Panel>
-            {loading && <Loader />}
-            <div className="rounded-sm mb-6 border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                {/* Go Back Button */}
-                <button
-                    onClick={() => navigate(-1)} // Navigate back to the previous page
-                    className="text-black hover:underline mb-4"
-                >
-                    &larr; Go Back
-                </button>
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batches</h4>
-                {error && <p className="text-red-500">{error}</p>}
-                {batches?.length === 0 && !loading && (
-                    <p className="text-center text-gray-600 dark:text-gray-400">No batches available.</p>
-                )}
-                {batches?.length > 0 && (
-                    <RenderCards
-                        data={batches?.map((batch) => ({
-                            _id: batch?._id,  // Ensure each batch has an ID
-                            batchName: batch?.batchName || 'Unnamed Batch',
-                            batchNumber: batch?.batchNumber || '-',
-                            // batchSession: batch?.batchSession || '-',
-                            batchStart: batch?.batchStart || '-',
-                            batchEnd: batch?.batchEnd || '-',
-                            batchStudent: batch?.batchStudent || [],
-                            batchQuiz: batch?.batchQuiz || [],
-                        }))}
-                        onCardClick={handleBatchSelect}
-                        selectedCardId={teacherSelectedBatch}  // Pass selected batch ID for highlighting
-                    />
-                )}
-            </div>
+            {
+                loading
+                    ?
+                    <Loader />
+                    :
+                    (
+                        <>
+                            <div className="rounded-sm mb-6 border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                                {/* Go Back Button */}
+                                <button
+                                    onClick={() => navigate(-1)} // Navigate back to the previous page
+                                    className="text-black hover:underline mb-4"
+                                >
+                                    &larr; Go Back
+                                </button>
+                                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Batches</h4>
+                                {error && <p className="text-red-500">{error}</p>}
+                                {batches?.length === 0 && !loading && (
+                                    <p className="text-center text-gray-600 dark:text-gray-400">No batches available.</p>
+                                )}
+                                {batches?.length > 0 && (
+                                    <RenderCards
+                                        data={batches?.map((batch) => ({
+                                            _id: batch?._id,  // Ensure each batch has an ID
+                                            batchName: batch?.batchName || 'Unnamed Batch',
+                                            batchNumber: batch?.batchNumber || '-',
+                                            // batchSession: batch?.batchSession || '-',
+                                            batchStart: batch?.batchStart || '-',
+                                            batchEnd: batch?.batchEnd || '-',
+                                            batchStudent: batch?.batchStudent || [],
+                                            batchQuiz: batch?.batchQuiz || [],
+                                        }))}
+                                        onCardClick={handleBatchSelect}
+                                        selectedCardId={teacherSelectedBatch}  // Pass selected batch ID for highlighting
+                                    />
+                                )}
+                            </div>
+                        </>
+                    )
+            }
         </Panel>
     );
 }

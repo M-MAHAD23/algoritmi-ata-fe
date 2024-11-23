@@ -123,61 +123,67 @@ function BatchDetails() {
     return (
         <>
             <Panel>
-                {loading && <Loader />}
-                <div className="rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                {loading ? <Loader />
+                    :
+                    (
+                        <>
+                            <div className="rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
 
-                    {/* Go Back Button */}
-                    <button
-                        onClick={() => navigate(-1)} // Navigate back to the previous page
-                        className="text-black hover:underline mb-4"
-                    >
-                        &larr; Go Back
-                    </button>
+                                {/* Go Back Button */}
+                                <button
+                                    onClick={() => navigate(-1)} // Navigate back to the previous page
+                                    className="text-black hover:underline mb-4"
+                                >
+                                    &larr; Go Back
+                                </button>
 
 
-                    <h2 className="text-2xl font-bold mb-5 text-black dark:text-white">
-                        Batch: {batch?.batchName || 'N/A'}
-                    </h2>
+                                <h2 className="text-2xl font-bold mb-5 text-black dark:text-white">
+                                    Batch: {batch?.batchName || 'N/A'}
+                                </h2>
 
-                    {/* Teachers Section */}
-                    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Teachers</h4>
-                        <div className="grid grid-cols-5 sm:grid-cols-5 bg-black text-white dark:bg-meta-4 rounded-sm">
-                            {headers.map((header, index) => (
-                                <div key={index} className="p-2.5 text-center font-medium uppercase">
-                                    {header}
+                                {/* Teachers Section */}
+                                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Teachers</h4>
+                                    <div className="grid grid-cols-5 sm:grid-cols-5 bg-black text-white dark:bg-meta-4 rounded-sm">
+                                        {headers.map((header, index) => (
+                                            <div key={index} className="p-2.5 text-center font-medium uppercase">
+                                                {header}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {renderUsers(batch?.batchTeacher || [])}
                                 </div>
-                            ))}
-                        </div>
-                        {renderUsers(batch?.batchTeacher || [])}
-                    </div>
 
-                    {/* Students Section */}
-                    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-8">
-                        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
-                        <div className="grid grid-cols-5 sm:grid-cols-5 bg-black text-white dark:bg-meta-4 rounded-sm">
-                            {headers.map((header, index) => (
-                                <div key={index} className="p-2.5 text-center font-medium uppercase">
-                                    {header}
+                                {/* Students Section */}
+                                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-8">
+                                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Students</h4>
+                                    <div className="grid grid-cols-5 sm:grid-cols-5 bg-black text-white dark:bg-meta-4 rounded-sm">
+                                        {headers.map((header, index) => (
+                                            <div key={index} className="p-2.5 text-center font-medium uppercase">
+                                                {header}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {renderUsers(batch?.batchStudent || [])}
                                 </div>
-                            ))}
-                        </div>
-                        {renderUsers(batch?.batchStudent || [])}
-                    </div>
 
-                    {/* Students Section */}
-                    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-8">
-                        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
-                        <div className="grid grid-cols-5 sm:grid-cols-5 bg-black text-white dark:bg-meta-4 rounded-sm">
-                            {headersQuiz.map((headerQuiz, index) => (
-                                <div key={index} className="p-2.5 text-center font-medium uppercase">
-                                    {headerQuiz}
+                                {/* Students Section */}
+                                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-8">
+                                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
+                                    <div className="grid grid-cols-5 sm:grid-cols-5 bg-black text-white dark:bg-meta-4 rounded-sm">
+                                        {headersQuiz.map((headerQuiz, index) => (
+                                            <div key={index} className="p-2.5 text-center font-medium uppercase">
+                                                {headerQuiz}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {renderQuizzes(batch?.batchQuiz || [])}
                                 </div>
-                            ))}
-                        </div>
-                        {renderQuizzes(batch?.batchQuiz || [])}
-                    </div>
-                </div>
+                            </div>
+                        </>
+                    )
+                }
             </Panel>
         </>
     );
