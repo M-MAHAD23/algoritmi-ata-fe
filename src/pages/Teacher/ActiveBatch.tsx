@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import Panel from '../../layout/Panel';
 import Loader from '../../common/Loader';
@@ -11,6 +11,7 @@ import HintModal from './Modal/HintModal';
 import QuizModal from './Modal/QuizModal';
 import RenderCard from '../../components/RenderCard';
 import profileImage from '../../images/ata/profile.png'
+import LaunchATAContext from '../../context/AppContext';
 
 function ActiveBatch() {
     const navigate = useNavigate();
@@ -36,6 +37,7 @@ function ActiveBatch() {
     const [showHintModal, setShowHintModal] = useState(false);
     const [currentQuizId, setCurrentQuizId] = useState(null);
     const userProfile = JSON.parse(localStorage.getItem("userInfo"));
+    const { teacherSelectedBatch } = useContext(LaunchATAContext);
 
     const handleAddHint = () => {
         const errors = {};
@@ -74,7 +76,7 @@ function ActiveBatch() {
     const fetchBatchDetails = async () => {
         if (!userProfile?.batchId) return; // Ensure batchId is available
         setLoading(true);
-        const payload = { batchId: userProfile?.batchId?._id };
+        const payload = { batchId: teacherSelectedBatch ? teacherSelectedBatch : userProfile?.batchId?._id };
         try {
             const response = await axios.post(`${API_BASE_URL}/batch/getBatchById`, payload);
             setBatch(response?.data?.data);

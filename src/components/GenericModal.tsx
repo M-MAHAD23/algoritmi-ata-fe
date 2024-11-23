@@ -9,6 +9,7 @@ const GenericModal = ({
     cancelButtonText = 'Cancel',
     okButtonText = 'Save',
     hasScroll = true,
+    hideButtons = false,
 }) => {
     const [isAtBottom, setIsAtBottom] = useState(false);
     const [isScrollable, setIsScrollable] = useState(false);
@@ -106,7 +107,7 @@ const GenericModal = ({
                 )}
 
                 {/* Buttons */}
-                <div className="w-full flex space-x-4 mt-4">
+                {!hideButtons && <div className="w-full flex space-x-4 mt-4">
                     <button
                         onClick={closeModal}
                         className="w-full px-4 py-2 text-white bg-gray-300 hover:bg-gray-500 rounded-md"
@@ -120,6 +121,7 @@ const GenericModal = ({
                         {okButtonText}
                     </button>
                 </div>
+                }
             </div>
         </div>
     );

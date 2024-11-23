@@ -666,20 +666,19 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId, existingTeachers, 
                             </option>
                         ))}
                     </optgroup>
-                    <optgroup label="Students">
+                    {/* <optgroup label="Students">
                         {existingStudents?.map((student) => (
                             <option key={student.id} value={JSON.stringify(student)}>
                                 {student.name}
                             </option>
                         ))}
-                    </optgroup>
+                    </optgroup> */}
                 </select>
                 <button
                     onClick={handleAddExisting}
-                    className="btn-primary mt-4"
-                    disabled={!selectedUser}
+                    className="w-full px-4 py-2 text-white bg-black hover:bg-gray-500 rounded-md"
                 >
-                    Add User
+                    Add Teacher
                 </button>
             </div>
         </>
@@ -693,13 +692,13 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId, existingTeachers, 
                     onClick={() => handleModeChange('existing')}
                     className=" px-4 py-2 text-white bg-black hover:bg-gray-500 rounded-md"
                 >
-                    Add Existing
+                    Add Existing Teacher
                 </button>
                 <button
                     onClick={() => handleModeChange('new')}
                     className=" px-4 py-2 text-white bg-black hover:bg-gray-500 rounded-md"
                 >
-                    Add New
+                    Add New Teacher/Student
                 </button>
             </div>
         </>
@@ -717,6 +716,7 @@ const CreateUserModal = ({ setIsModalOpen, onSubmit, batchId, existingTeachers, 
                 onOkClick={handleSave}
                 modalClass="relative flex items-center justify-center z-50 bg-black bg-opacity-50"
                 modalContentClass="bg-white dark:bg-boxdark rounded-lg w-full max-w-lg sm:max-w-md lg:max-w-4xl p-6"
+                hideButtons={viewMode === "existing" ? true : false}
             />
         </>
     );
