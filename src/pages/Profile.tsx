@@ -6,12 +6,14 @@ import Loader from '../common/Loader';
 import getUserProfile from '../hooks/profile';
 import LaunchATAContext from '../context/AppContext';
 import Panel from '../layout/Panel';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const { profile, setProfile } = useContext(LaunchATAContext)
   const [userProfile, setUserProfile] = useState(null); // Add state for userProfile
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [loading, setLoading] = useState(true); // Set loading to true initially
+  const navigate = useNavigate();
 
 
   // Callback function to handle form submission
@@ -78,6 +80,13 @@ const Profile = () => {
         {loading && <Loader />}
         <div className="overflow-hidden rounded-lg border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark">
           <div className="relative bg-black z-20 h-35 md:h-65">
+            {/* Go Back Button */}
+            <button
+              onClick={() => navigate(-1)} // Navigate back to the previous page
+              className="absolute top-7 left-7 text-white hover:underline mb-4"
+            >
+              &larr; Go Back
+            </button>
             {/* <img
             src={CoverOne}
             alt="profile cover"
