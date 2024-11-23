@@ -30,7 +30,7 @@ function Batches() {
         batchSession: '',
         batchStart: '',
         batchEnd: '',
-        batchName: '',
+        batchName: 'CS',
     });
     const [showUserModal, setShowUserModal] = useState(false);
     const [selectedBatchId, setSelectedBatchId] = useState(null);
@@ -172,6 +172,10 @@ function Batches() {
                 response = await axios.post(`${API_BASE_URL}/batch/getAllBatches`);
             }
             setBatches(response.data.data);
+            const lastBatch = response.data.data.slice(-1)[0]; // Get last batch
+            const lastBatchNumber = lastBatch ? parseInt(lastBatch.batchNumber.replace('b', '')) : 0;
+            const nextBatchNumber = `b${lastBatchNumber + 1}`;
+            setNewBatch((prevBatch) => ({ ...prevBatch, batchNumber: nextBatchNumber }));
             const batchesData = response.data.data;
             const teachers = [];
             const students = [];
@@ -232,8 +236,9 @@ function Batches() {
                 batchSession: '',
                 batchStart: '',
                 batchEnd: '',
-                batchName: '',
+                batchName: 'CS',
             });
+            fetchBatches()
         } catch (err) {
             setError('Error creating batch');
         }

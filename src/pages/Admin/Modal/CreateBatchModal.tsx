@@ -9,8 +9,6 @@ const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, set
         const newErrors = {};
         if (!newBatch.batchNumber) {
             newErrors.batchNumber = 'Batch number is required.';
-        } else if (isNaN(newBatch.batchNumber)) {
-            newErrors.batchNumber = 'Batch number must be a valid number.';
         }
         if (!newBatch.batchStart) newErrors.batchStart = 'Batch start date is required.';
         if (!newBatch.batchEnd) newErrors.batchEnd = 'Batch end date is required.';
@@ -33,8 +31,8 @@ const CreateBatchModal = ({ isOpen, closeModal, handleCreateBatch, newBatch, set
                     type="text"
                     placeholder="Batch Number"
                     value={newBatch.batchNumber}
-                    onChange={(e) => setNewBatch({ ...newBatch, batchNumber: e.target.value })}
-                    className={`border p-2 w-full ${errors.batchNumber ? 'border-red-500' : ''}`}
+                    disabled // Make batch number read-only
+                    className="border p-2 w-full bg-gray-100 text-gray-500"
                 />
                 {errors.batchNumber && (
                     <p className="text-red-500 text-sm mt-1">{errors.batchNumber}</p>
