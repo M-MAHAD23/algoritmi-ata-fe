@@ -110,7 +110,7 @@ function StudentQuiz() {
                 ) : (
                     <div className="flex flex-col mb-6">
                         {/* Table Header */}
-                        <div className="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4">
+                        <div className="grid grid-cols-6 rounded-sm bg-black text-white dark:bg-meta-4">
                             <div className="p-2.5 text-center xl:p-5">Quiz Name</div>
                             <div className="p-2.5 text-center xl:p-5">Quiz Topic</div>
                             <div className="p-2.5 text-center xl:p-5">Description</div>

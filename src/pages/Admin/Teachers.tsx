@@ -56,7 +56,7 @@ function Teachers() {
 
                 <div className="flex flex-col">
                     {/* Dynamic Headers */}
-                    <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-gray-2 dark:bg-meta-4">
+                    <div className="grid grid-cols-5 sm:grid-cols-5 rounded-sm bg-black text-white dark:bg-meta-4">
                         {headers.map((header, index) => (
                             <div key={index} className="p-2.5 text-center xl:p-5">
                                 <h5 className="text-sm font-medium uppercase xsm:text-base">{header}</h5>

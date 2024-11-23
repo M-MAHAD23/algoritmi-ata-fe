@@ -123,7 +123,7 @@ function Batches() {
         <div className="mb-8">
             {/* Table Header */}
             <div
-                className="grid grid-cols-8 gap-2 bg-gray-200 dark:bg-meta-4 rounded-sm"
+                className="grid grid-cols-8 bg-black text-white dark:bg-meta-4 rounded-sm"
             >
                 {headers.map((header, index) => (
                     <div

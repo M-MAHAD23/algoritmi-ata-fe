@@ -11,7 +11,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 // Utility function to render a table
 const renderTable = ({ headers, rows, renderRow, keyExtractor }) => (
     <div>
-        <div className={`grid grid-cols-${headers.length} bg-gray-2 dark:bg-meta-4 rounded-sm`}>
+        <div className={`grid grid-cols-${headers.length} bg-black text-white dark:bg-meta-4 rounded-sm`}>
             {headers.map((header, index) => (
                 <div key={index} className="p-2.5 text-center font-medium uppercase">
                     {header}
