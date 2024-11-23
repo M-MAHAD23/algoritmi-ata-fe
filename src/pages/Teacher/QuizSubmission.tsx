@@ -4,7 +4,7 @@ import axios from 'axios';
 import Loader from '../../common/Loader';
 import toast, { Toaster } from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faHourglassHalf } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faHourglassHalf, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -34,6 +34,8 @@ const renderTable = ({ headers, rows, renderRow, keyExtractor }) => (
 );
 
 function QuizSubmission() {
+    const [analyzingId, setAnalyzingId] = useState(null); // Declare analyzingId state
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -60,12 +62,25 @@ function QuizSubmission() {
         }
     };
 
+
     useEffect(() => {
-        fetchSubmissions();
+        fetchSubmissions(); // Initial fetch
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                fetchSubmissions(); // Refetch batches when the page becomes visible again
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, []);
 
     const handleAnalyzeClick = async (submission) => {
-        const quizDeadline = new Date(submission.quizId.quizDead); // Get the quiz deadline
+        const quizDeadline = new Date(submission.quizId.quizDead);
         const isPastDeadline = new Date() >= quizDeadline;
 
         if (!isPastDeadline) {
@@ -74,14 +89,18 @@ function QuizSubmission() {
             });
             return;
         }
+
         try {
+            setAnalyzingId(submission._id); // Set analyzing row
             await axios.post(`${API_BASE_URL}/quiz/analyzeQuiz`, { submission });
-            fetchSubmissions();
+            fetchSubmissions(); // Refresh data after analyzing
             navigate(
                 `/quiz-results?quizId=${submission?.quizId?._id}&submitterId=${submission?.submitterId?._id}`
             );
         } catch (err) {
             setError('Error analyzing submission');
+        } finally {
+            setAnalyzingId(null); // Reset analyzing state
         }
     };
 
@@ -119,7 +138,7 @@ function QuizSubmission() {
                                 const isPastDeadline = new Date() > quizDeadline;
 
                                 return [
-                                    // Student Name (simple text, no action)
+                                    // Student Name
                                     <div className="p-2.5 text-center text-black dark:text-white">
                                         {submitterId.name || '-'}
                                     </div>,
@@ -142,10 +161,10 @@ function QuizSubmission() {
                                             />
                                         ) : (
                                             <FontAwesomeIcon
-                                                icon={faHourglassHalf}
-                                                className={`cursor-pointer ${isPastDeadline ? 'text-black hover:text-gray-600' : 'text-gray-500 cursor-not-allowed'}`}
-                                                onClick={() => isPastDeadline && handleAnalyzeClick(submission)}
-                                                title="Analyze"
+                                                icon={analyzingId === submission._id ? faSpinner : faHourglassHalf} // Show spinner for the specific row
+                                                className={`cursor-pointer ${isPastDeadline ? 'text-black hover:text-gray-600' : 'text-gray-500 cursor-not-allowed'} ${analyzingId === submission._id ? 'animate-spin' : ''}`}
+                                                onClick={() => isPastDeadline && analyzingId !== submission._id && handleAnalyzeClick(submission)}
+                                                title={analyzingId === submission._id ? "Analyzing..." : "Analyze"}
                                             />
                                         )}
                                     </div>
