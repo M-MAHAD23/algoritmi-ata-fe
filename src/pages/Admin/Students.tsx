@@ -36,6 +36,18 @@ function Students() {
         };
 
         fetchStudents();
+
+        const handleVisibilityChange = () => {
+            if (document.hidden === false) {
+                fetchStudents();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, [batchId]);
 
     // Calculate the students to be shown on the current page
@@ -139,7 +151,7 @@ function Students() {
                                         <button
                                             onClick={prevPage}
                                             disabled={currentPage === 1}
-                                            className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+                                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
                                         >
                                             Prev
                                         </button>
@@ -149,7 +161,7 @@ function Students() {
                                         <button
                                             onClick={nextPage}
                                             disabled={currentPage === totalPages}
-                                            className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+                                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
                                         >
                                             Next
                                         </button>

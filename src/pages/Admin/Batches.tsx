@@ -64,40 +64,68 @@ function Batches() {
         <div className="p-2 text-center">{batch?.batchStudent?.length || 0}</div>,
         <div className="p-2 text-center">{batch?.batchQuiz?.length || 0}</div>,
         <div className="p-2 flex justify-center space-x-4">
-            {/* Action Icons */}
-            <FontAwesomeIcon
-                icon={faEye}
-                className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                onClick={() => {
-                    window.location.href = `/batch-details?batchId=${batch._id}`;
-                }}
-                title="View Batch Details"
-            />
-            <FontAwesomeIcon
-                icon={faArchive}
-                className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                onClick={() => handleArchiveBatch(batch._id)}
-                title="Archive Batch"
-            />
-            <FontAwesomeIcon
-                icon={faEdit}
-                className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                onClick={() => {
-                    setBatch(batch);
-                    setShowUpdateModal(true);
-                }}
-                title="Update Batch"
-            />
-            <FontAwesomeIcon
-                icon={faUserPlus}
-                className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                onClick={() => {
-                    setNewUser({ ...newUser, batchId: batch._id });
-                    setSelectedBatchId(batch?._id);
-                    setIsModalOpen(true);
-                }}
-                title="Add User"
-            />
+            {
+                batch?.isEnable
+                    ?
+                    (
+                        <>
+                            {/* Action Icons */}
+                            <FontAwesomeIcon
+                                icon={faEye}
+                                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                                onClick={() => {
+                                    window.location.href = `/batch-details?batchId=${batch._id}`;
+                                }}
+                                title="View Batch Details"
+                            />
+                            <FontAwesomeIcon
+                                icon={faArchive}
+                                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                                onClick={() => handleArchiveBatch(batch._id)}
+                                title="Archive Batch"
+                            />
+                            <FontAwesomeIcon
+                                icon={faEdit}
+                                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                                onClick={() => {
+                                    setBatch(batch);
+                                    setShowUpdateModal(true);
+                                }}
+                                title="Update Batch"
+                            />
+                            <FontAwesomeIcon
+                                icon={faUserPlus}
+                                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                                onClick={() => {
+                                    setNewUser({ ...newUser, batchId: batch._id });
+                                    setSelectedBatchId(batch?._id);
+                                    setIsModalOpen(true);
+                                }}
+                                title="Add User"
+                            />
+                        </>
+                    )
+                    :
+                    (
+                        <>
+                            {/* Action Icons */}
+                            <FontAwesomeIcon
+                                icon={faEye}
+                                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                                onClick={() => {
+                                    window.location.href = `/batch-details?batchId=${batch._id}`;
+                                }}
+                                title="View Batch Details"
+                            />
+                            <FontAwesomeIcon
+                                icon={faArchive}
+                                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                                onClick={() => handleArchiveBatch(batch._id)}
+                                title="Archive Batch"
+                            />
+                        </>
+                    )
+            }
         </div>,
     ];
 
@@ -146,7 +174,7 @@ function Batches() {
                     <button
                         onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+                        className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
                     >
                         Prev
                     </button>
@@ -156,7 +184,7 @@ function Batches() {
                     <button
                         onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(rows.length / batchesPerPage)))}
                         disabled={currentPage === Math.ceil(rows.length / batchesPerPage)}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+                        className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
                     >
                         Next
                     </button>

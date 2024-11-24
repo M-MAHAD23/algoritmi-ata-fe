@@ -14,6 +14,10 @@ function BatchDetails() {
     const [batch, setBatch] = useState(null);
     const [batchId, setBatchId] = useState(null);
     const navigate = useNavigate();
+    const [teachersPage, setTeachersPage] = useState(1);
+    const [studentsPage, setStudentsPage] = useState(1);
+    const [quizzesPage, setQuizzesPage] = useState(1);
+    const itemsPerPage = 5;
 
     // Fetch batches inside useEffect
     useEffect(() => {
@@ -37,88 +41,131 @@ function BatchDetails() {
         };
 
         fetchBatch();
+
+        const handleVisibilityChange = () => {
+            if (document.hidden === false) {
+                fetchBatch();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, []); // This useEffect will run whenever `batchId` changes
 
-
-    const renderUsers = (users) => (
-        <>
-            {loading && <Loader />}
-            {users.length === 0 ? (
-                <div className="text-center text-lg p-5">No data available.</div>
-            ) : (
-                users.map((user, index) => (
-                    <div
-                        key={index}
-                        className={`grid grid-cols-5 sm:grid-cols-5 ${index === users.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'
-                            }`}
-                    >
-                        {/* Image */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <img
-                                src={user.image || profileImage}
-                                alt={user.name}
-                                className="w-12 h-12 rounded-full object-cover"
-                            />
-                        </div>
-                        {/* Name */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{user.name || '-'}</p>
-                        </div>
-                        {/* Email */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{user.email || '-'}</p>
-                        </div>
-                        {/* Contact */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{user.contact?.join(', ') || '-'}</p>
-                        </div>
-                        {/* About */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{user.about || '-'}</p>
-                        </div>
-                    </div>
-                ))
-            )}
-        </>
+    const PaginationControls = ({ currentPage, totalPages, onPageChange }) => (
+        <div className="flex mb-20 justify-between items-center mt-4">
+            <button
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+            >
+                Prev
+            </button>
+            <div className="text-center">
+                Page {currentPage} of {totalPages}
+            </div>
+            <button
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+            >
+                Next
+            </button>
+        </div>
     );
 
-    const renderQuizzes = (quizzes) => (
-        <>
-            {loading && <Loader />}
-            {quizzes.length === 0 ? (
-                <div className="text-center text-lg p-5">No data available.</div>
-            ) : (
-                quizzes.map((quiz, index) => (
-                    <div
-                        key={index}
-                        className={`grid grid-cols-5 sm:grid-cols-5 ${index === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'
-                            }`}
-                    >
-                        {/* Name */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{quiz.quizName || '-'}</p>
+    const paginateData = (data, currentPage) => {
+        const start = (currentPage - 1) * itemsPerPage;
+        return data.slice(start, start + itemsPerPage);
+    };
+
+
+    const renderUsers = (users) => {
+        return (
+            <>
+                {loading && <Loader />}
+                {users.length === 0 ? (
+                    <div className="text-center text-lg p-5">No data available.</div>
+                ) : (
+                    users.map((user, index) => (
+                        <div
+                            key={index}
+                            className={`grid grid-cols-5 sm:grid-cols-5 ${index === users.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'
+                                }`}
+                        >
+                            {/* Image */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <img
+                                    src={user.image || profileImage}
+                                    alt={user.name}
+                                    className="w-12 h-12 rounded-full object-cover"
+                                />
+                            </div>
+                            {/* Name */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{user.name || '-'}</p>
+                            </div>
+                            {/* Email */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{user.email || '-'}</p>
+                            </div>
+                            {/* Contact */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{user.contact?.join(', ') || '-'}</p>
+                            </div>
+                            {/* About */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{user.about || '-'}</p>
+                            </div>
                         </div>
-                        {/* Topic */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{quiz.quizTopic || '-'}</p>
+                    ))
+                )}
+            </>
+        )
+    };
+
+    const renderQuizzes = (quizzes) => {
+        return (
+            <>
+                {loading && <Loader />}
+                {quizzes.length === 0 ? (
+                    <div className="text-center text-lg p-5">No data available.</div>
+                ) : (
+                    quizzes.map((quiz, index) => (
+                        <div
+                            key={index}
+                            className={`grid grid-cols-5 sm:grid-cols-5 ${index === quizzes.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'
+                                }`}
+                        >
+                            {/* Name */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{quiz.quizName || '-'}</p>
+                            </div>
+                            {/* Topic */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{quiz.quizTopic || '-'}</p>
+                            </div>
+                            {/* Description */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{quiz.quizDescription || '-'}</p>
+                            </div>
+                            {/* Issue */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{quiz.quizIssued || '-'}</p>
+                            </div>
+                            {/* Dead */}
+                            <div className="flex items-center justify-center p-2.5 xl:p-5">
+                                <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
+                            </div>
                         </div>
-                        {/* Description */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{quiz.quizDescription || '-'}</p>
-                        </div>
-                        {/* Issue */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{quiz.quizIssued || '-'}</p>
-                        </div>
-                        {/* Dead */}
-                        <div className="flex items-center justify-center p-2.5 xl:p-5">
-                            <p className="text-black dark:text-white">{quiz.quizDead || '-'}</p>
-                        </div>
-                    </div>
-                ))
-            )}
-        </>
-    );
+                    ))
+                )}
+            </>
+        )
+    };
 
     return (
         <>
@@ -152,7 +199,12 @@ function BatchDetails() {
                                             </div>
                                         ))}
                                     </div>
-                                    {renderUsers(batch?.batchTeacher || [])}
+                                    {renderUsers(paginateData(batch?.batchTeacher || [], teachersPage))}
+                                    <PaginationControls
+                                        currentPage={teachersPage}
+                                        totalPages={Math.ceil((batch?.batchTeacher?.length || 0) / itemsPerPage)}
+                                        onPageChange={setTeachersPage}
+                                    />
                                 </div>
 
                                 {/* Students Section */}
@@ -165,10 +217,15 @@ function BatchDetails() {
                                             </div>
                                         ))}
                                     </div>
-                                    {renderUsers(batch?.batchStudent || [])}
+                                    {renderUsers(paginateData(batch?.batchStudent || [], studentsPage))}
+                                    <PaginationControls
+                                        currentPage={studentsPage}
+                                        totalPages={Math.ceil((batch?.batchStudent?.length || 0) / itemsPerPage)}
+                                        onPageChange={setStudentsPage}
+                                    />
                                 </div>
 
-                                {/* Students Section */}
+                                {/* Quizzes Section */}
                                 <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-8">
                                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
                                     <div className="grid grid-cols-5 sm:grid-cols-5 bg-black text-white dark:bg-meta-4 rounded-sm">
@@ -178,7 +235,12 @@ function BatchDetails() {
                                             </div>
                                         ))}
                                     </div>
-                                    {renderQuizzes(batch?.batchQuiz || [])}
+                                    {renderQuizzes(paginateData(batch?.batchQuiz || [], quizzesPage))}
+                                    <PaginationControls
+                                        currentPage={quizzesPage}
+                                        totalPages={Math.ceil((batch?.batchQuiz?.length || 0) / itemsPerPage)}
+                                        onPageChange={setQuizzesPage}
+                                    />
                                 </div>
                             </div>
                         </>
