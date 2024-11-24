@@ -27,11 +27,6 @@ const UpdateBatchModal = ({ isOpen, closeModal, handleUpdateBatch, batch, setBat
     // Validate fields before submission
     const validateFields = () => {
         const newErrors = {};
-        if (!updatedBatch.batchNumber) {
-            newErrors.batchNumber = 'Batch number is required.';
-        } else if (isNaN(updatedBatch.batchNumber)) {
-            newErrors.batchNumber = 'Batch number must be a valid number.';
-        }
         if (!updatedBatch.batchStart) newErrors.batchStart = 'Batch start date is required.';
         if (!updatedBatch.batchEnd) newErrors.batchEnd = 'Batch end date is required.';
         if (!updatedBatch.batchName) newErrors.batchName = 'Batch name is required.';
@@ -49,16 +44,10 @@ const UpdateBatchModal = ({ isOpen, closeModal, handleUpdateBatch, batch, setBat
     const content = (
         <div>
             <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Batch Number"
-                    value={updatedBatch.batchNumber}
-                    onChange={(e) => setUpdatedBatch({ ...updatedBatch, batchNumber: e.target.value })}
-                    className={`border p-2 w-full ${errors.batchNumber ? 'border-red-500' : ''}`}
-                />
-                {errors.batchNumber && (
-                    <p className="text-red-500 text-sm mt-1">{errors.batchNumber}</p>
-                )}
+                {/* Make batchNumber non-editable */}
+                <div className="border p-2 w-full bg-gray-200 text-gray-600">
+                    {updatedBatch.batchNumber}
+                </div>
             </div>
             <div className="mb-4">
                 <input
