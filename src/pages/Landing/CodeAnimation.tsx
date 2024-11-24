@@ -1,43 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 const CodeAnimation = () => {
-  const [displayedCode, setDisplayedCode] = useState('');
+  const [displayedCode, setDisplayedCode] = useState("");
   const [compiling, setCompiling] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const codeSnippet = `function greet(name) {
+  const codeSnippet = ` function greet(name) {
     return "Hello, " + name + "!";
 }
 console.log(greet("World"));`;
 
   const result = `Hello, World!`;
 
-  // Display code with applied styling
+  const typingIntervalRef = useRef(null);
+
   const highlightSyntax = (code) => {
-    return code.split('\n').map((line, lineIndex) => (
+    return code.split("\n").map((line, lineIndex) => (
       <div key={lineIndex} className="code-line">
         <span className="text-green-400">{line}</span>
       </div>
     ));
   };
 
-  useEffect(() => {
+  const startTypingAnimation = () => {
     let charIndex = 0;
-    const typeCode = () => {
-      const typingInterval = setInterval(() => {
-        setDisplayedCode((prev) => prev + codeSnippet[charIndex]);
-        charIndex++;
-        if (charIndex === codeSnippet.length) {
-          clearInterval(typingInterval);
-          setTimeout(() => setCompiling(true), 500); // Start compiling after typing finishes
-        }
-      }, 50);
-    };
+    setDisplayedCode(""); // Reset code display
+    setCompiling(false);
+    setShowResult(false);
 
-    typeCode();
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current); // Clear any previous interval
+    }
+
+    typingIntervalRef.current = setInterval(() => {
+      // Ensure the character is not undefined before appending
+      if (charIndex < codeSnippet.length) {
+        setDisplayedCode((prev) => prev + (codeSnippet[charIndex] || ""));
+        charIndex++;
+      } else {
+        clearInterval(typingIntervalRef.current);
+        setTimeout(() => setCompiling(true), 500); // Trigger compiling phase
+      }
+    }, 50);
+  };
+
+  useEffect(() => {
+    startTypingAnimation();  // Start animation on mount
+
     return () => {
-      // Cleanup the interval on component unmount
-      clearInterval();
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);  // Cleanup on unmount
+      }
     };
   }, []);
 
@@ -45,35 +58,16 @@ console.log(greet("World"));`;
     if (compiling) {
       const compileTimeout = setTimeout(() => {
         setCompiling(false);
-        setShowResult(true); // Show result after compiling
-        setTimeout(() => resetAnimation(), 3000); // Reset animation after result is shown
-      }, 1500); // Simulate compile time
+        setShowResult(true);
+        setTimeout(() => startTypingAnimation(), 3000);  // Restart animation
+      }, 1500);  // Simulate compile time
+
       return () => clearTimeout(compileTimeout);
     }
   }, [compiling]);
 
-  const resetAnimation = () => {
-    setDisplayedCode('');
-    setCompiling(false);
-    setShowResult(false);
-    setTimeout(() => {
-      let charIndex = 0;
-      const typingInterval = setInterval(() => {
-        setDisplayedCode((prev) => prev + codeSnippet[charIndex]);
-        charIndex++;
-        if (charIndex === codeSnippet.length) {
-          clearInterval(typingInterval);
-          setTimeout(() => setCompiling(true), 500); // Start compiling
-        }
-      }, 50);
-    }, 500);
-  };
-
   return (
-    <div
-      className="bg-gray-900 text-white rounded-lg shadow-lg w-full md:w-10/12 mx-auto border border-gray-700 mt-[-120px]"
-      style={{ height: '350px', overflow: 'hidden' }} // Increased the height to 500px
-    >
+    <div className="bg-gray-900 text-white rounded-lg shadow-lg w-full md:w-10/12 mx-auto border border-gray-700 mt-[-120px]" style={{ height: "350px", overflow: "hidden" }}>
       {/* VS Code Top Bar */}
       <div className="bg-gray-800 text-gray-400 px-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">

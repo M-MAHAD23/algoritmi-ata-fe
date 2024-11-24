@@ -42,7 +42,7 @@ function Landing() {
     //   imgSrc:
     //     'https://scontent.flhe13-1.fna.fbcdn.net/v/t39.30808-6/343163896_770153518161561_6751047617848390799_n.jpg?stp=c5.0.306.306a_dst-jpg_s206x206&_nc_cat=108&ccb=1-7&_nc_sid=fe5ecc&_nc_ohc=4we9_5V6cVMQ7kNvgGQ0do5&_nc_zt=23&_nc_ht=scontent.flhe13-1.fna&_nc_gid=A9jLI1gcUzZW0hQMx4yeCyh&oh=00_AYDO8TFNdpW7Flh0m2y8bMZSEFjl8QzfGWvYG_eNfwiMKA&oe=673B3B81',
     //   description:
-    //     'Responsible for ensuring the quality, functionality, and reliability of software through meticulous testing and validation of features and fixes before release 🛡️',
+    //     'Responsible for ensuring the quality, functionality, and reliability of software and fixes before release 🛡️',
     //   linkedin: 'your-link-here',
     // },
   ];
