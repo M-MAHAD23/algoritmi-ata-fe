@@ -468,7 +468,7 @@ function ActiveBatch() {
                                                                     // : 'text-black hover:text-green-500 cursor-pointer'
                                                                     }`}
                                                                 onClick={() => {
-                                                                    toast('Feature comming soon!!', {
+                                                                    toast('Feature coming soon!!', {
                                                                         icon: '🔜',
                                                                     });
                                                                     // if (new Date().toISOString().split('T')[0] < quiz.quizDead) {
