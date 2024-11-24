@@ -18,6 +18,13 @@ function QuizResults() {
     const [error, setError] = useState(null);
     const [isEthicsVisible, setIsEthicsVisible] = useState(false);
 
+    // Separate pagination states for each table
+    const [pagination, setPagination] = useState({
+        textMatched: { currentPage: 1, itemsPerPage: 5 },
+        syntaxMatched: { currentPage: 1, itemsPerPage: 5 },
+        logicMatched: { currentPage: 1, itemsPerPage: 5 },
+    });
+
     const toggleEthicsVisibility = () => {
         setIsEthicsVisible((prevState) => !prevState);
     };
@@ -47,12 +54,9 @@ function QuizResults() {
         }
     };
 
-    useEffect(() => {
-        fetchSubmissionDetails(); // Refetch the submission details when the page becomes visible again
-    }, []);
-
     // Visibility change logic
     useEffect(() => {
+        fetchSubmissionDetails(); // Refetch the submission details when the page becomes visible again
         const handleVisibilityChange = () => {
             console.log('Visibility state:', document.visibilityState); // Check if it's being called
             if (document.visibilityState === 'visible') {
@@ -78,57 +82,88 @@ function QuizResults() {
         s3Url,
     } = submissionDetails || {};
 
-    const renderMatchTable = (title, matches) => (
-        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
-            {/* Table Wrapper */}
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+    // Pagination handling functions
+    const handlePageChange = (table, direction) => {
+        setPagination((prev) => {
+            const newPagination = { ...prev };
+            if (direction === "next") {
+                if (newPagination[table].currentPage < Math.ceil(matches[table].length / newPagination[table].itemsPerPage)) {
+                    newPagination[table].currentPage += 1;
+                }
+            } else if (direction === "prev") {
+                if (newPagination[table].currentPage > 1) {
+                    newPagination[table].currentPage -= 1;
+                }
+            }
+            return newPagination;
+        });
+    };
 
-                {/* Go Back Button */}
-                <button
-                    onClick={() => navigate(-1)} // Navigate back to the previous page
-                    className="text-black hover:underline mb-4"
-                >
-                    &larr; Go Back
-                </button>
+    const renderMatchTable = (title, matches, tableKey) => {
+        const { currentPage, itemsPerPage } = pagination[tableKey];
 
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{title}</h4>
+        // Calculate the items to be displayed on the current page
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const currentMatches = matches.slice(startIndex, startIndex + itemsPerPage);
 
-                {matches?.length === 0 ? (
-                    <div className="text-center text-lg p-5">No matches found.</div>
-                ) : (
-                    <div className="flex flex-col">
-                        {/* Table Header */}
-                        <div className="grid grid-cols-3 rounded-sm bg-black text-white dark:bg-meta-4">
-                            <div className="p-2.5 text-center xl:p-5">Image</div>
-                            <div className="p-2.5 text-center xl:p-5">Student Name</div>
-                            <div className="p-2.5 text-center xl:p-5">Percentage</div>
-                        </div>
+        return (
+            <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
+                    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{title}</h4>
 
-                        {/* Table Rows */}
-                        {matches?.map((match, index) => (
-                            <div
-                                className={`grid grid-cols-3 ${index === matches?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                                key={match._id}
-                            >
-                                {/* Image */}
-                                <div className="p-2.5 text-center xl:p-5 flex justify-center items-center">
-                                    <img
-                                        src={match.studentId?.image || profileImage}
-                                        alt={match.studentId?.name}
-                                        className="w-8 h-8 rounded-full object-cover"
-                                    />
-                                </div>
-                                {/* Student Name */}
-                                <div className="p-2.5 text-center xl:p-5">{match.studentId?.name || "Unknown"}</div>
-                                {/* Percentage */}
-                                <div className="p-2.5 text-center xl:p-5">{match.percentage}%</div>
+                    {matches?.length === 0 ? (
+                        <div className="text-center text-lg p-5">No matches found.</div>
+                    ) : (
+                        <div className="flex flex-col">
+                            <div className="grid grid-cols-3 rounded-sm bg-black text-white dark:bg-meta-4">
+                                <div className="p-2.5 text-center xl:p-5">Image</div>
+                                <div className="p-2.5 text-center xl:p-5">Student Name</div>
+                                <div className="p-2.5 text-center xl:p-5">Percentage</div>
                             </div>
-                        ))}
+
+                            {currentMatches?.map((match, index) => (
+                                <div
+                                    className={`grid grid-cols-3 ${index === currentMatches?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                    key={match._id}
+                                >
+                                    <div className="p-2.5 text-center xl:p-5 flex justify-center items-center">
+                                        <img
+                                            src={match.studentId?.image || profileImage}
+                                            alt={match.studentId?.name}
+                                            className="w-8 h-8 rounded-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="p-2.5 text-center xl:p-5">{match.studentId?.name || "Unknown"}</div>
+                                    <div className="p-2.5 text-center xl:p-5">{match.percentage}%</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between items-center mt-4">
+                        <button
+                            onClick={() => handlePageChange(tableKey, "prev")}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                        >
+                            Prev
+                        </button>
+                        <div className="text-center">
+                            Page {currentPage} of {Math.ceil(matches.length / itemsPerPage)}
+                        </div>
+                        <button
+                            onClick={() => handlePageChange(tableKey, "next")}
+                            disabled={currentPage === Math.ceil(matches.length / itemsPerPage)}
+                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                        >
+                            Next
+                        </button>
                     </div>
-                )}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <>
@@ -226,9 +261,9 @@ function QuizResults() {
                                     </div>
 
                                     {/* Matching Details Tables */}
-                                    {renderMatchTable("Text Matches", textMatched)}
-                                    {renderMatchTable("Syntax Matches", syntaxMatched)}
-                                    {renderMatchTable("Logic Matches", logicMatched)}
+                                    {renderMatchTable("Text Matches", textMatched, "textMatched")}
+                                    {renderMatchTable("Syntax Matches", syntaxMatched, "syntaxMatched")}
+                                    {renderMatchTable("Logic Matches", logicMatched, "logicMatched")}
                                 </div>
                             </>
                         )

@@ -22,6 +22,24 @@ function StudentQuiz() {
     const navigate = useNavigate();
     const [token, setToken] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
+    // Pagination states for each table
+    const [currentPageNew, setCurrentPageNew] = useState(1);
+    const [currentPageLate, setCurrentPageLate] = useState(1);
+    const [currentPageSubmitted, setCurrentPageSubmitted] = useState(1);
+    const quizzesPerPage = 5;
+
+    // Pagination calculation for each table
+    const paginateQuizzes = (quizzes, currentPage) => {
+        const indexOfLastQuiz = currentPage * quizzesPerPage;
+        const indexOfFirstQuiz = indexOfLastQuiz - quizzesPerPage;
+        return quizzes.slice(indexOfFirstQuiz, indexOfLastQuiz);
+    };
+
+    // Paginated data for each table
+    const paginatedNewQuizzes = paginateQuizzes(newQuizzes, currentPageNew);
+    const paginatedLateQuizzes = paginateQuizzes(lateQuizzes, currentPageLate);
+    const paginatedSubmittedQuizzes = paginateQuizzes(submittedQuizzes, currentPageSubmitted);
+
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
@@ -99,100 +117,127 @@ function StudentQuiz() {
 
     if (error) return <div>{error}</div>;
 
-    const renderTable = (title, quizzes, isLate) => (
-        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
-            {/* Table Wrapper */}
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{title}</h4>
+    // Render table with pagination
+    const renderTable = (title, quizzes, currentPage, setCurrentPage, isLate = false) => {
+        const paginatedData = paginateQuizzes(quizzes, currentPage);
+        const totalPages = Math.ceil(quizzes.length / quizzesPerPage);
 
-                {quizzes?.length === 0 ? (
-                    <div className="text-center text-lg p-5">No quizzes available.</div>
-                ) : (
-                    <div className="flex flex-col mb-6">
-                        {/* Table Header */}
-                        <div className="grid grid-cols-6 rounded-sm bg-black text-white dark:bg-meta-4">
-                            <div className="p-2.5 text-center xl:p-5">Quiz Name</div>
-                            <div className="p-2.5 text-center xl:p-5">Quiz Topic</div>
-                            <div className="p-2.5 text-center xl:p-5">Description</div>
-                            <div className="p-2.5 text-center xl:p-5">Issued Date</div>
-                            <div className="p-2.5 text-center xl:p-5">Deadline</div>
-                            <div className="p-2.5 text-center xl:p-5">Actions</div>
-                        </div>
+        return (
+            <div className="mt-6">
+                <div className="rounded-sm border px-5 pt-6 pb-6 shadow-lg">
+                    <h4 className="mb-6 text-xl font-semibold">{title}</h4>
 
-                        {/* Table Rows */}
-                        {quizzes?.map((quiz, index) => (
-                            <div
-                                className={`grid grid-cols-6 ${index === quizzes?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
-                                key={quiz?._id}
-                            >
-                                {/* Quiz Name */}
-                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizName || '-'}</div>
-                                {/* Quiz Topic */}
-                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizTopic || '-'}</div>
-                                {/* Quiz Description */}
-                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizDescription || '-'}</div>
-                                {/* Issued Date */}
-                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizIssued || '-'}</div>
-                                {/* Deadline */}
-                                <div className="p-2.5 text-center xl:p-5">{quiz?.quizDead || '-'}</div>
-                                {/* Action Buttons */}
-                                <div className="p-2.5 text-center xl:p-5">
-                                    {/* New Quizzes */}
-                                    {title === "New Quizzes" && !isLate && (
-                                        <span
-                                            onClick={() => handleOpenModal(quiz)}
-                                            className="text-black hover:text-gray-550 cursor-pointer"
-                                        >
-                                            <FontAwesomeIcon icon={faPaperPlane} className="text-xl" /> {/* Paper plane icon */}
-                                        </span>
-                                    )}
-
-                                    {/* Late Quizzes */}
-                                    {title === "Late Quizzes" && isLate && (
-                                        <span className="flex items-center justify-center cursor-pointer text-red">
-                                            <FontAwesomeIcon icon={faClock} className="mr-2" /> {/* Clock icon */}
-                                            Late Submission
-                                        </span>
-                                    )}
-
-                                    {/* Submitted Quizzes */}
-                                    {title === "Submitted Quizzes" && (
-                                        <>
-                                            <span
-                                                onClick={() => {
-                                                    const cooldown = 6000; // 6 seconds
-                                                    const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
-                                                    const now = Date.now();
-
-                                                    if (quiz?.analyzed) {
-                                                        handleViewResults(quiz?._id);
-                                                    } else if (now - lastToastTime > cooldown) {
-                                                        toast.error("Please wait for analysis.");
-                                                        window.lastToastTime = now; // Update the last toast time globally
-                                                    }
-                                                }}
-                                                className={`flex items-center justify-center cursor-pointer text-black hover:text-gray-550`}
-                                            >
-                                                {/* Icon */}
-                                                <FontAwesomeIcon
-                                                    icon={quiz?.analyzed ? faEye : faHourglassHalf}
-                                                    className="mr-2" // Space between icon and text
-                                                />
-                                                {/* Icon Text */}
-                                                {quiz?.analyzed ? "View Results" : "Being Analyzed"}
-                                            </span>
-
-                                        </>
-                                    )}
-                                    <Toaster />
-                                </div>
+                    {/* Table Content */}
+                    {paginatedData.length === 0 ? (
+                        <div className="text-center text-lg p-5">No quizzes available.</div>
+                    ) : (
+                        <div className="flex flex-col mb-6">
+                            {/* Table Header */}
+                            <div className="grid grid-cols-6 rounded-sm bg-black text-white dark:bg-meta-4">
+                                <div className="p-2.5 text-center xl:p-5">Quiz Name</div>
+                                <div className="p-2.5 text-center xl:p-5">Quiz Topic</div>
+                                <div className="p-2.5 text-center xl:p-5">Description</div>
+                                <div className="p-2.5 text-center xl:p-5">Issued Date</div>
+                                <div className="p-2.5 text-center xl:p-5">Deadline</div>
+                                <div className="p-2.5 text-center xl:p-5">Actions</div>
                             </div>
-                        ))}
+
+                            {/* Table Rows */}
+                            {paginatedData?.map((quiz, index) => (
+                                <div
+                                    className={`grid grid-cols-6 ${index === paginatedData?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                    key={quiz?._id}
+                                >
+                                    {/* Quiz Name */}
+                                    <div className="p-2.5 text-center xl:p-5">{quiz?.quizName || '-'}</div>
+                                    {/* Quiz Topic */}
+                                    <div className="p-2.5 text-center xl:p-5">{quiz?.quizTopic || '-'}</div>
+                                    {/* Quiz Description */}
+                                    <div className="p-2.5 text-center xl:p-5">{quiz?.quizDescription || '-'}</div>
+                                    {/* Issued Date */}
+                                    <div className="p-2.5 text-center xl:p-5">{quiz?.quizIssued || '-'}</div>
+                                    {/* Deadline */}
+                                    <div className="p-2.5 text-center xl:p-5">{quiz?.quizDead || '-'}</div>
+                                    {/* Action Buttons */}
+                                    <div className="p-2.5 text-center xl:p-5">
+                                        {/* New Quizzes */}
+                                        {title === "New Quizzes" && !isLate && (
+                                            <span
+                                                onClick={() => handleOpenModal(quiz)}
+                                                className="text-black hover:text-gray-550 cursor-pointer"
+                                            >
+                                                <FontAwesomeIcon icon={faPaperPlane} className="text-xl" /> {/* Paper plane icon */}
+                                            </span>
+                                        )}
+
+                                        {/* Late Quizzes */}
+                                        {title === "Late Quizzes" && isLate && (
+                                            <span className="flex items-center justify-center cursor-pointer text-red">
+                                                <FontAwesomeIcon icon={faClock} className="mr-2" /> {/* Clock icon */}
+                                                Late Submission
+                                            </span>
+                                        )}
+
+                                        {/* Submitted Quizzes */}
+                                        {title === "Submitted Quizzes" && (
+                                            <>
+                                                <span
+                                                    onClick={() => {
+                                                        const cooldown = 6000; // 6 seconds
+                                                        const lastToastTime = window.lastToastTime || 0; // Default to 0 if not set
+                                                        const now = Date.now();
+
+                                                        if (quiz?.analyzed) {
+                                                            handleViewResults(quiz?._id);
+                                                        } else if (now - lastToastTime > cooldown) {
+                                                            toast.error("Please wait for analysis.");
+                                                            window.lastToastTime = now; // Update the last toast time globally
+                                                        }
+                                                    }}
+                                                    className={`flex items-center justify-center cursor-pointer text-black hover:text-gray-550`}
+                                                >
+                                                    {/* Icon */}
+                                                    <FontAwesomeIcon
+                                                        icon={quiz?.analyzed ? faEye : faHourglassHalf}
+                                                        className="mr-2" // Space between icon and text
+                                                    />
+                                                    {/* Icon Text */}
+                                                    {quiz?.analyzed ? "View Results" : "Being Analyzed"}
+                                                </span>
+
+                                            </>
+                                        )}
+                                        <Toaster />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between items-center mt-4">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                        >
+                            Prev
+                        </button>
+                        <div className="text-center">
+                            Page {currentPage} of {totalPages}
+                        </div>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                        >
+                            Next
+                        </button>
                     </div>
-                )}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <>
@@ -213,9 +258,9 @@ function StudentQuiz() {
                                         &larr; Go Back
                                     </button>
                                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Quizzes</h4>
-                                    <div className="mb-8">{renderTable('New Quizzes', newQuizzes, false)}</div>
-                                    <div className="mb-8">{renderTable('Late Quizzes', lateQuizzes, true)}</div>
-                                    <div className="mb-8">{renderTable('Submitted Quizzes', submittedQuizzes, false)}</div>
+                                    <div className="mb-8">{renderTable('New Quizzes', newQuizzes, currentPageNew, setCurrentPageNew)}</div>
+                                    <div className="mb-8">{renderTable('Late Quizzes', lateQuizzes, currentPageLate, setCurrentPageLate, true)}</div>
+                                    <div className="mb-8">{renderTable('Submitted Quizzes', submittedQuizzes, currentPageSubmitted, setCurrentPageSubmitted)}</div>
                                 </div>
 
                                 {isModalOpen && selectedQuiz && (
