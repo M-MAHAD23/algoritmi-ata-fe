@@ -38,6 +38,15 @@ function ActiveBatch() {
     const [currentQuizId, setCurrentQuizId] = useState(null);
     const userProfile = JSON.parse(localStorage.getItem("userInfo"));
     const { teacherSelectedBatch } = useContext(LaunchATAContext);
+    // Pagination state for Students and Quizzes tables
+    const [studentsPagination, setStudentsPagination] = useState({
+        currentPage: 1,
+        itemsPerPage: 5,
+    });
+    const [quizzesPagination, setQuizzesPagination] = useState({
+        currentPage: 1,
+        itemsPerPage: 5,
+    });
 
     const handleAddHint = () => {
         const errors = {};
@@ -67,6 +76,7 @@ function ActiveBatch() {
         // Reset the form
         setHintForm({ description: '', hintType: 'Input', image: null });
     };
+
     const handleHintChange = (e) => {
         const { name, value, files } = e.target;
         setHintForm({ ...hintForm, [name]: files ? files[0] : value });
@@ -86,10 +96,6 @@ function ActiveBatch() {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchBatchDetails();
-    }, []);
 
     useEffect(() => {
         fetchBatchDetails();
@@ -267,8 +273,48 @@ function ActiveBatch() {
         </div>
     );
 
-    return (
+    // Handle pagination for the Students table
+    const handleStudentsPageChange = (direction) => {
+        setStudentsPagination((prev) => {
+            const newPagination = { ...prev };
+            const totalPages = Math.ceil(batch?.batchStudent?.length / newPagination.itemsPerPage);
 
+            if (direction === "next" && newPagination.currentPage < totalPages) {
+                newPagination.currentPage += 1;
+            } else if (direction === "prev" && newPagination.currentPage > 1) {
+                newPagination.currentPage -= 1;
+            }
+
+            return newPagination;
+        });
+    };
+
+    // Handle pagination for the Quizzes table
+    const handleQuizzesPageChange = (direction) => {
+        setQuizzesPagination((prev) => {
+            const newPagination = { ...prev };
+            const totalPages = Math.ceil(batch?.batchQuiz?.length / newPagination.itemsPerPage);
+
+            if (direction === "next" && newPagination.currentPage < totalPages) {
+                newPagination.currentPage += 1;
+            } else if (direction === "prev" && newPagination.currentPage > 1) {
+                newPagination.currentPage -= 1;
+            }
+
+            return newPagination;
+        });
+    };
+
+    // Paginate the Students and Quizzes tables
+    const { currentPage: studentsPage, itemsPerPage: studentsPerPage } = studentsPagination;
+    const startIndexStudents = (studentsPage - 1) * studentsPerPage;
+    const paginatedStudents = batch?.batchStudent?.slice(startIndexStudents, startIndexStudents + studentsPerPage);
+
+    const { currentPage: quizzesPage, itemsPerPage: quizzesPerPage } = quizzesPagination;
+    const startIndexQuizzes = (quizzesPage - 1) * quizzesPerPage;
+    const paginatedQuizzes = batch?.batchQuiz?.slice(startIndexQuizzes, startIndexQuizzes + quizzesPerPage);
+
+    return (
         <>
             <Toaster
                 toastOptions={{
@@ -302,7 +348,6 @@ function ActiveBatch() {
                                             <RenderCard
                                                 data={{
                                                     batchNumber: batch?.batchNumber,
-                                                    // batchSession: batch?.batchSession,
                                                     batchStart: batch?.batchStart,
                                                     batchEnd: batch?.batchEnd,
                                                     batchName: batch?.batchName,
@@ -310,8 +355,8 @@ function ActiveBatch() {
                                                     batchQuiz: batch?.batchQuiz,
                                                 }}
                                             />
-
                                         </div>
+
                                         <div className="mt-6 mb-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16">
                                             {/* Students Table */}
                                             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
@@ -319,10 +364,9 @@ function ActiveBatch() {
 
                                                 {renderTable({
                                                     headers: ["Image", "Roll ID", "Name", "Email", "Contact"],
-                                                    rows: batch.batchStudent || [],
+                                                    rows: paginatedStudents || [],
                                                     keyExtractor: (student) => student._id,
                                                     renderRow: (student) => [
-                                                        // Student Image
                                                         <div className="p-2.5 text-center">
                                                             {student.image ? (
                                                                 <img
@@ -334,24 +378,39 @@ function ActiveBatch() {
                                                                 <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto"></div>
                                                             )}
                                                         </div>,
-                                                        // Student Roll ID
                                                         <div className="p-2.5 text-center text-black dark:text-white">
                                                             {student.rollId || '-'}
                                                         </div>,
-                                                        // Student Name
                                                         <div className="p-2.5 text-center text-black dark:text-white">
                                                             {student.name || '-'}
                                                         </div>,
-                                                        // Student Email
                                                         <div className="p-2.5 text-center text-black dark:text-white">
                                                             {student.email || '-'}
                                                         </div>,
-                                                        // Student Contact
                                                         <div className="p-2.5 text-center text-black dark:text-white">
                                                             {student.contact?.[0] || '-'}
                                                         </div>,
                                                     ],
                                                 })}
+
+                                                {/* Pagination Controls for Students */}
+                                                <div className="flex justify-between items-center mt-4">
+                                                    <button
+                                                        onClick={() => handleStudentsPageChange('prev')}
+                                                        disabled={studentsPage === 1}
+                                                        className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                                                    >
+                                                        Prev
+                                                    </button>
+                                                    <span>{`Page ${studentsPage}`}</span>
+                                                    <button
+                                                        onClick={() => handleStudentsPageChange('next')}
+                                                        disabled={studentsPage === Math.ceil(batch?.batchStudent?.length / studentsPerPage)}
+                                                        className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                                                    >
+                                                        Next
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             {/* Quizzes Table */}
@@ -359,7 +418,6 @@ function ActiveBatch() {
                                                 <h4 className="mb-6 text-xl font-bold text-black dark:text-white">
                                                     Quizzes
                                                 </h4>
-                                                {/* Create Quiz Button Below Heading */}
                                                 <div className="mt-4 mb-6">
                                                     <button
                                                         onClick={() => setShowQuizModal(true)}
@@ -379,7 +437,7 @@ function ActiveBatch() {
                                                         'Submissions',
                                                         'Actions',
                                                     ],
-                                                    rows: batch.batchQuiz || [],
+                                                    rows: paginatedQuizzes || [],
                                                     keyExtractor: (quiz) => quiz._id,
                                                     renderRow: (quiz) => [
                                                         <div className="p-2.5 text-center text-black dark:text-white">
@@ -411,7 +469,7 @@ function ActiveBatch() {
                                                                 onClick={() => {
                                                                     if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
                                                                         setShowHintModal(true);
-                                                                        setCurrentQuizId(quiz._id); // Store quiz._id to use in the modal
+                                                                        setCurrentQuizId(quiz._id);
                                                                     } else {
                                                                         toast.error("Deadline passed, Can't add hint :)");
                                                                     }
@@ -428,7 +486,7 @@ function ActiveBatch() {
                                                                     }`}
                                                                 onClick={() => {
                                                                     if (new Date().toISOString().split('T')[0] >= quiz.quizDead) {
-                                                                        handleQuizClick(quiz._id); // Use quiz._id to view results
+                                                                        handleQuizClick(quiz._id);
                                                                     } else {
                                                                         toast.error("Please wait for the deadline to analyze the results :)");
                                                                     }
@@ -445,50 +503,35 @@ function ActiveBatch() {
                                                                     }`}
                                                                 onClick={() => {
                                                                     if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
-                                                                        handleQuizDeleteClick(quiz._id); // Use quiz._id to delete quiz
+                                                                        handleQuizDeleteClick(quiz._id);
                                                                     } else {
                                                                         toast.error("Deadline passed, Can't delete Quiz :)");
                                                                     }
                                                                 }}
                                                                 title="Delete"
                                                             />
-                                                        </div>
+                                                        </div>,
                                                     ],
                                                 })}
 
-
-                                                <QuizModal
-                                                    isOpen={showQuizModal}
-                                                    closeModal={() => {
-                                                        setShowQuizModal(false);
-                                                        setQuizErrors({});
-                                                        resetQuizForm();
-                                                    }}
-                                                    quizForm={quizForm}
-                                                    setQuizForm={setQuizForm}
-                                                    quizErrors={quizErrors}
-                                                    handleInputChange={handleInputChange}
-                                                    createQuiz={createQuiz}
-                                                />
-
-                                                <HintModal
-                                                    isOpen={showHintModal}
-                                                    closeModal={() => {
-                                                        setShowHintModal(false);
-                                                        setHintErrors({});
-                                                        resetQuizHintForm();
-                                                    }}
-                                                    hintForm={hintForm}
-                                                    setHintForm={setHintForm}
-                                                    hintErrors={hintErrors}
-                                                    handleHintChange={handleHintChange}
-                                                    handleAddHint={handleAddHint}
-                                                    quizHints={quizHints}
-                                                    setQuizHints={setQuizHints}
-                                                    addHint={addHint}
-                                                    currentQuizId={currentQuizId}
-                                                    setHintErrors={setHintErrors}
-                                                />
+                                                {/* Pagination Controls for Quizzes */}
+                                                <div className="flex justify-between items-center mt-4">
+                                                    <button
+                                                        onClick={() => handleQuizzesPageChange('prev')}
+                                                        disabled={quizzesPage === 1}
+                                                        className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                                                    >
+                                                        Prev
+                                                    </button>
+                                                    <span>{`Page ${quizzesPage}`}</span>
+                                                    <button
+                                                        onClick={() => handleQuizzesPageChange('next')}
+                                                        disabled={quizzesPage === Math.ceil(batch?.batchQuiz?.length / quizzesPerPage)}
+                                                        className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                                                    >
+                                                        Next
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </>

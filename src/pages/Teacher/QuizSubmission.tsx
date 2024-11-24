@@ -9,7 +9,6 @@ import Panel from '../../layout/Panel';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// Utility function to render a table
 const renderTable = ({ headers, rows, renderRow, keyExtractor }) => (
     <div>
         <div className={`grid grid-cols-${headers.length} bg-black text-white dark:bg-meta-4 rounded-sm`}>
@@ -40,6 +39,11 @@ function QuizSubmission() {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [pagination, setPagination] = useState({
+        currentPage: 1,
+        itemsPerPage: 5,
+    });
+
     const navigate = useNavigate();
 
     const fetchSubmissions = async () => {
@@ -62,7 +66,6 @@ function QuizSubmission() {
             setLoading(false);
         }
     };
-
 
     useEffect(() => {
         fetchSubmissions(); // Initial fetch
@@ -110,16 +113,34 @@ function QuizSubmission() {
         );
     };
 
+    const handlePageChange = (direction) => {
+        setPagination((prev) => {
+            const newPagination = { ...prev };
+            const totalPages = Math.ceil(submissions.length / newPagination.itemsPerPage);
+
+            if (direction === "next" && newPagination.currentPage < totalPages) {
+                newPagination.currentPage += 1;
+            } else if (direction === "prev" && newPagination.currentPage > 1) {
+                newPagination.currentPage -= 1;
+            }
+
+            return newPagination;
+        });
+    };
+
+    // Paginate submissions
+    const { currentPage, itemsPerPage } = pagination;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedSubmissions = submissions.slice(startIndex, startIndex + itemsPerPage);
+
     return (
         <>
             <Toaster />
             <Panel>
                 {
                     loading
-                        ?
-                        <Loader />
-                        :
-                        (
+                        ? <Loader />
+                        : (
                             <>
                                 <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                                     {/* Go Back Button */}
@@ -140,7 +161,7 @@ function QuizSubmission() {
                                                 'Quiz Deadline',
                                                 'Actions',
                                             ],
-                                            rows: submissions,
+                                            rows: paginatedSubmissions,
                                             keyExtractor: (submission) => submission._id,
                                             renderRow: (submission) => {
                                                 const { submitterId, submitDate, analyzed, quizId } = submission;
@@ -182,12 +203,31 @@ function QuizSubmission() {
                                             },
                                         })}
                                     </div>
-                                </div>
 
+                                    {/* Pagination Controls */}
+                                    <div className="flex justify-between items-center mt-4">
+                                        <button
+                                            onClick={() => handlePageChange('prev')}
+                                            disabled={currentPage === 1}
+                                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                                        >
+                                            Prev
+                                        </button>
+                                        <div className="text-center">
+                                            Page {currentPage} of {Math.ceil(submissions.length / itemsPerPage)}
+                                        </div>
+                                        <button
+                                            onClick={() => handlePageChange('next')}
+                                            disabled={currentPage === Math.ceil(submissions.length / itemsPerPage)}
+                                            className="px-4 py-2 bg-black text-white rounded-md disabled:opacity-50"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
                             </>
                         )
                 }
-
             </Panel>
         </>
     );
