@@ -6,11 +6,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import profileImage from '../../images/ata/profile.png';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-
 function Teachers() {
     const [teachers, setTeachers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1); // Current page state
+    const [teachersPerPage] = useState(5); // Records per page (5)
     const { batchId } = useParams();  // This will get the batchId from the URL
     const navigate = useNavigate();
 
@@ -35,7 +36,26 @@ function Teachers() {
         };
 
         fetchTeachers();
-    }, [batchId]);  // This will trigger the effect when batchId changes
+    }, [batchId]);
+
+    // Calculate the teachers to be shown on the current page
+    const indexOfLastTeacher = currentPage * teachersPerPage;
+    const indexOfFirstTeacher = indexOfLastTeacher - teachersPerPage;
+    const currentTeachers = teachers.slice(indexOfFirstTeacher, indexOfLastTeacher);
+
+    // Pagination Handlers
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const nextPage = () => {
+        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    };
+
+    const prevPage = () => {
+        if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    };
+
+    // Calculate total pages
+    const totalPages = Math.ceil(teachers.length / teachersPerPage);
 
     const headers = [
         'Image',
@@ -78,12 +98,12 @@ function Teachers() {
                                         </div>
 
                                         {/* Dynamic Rows */}
-                                        {teachers?.length === 0 ? (
+                                        {currentTeachers?.length === 0 ? (
                                             <div className="text-center text-lg p-5">No teachers available.</div>
                                         ) : (
-                                            teachers?.map((teacher, rowIndex) => (
+                                            currentTeachers?.map((teacher, rowIndex) => (
                                                 <div
-                                                    className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === teachers?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
+                                                    className={`grid grid-cols-5 sm:grid-cols-5 ${rowIndex === currentTeachers?.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'}`}
                                                     key={rowIndex}
                                                 >
                                                     {/* Image Column */}
@@ -110,6 +130,27 @@ function Teachers() {
                                                 </div>
                                             ))
                                         )}
+                                    </div>
+
+                                    {/* Pagination Controls */}
+                                    <div className="flex justify-between items-center mt-4">
+                                        <button
+                                            onClick={prevPage}
+                                            disabled={currentPage === 1}
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+                                        >
+                                            Prev
+                                        </button>
+                                        <div className="text-center">
+                                            Page {currentPage} of {totalPages}
+                                        </div>
+                                        <button
+                                            onClick={nextPage}
+                                            disabled={currentPage === totalPages}
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+                                        >
+                                            Next
+                                        </button>
                                     </div>
                                 </div>
                             </div>

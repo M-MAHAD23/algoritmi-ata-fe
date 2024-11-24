@@ -51,6 +51,8 @@ function Batches() {
     });
     const { batchId } = useParams();
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [batchesPerPage] = useState(5);
 
     const renderRow = (batch) => [
         <div className="p-2 text-center">{batch?.batchNumber || '-'}</div>,
@@ -61,104 +63,106 @@ function Batches() {
         <div className="p-2 text-center">{batch?.batchStudent?.length || 0}</div>,
         <div className="p-2 text-center">{batch?.batchQuiz?.length || 0}</div>,
         <div className="p-2 flex justify-center space-x-4">
-            {/* View Details Button */}
-            {
-                batch.isEnable ?
-                    <>
-                        <FontAwesomeIcon
-                            icon={faEye}
-                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                            onClick={() => {
-                                // Navigate to the BatchDetails screen with the selected batch ID
-                                window.location.href = `/batch-details?batchId=${batch._id}`;
-                            }}
-                            title="View Batch Details"
-                        />
-                        <FontAwesomeIcon
-                            icon={faArchive}
-                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                            onClick={() => handleArchiveBatch(batch._id)}
-                            title="Archive Batch"
-                        />
-                        <FontAwesomeIcon
-                            icon={faEdit}
-                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                            onClick={() => {
-                                setBatch(batch);
-                                setShowUpdateModal(true);
-                            }}
-                            title="Update Batch"
-                        />
-                        <FontAwesomeIcon
-                            icon={faUserPlus}
-                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                            onClick={() => {
-                                setNewUser({ ...newUser, batchId: batch._id });
-                                setSelectedBatchId(batch?._id);
-                                setIsModalOpen(true);
-                            }}
-                            title="Add User"
-                        />
-                    </>
-                    :
-                    <>
-                        <FontAwesomeIcon
-                            icon={faArchive}
-                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                            onClick={() => handleArchiveBatch(batch._id)}
-                            title="Archive Batch"
-                        />
-                        {/* <FontAwesomeIcon
-                            icon={faEye}
-                            className="text-1xl text-black hover:text-green-500 cursor-pointer"
-                            onClick={() => {
-                                window.location.href = `/batch-details?batchId=${batch._id}`;
-                            }}
-                            title="View Batch Details"
-                        /> */}
-                    </>
-            }
+            {/* Action Icons */}
+            <FontAwesomeIcon
+                icon={faEye}
+                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                onClick={() => {
+                    window.location.href = `/batch-details?batchId=${batch._id}`;
+                }}
+                title="View Batch Details"
+            />
+            <FontAwesomeIcon
+                icon={faArchive}
+                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                onClick={() => handleArchiveBatch(batch._id)}
+                title="Archive Batch"
+            />
+            <FontAwesomeIcon
+                icon={faEdit}
+                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                onClick={() => {
+                    setBatch(batch);
+                    setShowUpdateModal(true);
+                }}
+                title="Update Batch"
+            />
+            <FontAwesomeIcon
+                icon={faUserPlus}
+                className="text-1xl text-black hover:text-green-500 cursor-pointer"
+                onClick={() => {
+                    setNewUser({ ...newUser, batchId: batch._id });
+                    setSelectedBatchId(batch?._id);
+                    setIsModalOpen(true);
+                }}
+                title="Add User"
+            />
         </div>,
     ];
 
     // Utility function to render tables
 
-    const renderTable = ({ headers, rows, renderRow, keyExtractor }) => (
-        <div className="mb-8">
-            {/* Table Header */}
-            <div
-                className="grid grid-cols-8 bg-black text-white dark:bg-meta-4 rounded-sm"
-            >
-                {headers.map((header, index) => (
-                    <div
-                        key={index}
-                        className="p-2.5 text-center font-medium uppercase border-b border-stroke dark:border-strokedark"
+    // Utility function to render tables with pagination
+    const renderTable = ({ headers, rows, renderRow, keyExtractor }) => {
+        const indexOfLastBatch = currentPage * batchesPerPage;
+        const indexOfFirstBatch = indexOfLastBatch - batchesPerPage;
+        const currentBatches = rows.slice(indexOfFirstBatch, indexOfLastBatch);
+
+        return (
+            <div className="mb-8">
+                {/* Table Header */}
+                <div className="grid grid-cols-8 bg-black text-white dark:bg-meta-4 rounded-sm">
+                    {headers.map((header, index) => (
+                        <div
+                            key={index}
+                            className="p-2.5 text-center font-medium uppercase border-b border-stroke dark:border-strokedark"
+                        >
+                            {header}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Table Body */}
+                {currentBatches.length ? (
+                    currentBatches.map((row) => (
+                        <div
+                            key={keyExtractor(row)}
+                            className="grid grid-cols-8 gap-2 border-b border-stroke dark:border-strokedark"
+                        >
+                            {renderRow(row).map((cell, cellIndex) => (
+                                <div key={cellIndex} className="p-2 text-center">
+                                    {cell}
+                                </div>
+                            ))}
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center p-5">No data available.</div>
+                )}
+
+                {/* Pagination Controls */}
+                <div className="flex justify-between items-center mt-4">
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
                     >
-                        {header}
+                        Prev
+                    </button>
+                    <div className="text-center">
+                        Page {currentPage} of {Math.ceil(rows.length / batchesPerPage)}
                     </div>
-                ))}
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(rows.length / batchesPerPage)))}
+                        disabled={currentPage === Math.ceil(rows.length / batchesPerPage)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
-
-            {/* Table Body */}
-            {rows.length ? (
-                rows.map((row) => (
-                    <div
-                        key={keyExtractor(row)}
-                        className="grid grid-cols-8 gap-2 border-b border-stroke dark:border-strokedark"
-                    >
-                        {renderRow(row).map((cell, cellIndex) => (
-                            <div key={cellIndex} className="p-2 text-center">
-                                {cell}
-                            </div>
-                        ))}
-                    </div>
-                ))
-            ) : (
-                <div className="text-center p-5">No data available.</div>
-            )}
-        </div>
-    );
-
+        );
+    };
 
     const fetchBatches = async () => {
         setLoading(true);
@@ -326,7 +330,6 @@ function Batches() {
                     (
                         <>
                             <div className="overflow-x-auto rounded-sm border border-stroke bg-white p-5 px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-
                                 {/* Go Back Button */}
                                 <button
                                     onClick={() => navigate(-1)} // Navigate back to the previous page
@@ -335,7 +338,7 @@ function Batches() {
                                     &larr; Go Back
                                 </button>
 
-                                {/* <div className="overflow-x-auto"> */}
+                                {/* Active Batches Table */}
                                 <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
                                         Active Batches
@@ -353,6 +356,8 @@ function Batches() {
                                         renderRow,
                                     })}
                                 </div>
+
+                                {/* Archived Batches Table */}
                                 <div className="mt-6 rounded-sm border border-stroke bg-white px-5 pt-6 pb-6 shadow-lg dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-5">
                                     <h4 className="mb-6 text-xl font-bold text-black dark:text-white">
                                         Archived Batches
@@ -366,7 +371,7 @@ function Batches() {
                                 </div>
                             </div>
 
-                            {/* Update Batch Modal */}
+                            {/* Modals */}
                             {showUpdateModal && (
                                 <UpdateBatchModal
                                     isOpen={showUpdateModal}
@@ -377,7 +382,6 @@ function Batches() {
                                 />
                             )}
 
-                            {/* Modals for Create User and Create Batch */}
                             {isModalOpen && (
                                 <CreateUserModal
                                     setIsModalOpen={setIsModalOpen}
@@ -388,7 +392,6 @@ function Batches() {
                                 />
                             )}
 
-                            {/* Create Batch Modal */}
                             {showCreateModal && (
                                 <CreateBatchModal
                                     isOpen={showCreateModal}
@@ -401,7 +404,6 @@ function Batches() {
                         </>
                     )
                 }
-
             </Panel>
         </>
     );
