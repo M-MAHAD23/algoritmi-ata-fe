@@ -462,12 +462,12 @@ function ActiveBatch() {
                                                             {/* Add Hint Icon */}
                                                             <FontAwesomeIcon
                                                                 icon={faPlusCircle}
-                                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                                className={`text-2xl ${new Date().toISOString().split('T')[0] >= quiz.quizDead
                                                                     ? 'text-gray-500 cursor-not-allowed'
                                                                     : 'text-black hover:text-green-500 cursor-pointer'
                                                                     }`}
                                                                 onClick={() => {
-                                                                    if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
+                                                                    if (new Date().toISOString().split('T')[0] < quiz.quizDead) {
                                                                         setShowHintModal(true);
                                                                         setCurrentQuizId(quiz._id);
                                                                     } else {
@@ -497,12 +497,12 @@ function ActiveBatch() {
                                                             {/* Delete Icon */}
                                                             <FontAwesomeIcon
                                                                 icon={faTrashAlt}
-                                                                className={`text-2xl ${new Date().toISOString().split('T')[0] === quiz.quizDead
+                                                                className={`text-2xl ${new Date().toISOString().split('T')[0] >= quiz.quizDead
                                                                     ? 'text-gray-500 cursor-not-allowed'
                                                                     : 'text-black hover:text-red-500 cursor-pointer'
                                                                     }`}
                                                                 onClick={() => {
-                                                                    if (new Date().toISOString().split('T')[0] !== quiz.quizDead) {
+                                                                    if (new Date().toISOString().split('T')[0] < quiz.quizDead) {
                                                                         handleQuizDeleteClick(quiz._id);
                                                                     } else {
                                                                         toast.error("Deadline passed, Can't delete Quiz :)");
