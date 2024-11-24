@@ -51,7 +51,8 @@ function Batches() {
     });
     const { batchId } = useParams();
     const navigate = useNavigate();
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentActivePage, setCurrentActivePage] = useState(1);
+    const [currentArchivePage, setCurrentArchivePage] = useState(1);
     const [batchesPerPage] = useState(5);
 
     const renderRow = (batch) => [
@@ -103,7 +104,7 @@ function Batches() {
     // Utility function to render tables
 
     // Utility function to render tables with pagination
-    const renderTable = ({ headers, rows, renderRow, keyExtractor }) => {
+    const renderTable = ({ headers, rows, renderRow, keyExtractor, currentPage, setCurrentPage }) => {
         const indexOfLastBatch = currentPage * batchesPerPage;
         const indexOfFirstBatch = indexOfLastBatch - batchesPerPage;
         const currentBatches = rows.slice(indexOfFirstBatch, indexOfLastBatch);
@@ -352,8 +353,10 @@ function Batches() {
                                     {renderTable({
                                         headers,
                                         rows: activeBatches,
-                                        keyExtractor: (batch) => batch._id,
                                         renderRow,
+                                        keyExtractor: (batch) => batch._id,
+                                        currentPage: currentActivePage,
+                                        setCurrentPage: setCurrentActivePage,
                                     })}
                                 </div>
 
@@ -365,8 +368,10 @@ function Batches() {
                                     {renderTable({
                                         headers,
                                         rows: archivedBatches,
-                                        keyExtractor: (batch) => batch._id,
                                         renderRow,
+                                        keyExtractor: (batch) => batch._id,
+                                        currentPage: currentArchivePage,
+                                        setCurrentPage: setCurrentArchivePage,
                                     })}
                                 </div>
                             </div>
