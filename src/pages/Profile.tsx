@@ -9,7 +9,7 @@ import Panel from '../layout/Panel';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-  const { profile, setProfile } = useContext(LaunchATAContext)
+  const { profile, setProfile } = useContext(LaunchATAContext);
   const [userProfile, setUserProfile] = useState(null); // Add state for userProfile
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [loading, setLoading] = useState(true); // Set loading to true initially

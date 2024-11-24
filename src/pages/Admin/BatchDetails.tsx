@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Loader from '../../common/Loader';
 import axios from 'axios';
 import profileImage from '../../images/ata/profile.png'
 import { useNavigate } from 'react-router-dom';
 import Panel from '../../layout/Panel';
+import LaunchATAContext from '../../context/AppContext';
+import getUserProfile from '../../hooks/profile';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function BatchDetails() {
+    const { profile, setProfile } = useContext(LaunchATAContext);
     const headers = ['Image', 'Name', 'Email', 'Contact', 'About'];
     const headersQuiz = ['Name', 'Topic', 'Description', 'Assigned At', 'Deadline'];
     const [loading, setLoading] = useState(false);
@@ -29,6 +32,8 @@ function BatchDetails() {
             setLoading(true);
             try {
                 let response;
+                const res = await getUserProfile();
+                setProfile(res);
                 if (batchId) {
                     response = await axios.post(`${API_BASE_URL}/batch/getBatchById`, { batchId });
                 }
