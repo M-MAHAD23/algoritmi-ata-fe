@@ -514,6 +514,39 @@ function ActiveBatch() {
                                                     ],
                                                 })}
 
+                                                <QuizModal
+                                                    isOpen={showQuizModal}
+                                                    closeModal={() => {
+                                                        setShowQuizModal(false);
+                                                        setQuizErrors({});
+                                                        resetQuizForm();
+                                                    }}
+                                                    quizForm={quizForm}
+                                                    setQuizForm={setQuizForm}
+                                                    quizErrors={quizErrors}
+                                                    handleInputChange={handleInputChange}
+                                                    createQuiz={createQuiz}
+                                                />
+
+                                                <HintModal
+                                                    isOpen={showHintModal}
+                                                    closeModal={() => {
+                                                        setShowHintModal(false);
+                                                        setHintErrors({});
+                                                        resetQuizHintForm();
+                                                    }}
+                                                    hintForm={hintForm}
+                                                    setHintForm={setHintForm}
+                                                    hintErrors={hintErrors}
+                                                    handleHintChange={handleHintChange}
+                                                    handleAddHint={handleAddHint}
+                                                    quizHints={quizHints}
+                                                    setQuizHints={setQuizHints}
+                                                    addHint={addHint}
+                                                    currentQuizId={currentQuizId}
+                                                    setHintErrors={setHintErrors}
+                                                />
+
                                                 {/* Pagination Controls for Quizzes */}
                                                 <div className="flex justify-between items-center mt-4">
                                                     <button
@@ -540,8 +573,9 @@ function ActiveBatch() {
                                 )}
                             </div>
                         </>
-                    )}
-            </Panel>
+                    )
+                }
+            </Panel >
         </>
     );
 }
