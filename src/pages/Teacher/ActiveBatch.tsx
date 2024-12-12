@@ -464,19 +464,17 @@ function ActiveBatch() {
                                                                 icon={faPlusCircle}
                                                                 className={`text-2xl ${new Date().toISOString().split('T')[0] >= quiz?.quizDead
                                                                     && `text-black hover:text-gray-700 cursor-pointer`
-                                                                    // ? 'text-gray-500 cursor-not-allowed'
-                                                                    // : 'text-black hover:text-green-500 cursor-pointer'
+                                                                    ? 'text-gray-500 cursor-not-allowed'
+                                                                    : 'text-black hover:text-green-500 cursor-pointer'
                                                                     }`}
                                                                 onClick={() => {
-                                                                    toast('Feature coming soon!!', {
-                                                                        icon: '🔜',
-                                                                    });
-                                                                    // if (new Date().toISOString().split('T')[0] < quiz.quizDead) {
-                                                                    //     setShowHintModal(true);
-                                                                    //     setCurrentQuizId(quiz._id);
-                                                                    // } else {
-                                                                    //     toast.error("Deadline passed, Can't add hint :)");
-                                                                    // }
+                                                                    // toast('Feature coming soon!!', {icon: '🔜',});
+                                                                    if (new Date().toISOString().split('T')[0] < quiz.quizDead) {
+                                                                        setShowHintModal(true);
+                                                                        setCurrentQuizId(quiz._id);
+                                                                    } else {
+                                                                        toast.error("Deadline passed, Can't add hint :)");
+                                                                    }
                                                                 }}
                                                                 title="Add Hint"
                                                             />
