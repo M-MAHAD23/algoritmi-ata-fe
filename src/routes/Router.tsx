@@ -24,6 +24,7 @@ import ChatBot from '../pages/Student/ChatBot';
 import { useGetUserInfo } from '../hooks/hooks';
 import QuizSubmission from '../pages/Teacher/QuizSubmission';
 import BatchDetails from '../pages/Admin/BatchDetails';
+import Submission from '../pages/Submission/Submission';
 
 // Wrapper to handle private routes
 const PrivateRoute = ({ element }) => {
@@ -41,6 +42,7 @@ function Router() {
                 <Route index element={<Landing />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/submission" element={<Submission />} />
 
                 {/* Private Routes */}
                 <Route path="/submit" element={<PrivateRoute element={<Submit />} />} />
